@@ -66,3 +66,16 @@ footer {
   text-align: center;
   color: var(--muted);
 }
+
+/* --- hero with professional portrait --- */
+.hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:28px;align-items:center}
+.hero-text{}
+.hero-photo{display:flex;justify-content:center}
+.avatar{width:260px;max-width:100%;border-radius:14px;border:1px solid var(--border);box-shadow:0 8px 22px rgba(0,0,0,.35)}
+
+/* responsive: stack on small screens */
+@media (max-width: 900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-photo{order:-1;margin-bottom:12px}
+  .avatar{width:180px}
+}
