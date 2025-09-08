@@ -79,3 +79,11 @@ footer {
   .hero-photo{order:-1;margin-bottom:12px}
   .avatar{width:180px}
 }
+
+/* --- blog list styling --- */
+.post-list{list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:10px}
+.post-list li{background:#121318;border:1px solid var(--border);border-radius:12px;padding:12px}
+.post-list .date{display:inline-block;color:var(--muted);font-size:12px;margin-right:8px}
+.post-list a{font-weight:600}
+.post-list .desc{display:block;color:var(--muted)}
+.blog-cta{margin-top:12px}
