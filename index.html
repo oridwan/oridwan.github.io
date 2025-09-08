@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Osman Goni Ridwan — AI + Materials Discovery</title>
-  <meta name="description" content="AI-assisted crystal structure generation, generative models, materials informatics.">
+  <meta name="description" content="AI-assisted crystal structure generation (LEGO-xtal), symmetry-aware generative models, HPC workflows for functional materials.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,49 +12,117 @@
   <nav>
     <a class="brand" href="#">Ridwan</a>
     <div class="links">
-      <a href="#research">Research</a>
+      <a href="#about">About</a>
+      <a href="#interests">Research</a>
+      <a href="#experience">Experience</a>
       <a href="#pubs">Publications</a>
+      <a href="#talks">Talks</a>
       <a href="#contact">Contact</a>
     </div>
   </nav>
 </header>
 
 <main>
-  <section class="hero">
+  <!-- HERO -->
+  <section class="hero" id="about">
     <h1>Osman Goni Ridwan</h1>
     <p class="tag">AI + Materials Discovery • Generative Models • Crystal Structure Prediction</p>
-    <p>PhD candidate at UNC Charlotte. I build symmetry-aware generative models (LEGO-xtal) and high-throughput workflows with ASE/VASP/MACE.</p>
+    <p>PhD candidate in Mechanical Engineering (UNC Charlotte; GPA 4.00/4.00). I build symmetry-aware
+       generative models for crystals (LEGO-xtal) and high-throughput optimization workflows using ASE,
+       VASP, and ML force fields (MACE / ALIGNN-FF). I collaborate across Computer Science and
+       Computational Chemistry to accelerate functional materials discovery. <!-- Resume source --> </p>
   </section>
 
-  <section id="research">
-    <h2>Selected Research</h2>
+  <!-- RESEARCH INTERESTS -->
+  <section id="interests">
+    <h2>Research Interests</h2>
     <ul>
-      <li><b>LEGO-xtal</b> — AI-assisted crystal structure generation using Wyckoff-site representations. <a href="#">Paper</a> · <a href="#">Code</a></li>
-      <li><b>MACE vs ALIGNN-FF</b> — Fast pre-relax vs high-fidelity refinement in CSP pipelines. <a href="#">Notes</a></li>
+      <li>Atomistic materials modeling & crystal structure prediction</li>
+      <li>AI generative models for materials (diffusion, LLMs, symmetry-aware reps)</li>
+      <li>Energy, molecular and battery materials</li>
     </ul>
   </section>
 
+  <!-- EDUCATION -->
+  <section id="education">
+    <h2>Education</h2>
+    <ul>
+      <li><b>Ph.D., Mechanical Engineering</b>, University of North Carolina at Charlotte — 2024–present (3rd year), GPA 4.00/4.00; Advisor: Prof. Qiang Zhu</li>
+      <li><b>B.Sc., Naval Architecture & Marine Engineering</b>, BUET — 2017–2022; CGPA 3.45/4.00. Thesis on earth-pipe cooling system thermal performance (MARTEC 2022 proceedings, 2023).</li>
+    </ul>
+  </section>
+
+  <!-- EXPERIENCE HIGHLIGHTS -->
+  <section id="experience">
+    <h2>Research Experience (selected)</h2>
+    <ul>
+      <li><b>LEGO-xtal:</b> symmetry-aware AI framework for crystal generation targeting specific local environments; enabled generation of 1,700+ novel sp²-carbon allotropes from only 25 seeds (first-authored manuscript under review). <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank">Code</a></li>
+      <li><b>PyXtal-DFTB:</b> automated elastic constants for organic crystals; collaboration with CUNY on mechanical properties of peptide hydrates (co-authored manuscript under review). <a href="https://github.com/MaterSim/PyXtal_DFTB" target="_blank">Code</a></li>
+      <li><b>Symmetry-driven structure generator in PyXtal:</b> leveraged crystallographic symmetry; collaboration with LLNL to curate ~200 hypothetical boron nitrides for XAS analysis (co-authored manuscript under review). <a href="https://github.com/MaterSim/PyXtal" target="_blank">Code</a></li>
+      <li><b>Latent-space crystal optimization:</b> 10× more efficient structure optimization vs direct-space (first-authored manuscript in prep.).</li>
+      <li><b>Reciprocal-space representations:</b> physics-informed 4D scattering-based descriptors for matching/reconstruction (first-authored manuscript in prep.).</li>
+    </ul>
+  </section>
+
+  <!-- PUBLICATIONS -->
   <section id="pubs">
-    <h2>Publications</h2>
+    <h2>Publications & Preprints</h2>
     <ol>
-      <li><b>AI-Assisted Rapid Crystal Structure Generation (LEGO-xtal)</b> — 2025. <a href="#">arXiv</a></li>
-      <li><b>X-ray Absorption of Boron Nitride via ML</b> — 2024. <a href="#">DOI</a></li>
+      <li>
+        <b>AI-Assisted Rapid Crystal Structure Generation Towards a Target Local Environment (LEGO-xtal)</b> — 2025.  
+        O. G. Ridwan, S. Pitié, M. S. Raj, D. Dai, G. Frapper, H-F. Xue, Q. Zhu. Under review (npj Computational Materials).  
+        <a href="https://arxiv.org/abs/2506.08224" target="_blank">arXiv</a>
+      </li>
+      <li>
+        <b>Unveiling X-ray Absorption Signatures of Boron Nitride via First-Principles Simulation and Machine Learning</b> — 2025.  
+        W-Y Sun, O. G. Ridwan, S. O. Kucheyev, Q. Zhu, L-W Wan. Under review in <i>Next Materials</i>.
+      </li>
+      <li>
+        <b>Context-Adaptive Nanotopology in Peptide Crystals</b> — 2025.  
+        V. Athiyarath, E. Naranjo, D. Dave, O. G. Ridwan, …, R. V. Ulijn, X. Chen. ChemRxiv; under review in <i>Matter</i>.  
+        <a href="https://chemrxiv.org/engage/chemrxiv/article-details/67818f64fa469535b981d92c" target="_blank">ChemRxiv</a>
+      </li>
+      <li>
+        <b>Crystal Representation in the Reciprocal Space</b> — 2025. O. G. Ridwan, H-F. Xue, Y-X. Chen, H. Cherukuri, Q. Zhu. (to submit)
+      </li>
+      <li>
+        <b>Enhancing Crystal Optimization at the Latent Space</b> — 2025. O. G. Ridwan, H-F. Xue, Q. Zhu. (in preparation)
+      </li>
     </ol>
   </section>
 
+  <!-- TALKS -->
+  <section id="talks">
+    <h2>Conferences & Presentations</h2>
+    <ul>
+      <li><b>Gordon Research Conference (2024)</b> — “Crystal Structure Prediction with Deep Learning Models Using Space Group Symmetry.” Spotlight Poster Preview (top 5 of 30+).</li>
+      <li><b>CITRANS Symposium, UNC Charlotte (2025)</b> — “AI-Assisted Rapid Crystal Structure Generation with a Target Local Chemical Environment.” <b>Best Poster Award</b> (1st of 26).</li>
+    </ul>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <h2>Technical Skills</h2>
+    <ul>
+      <li><b>Programming:</b> Python, Bash, MATLAB; Linux HPC scripting; Git</li>
+      <li><b>Software:</b> ASE, VASP, LAMMPS; VESTA; MLFFs (MACE, ALIGNN-FF)</li>
+    </ul>
+  </section>
+
+  <!-- CONTACT -->
   <section id="contact">
     <h2>Contact</h2>
-    <p>Email: <a href="mailto:your.email@uncc.edu">your.email@uncc.edu</a></p>
+    <p>Email: <a href="mailto:oridwan@charlotte.edu">oridwan@charlotte.edu</a> · Phone: +1 (704) 390-2081</p>
     <p>
       <a href="https://scholar.google.com/" target="_blank">Google Scholar</a> ·
-      <a href="https://github.com/" target="_blank">GitHub</a> ·
-      <a href="https://linkedin.com/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank">GitHub (LEGO-xtal)</a> ·
+      <a href="https://linkedin.com/in/ogridwan" target="_blank">LinkedIn</a>
     </p>
   </section>
 </main>
 
 <footer>
-  <p>© 2025 O.G. Ridwan</p>
+  <p>© 2025 O. G. Ridwan — Built with a lightweight static template.</p>
 </footer>
 </body>
 </html>
