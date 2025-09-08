@@ -5,7 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Osman Goni Ridwan — AI + Materials Discovery</title>
   <meta name="description" content="AI-assisted crystal structure generation (LEGO-xtal), symmetry-aware generative models, HPC workflows for functional materials.">
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="canonical" href="https://oridwan.github.io/">
+  <meta property="og:title" content="Osman Goni Ridwan — AI + Materials Discovery">
+  <meta property="og:description" content="Generative AI for crystal structure prediction; symmetry-aware models; HPC workflows.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://oridwan.github.io/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Osman Goni Ridwan — AI + Materials Discovery">
+  <meta name="twitter:description" content="Generative AI for crystal structure prediction; symmetry-aware models; HPC workflows.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "affiliation": {"@type":"CollegeOrUniversity","name":"University of North Carolina at Charlotte"},
+    "jobTitle": "PhD Candidate",
+    "email": "mailto:oridwan@charlotte.edu",
+    "url": "https://oridwan.github.io/",
+    "sameAs": [
+      "https://scholar.google.com/",
+      "https://linkedin.com/in/ogridwan",
+      "https://github.com/MaterSim/LEGO-xtal"
+    ]
+  }
+  </script>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .btn{display:inline-block;border:1px solid #1f2430;padding:10px 14px;border-radius:10px;color:#e5e7eb;margin-right:10px}
+    .btn.primary{background:linear-gradient(90deg,#60a5fa,#34d399);border:none;color:#0b0c10;font-weight:700}
+    .affil{color:#9aa0a6;margin:.25rem 0 0}
+    .badges{margin-top:6px;display:flex;gap:8px}
+    .badge{display:inline-block;border:1px solid #1f2430;padding:2px 8px;border-radius:999px;font-size:12px;color:#9aa0a6}
+  </style>
 </head>
 <body>
 <header class="top">
@@ -31,6 +63,12 @@
        generative models for crystals (LEGO-xtal) and high-throughput optimization workflows using ASE,
        VASP, and ML force fields (MACE / ALIGNN-FF). I collaborate across Computer Science and
        Computational Chemistry to accelerate functional materials discovery. <!-- Resume source --> </p>
+    <p class="affil">University of North Carolina at Charlotte · Materials AI Lab</p>
+    <p class="cta">
+      <a class="btn primary" href="#pubs">Publications</a>
+      <a class="btn" href="assets/CV.pdf" target="_blank" rel="noopener">Download CV</a>
+      <a class="btn" href="https://scholar.google.com/" target="_blank" rel="noopener">Google Scholar</a>
+    </p>
   </section>
 
   <!-- RESEARCH INTERESTS -->
@@ -40,6 +78,15 @@
       <li>Atomistic materials modeling & crystal structure prediction</li>
       <li>AI generative models for materials (diffusion, LLMs, symmetry-aware reps)</li>
       <li>Energy, molecular and battery materials</li>
+    </ul>
+  </section>
+
+  <section id="highlights">
+    <h2>Highlights</h2>
+    <ul>
+      <li><b>LEGO‑xtal:</b> symmetry‑aware generative framework; 1,700+ novel sp²‑carbon allotropes from 25 seeds; efficient local‑environment targeting.</li>
+      <li><b>ML Force Fields:</b> staged screening with ALIGNN‑FF → refinement with MACE; robust PES navigation for CSP workflows.</li>
+      <li><b>HPC Workflows:</b> automated ASE/VASP relaxations, dataset curation (tens of thousands of CIFs), and analysis pipelines.</li>
     </ul>
   </section>
 
@@ -64,6 +111,15 @@
     </ul>
   </section>
 
+  <section id="news">
+    <h2>News</h2>
+    <ul>
+      <li><b>Aug 2025:</b> Best Poster Award — CITRANS Symposium, UNC Charlotte.</li>
+      <li><b>Jul 2025:</b> LEGO‑xtal preprint updated on arXiv; code refactor released.</li>
+      <li><b>Mar 2024:</b> Spotlight poster preview at Gordon Research Conference.</li>
+    </ul>
+  </section>
+
   <!-- PUBLICATIONS -->
   <section id="pubs">
     <h2>Publications & Preprints</h2>
@@ -72,21 +128,41 @@
         <b>AI-Assisted Rapid Crystal Structure Generation Towards a Target Local Environment (LEGO-xtal)</b> — 2025.  
         O. G. Ridwan, S. Pitié, M. S. Raj, D. Dai, G. Frapper, H-F. Xue, Q. Zhu. Under review (npj Computational Materials).  
         <a href="https://arxiv.org/abs/2506.08224" target="_blank">arXiv</a>
+        <div class="badges">
+          <span class="badge">preprint</span>
+          <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
+        </div>
       </li>
       <li>
         <b>Unveiling X-ray Absorption Signatures of Boron Nitride via First-Principles Simulation and Machine Learning</b> — 2025.  
         W-Y Sun, O. G. Ridwan, S. O. Kucheyev, Q. Zhu, L-W Wan. Under review in <i>Next Materials</i>.
+        <div class="badges">
+          <span class="badge">preprint</span>
+          <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
+        </div>
       </li>
       <li>
         <b>Context-Adaptive Nanotopology in Peptide Crystals</b> — 2025.  
         V. Athiyarath, E. Naranjo, D. Dave, O. G. Ridwan, …, R. V. Ulijn, X. Chen. ChemRxiv; under review in <i>Matter</i>.  
         <a href="https://chemrxiv.org/engage/chemrxiv/article-details/67818f64fa469535b981d92c" target="_blank">ChemRxiv</a>
+        <div class="badges">
+          <span class="badge">preprint</span>
+          <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
+        </div>
       </li>
       <li>
         <b>Crystal Representation in the Reciprocal Space</b> — 2025. O. G. Ridwan, H-F. Xue, Y-X. Chen, H. Cherukuri, Q. Zhu. (to submit)
+        <div class="badges">
+          <span class="badge">preprint</span>
+          <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
+        </div>
       </li>
       <li>
         <b>Enhancing Crystal Optimization at the Latent Space</b> — 2025. O. G. Ridwan, H-F. Xue, Q. Zhu. (in preparation)
+        <div class="badges">
+          <span class="badge">preprint</span>
+          <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
+        </div>
       </li>
     </ol>
   </section>
@@ -109,20 +185,30 @@
     </ul>
   </section>
 
+  <section id="service">
+    <h2>Service & Teaching</h2>
+    <ul>
+      <li>Peer reviewer (selected): computational materials & ML journals/workshops.</li>
+      <li>Guest lectures: symmetry & Wyckoff sites for generative models; MLFF benchmarking.</li>
+    </ul>
+  </section>
+
   <!-- CONTACT -->
   <section id="contact">
     <h2>Contact</h2>
     <p>Email: <a href="mailto:oridwan@charlotte.edu">oridwan@charlotte.edu</a> </p>
     <p>
-      <a href="https://scholar.google.com/" target="_blank">Google Scholar</a> ·
-      <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank">GitHub (LEGO-xtal)</a> ·
-      <a href="https://linkedin.com/in/ogridwan" target="_blank">LinkedIn</a>
+      <a href="https://scholar.google.com/" target="_blank" rel="noopener">Google Scholar</a> ·
+      <a href="https://orcid.org/" target="_blank" rel="noopener">ORCID</a> ·
+      <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank" rel="noopener">GitHub (LEGO‑xtal)</a> ·
+      <a href="https://linkedin.com/in/ogridwan" target="_blank" rel="noopener">LinkedIn</a>
     </p>
   </section>
 </main>
 
 <footer>
-  <p>© 2025 O. G. Ridwan — Built with a lightweight static template.</p>
+  <p>© 2025 O. G. Ridwan · <a href="mailto:oridwan@charlotte.edu">oridwan@charlotte.edu</a> · <a href="https://oridwan.github.io/">oridwan.github.io</a></p>
+  <p><small>Last updated: Sept 2025 · Hosted on GitHub Pages</small></p>
 </footer>
 </body>
 </html>
