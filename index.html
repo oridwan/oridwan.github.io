@@ -37,6 +37,20 @@
     .affil{color:#9aa0a6;margin:.25rem 0 0}
     .badges{margin-top:6px;display:flex;gap:8px}
     .badge{display:inline-block;border:1px solid #1f2430;padding:2px 8px;border-radius:999px;font-size:12px;color:#9aa0a6}
+    .news-article{border-left:3px solid #60a5fa;padding:16px 0 16px 16px;margin-bottom:24px}
+    .news-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:8px}
+    .news-header h3{margin:0;font-size:18px;line-height:1.4;flex:1}
+    .news-date{color:#9aa0a6;font-size:14px;white-space:nowrap}
+    .news-article p{margin:0;color:#e5e7eb;line-height:1.6}
+    .project{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #1f2430}
+    .project:last-child{border-bottom:none}
+    .project h3{margin:0 0 8px 0;font-size:18px;color:#e5e7eb}
+    .tech-stack{color:#9aa0a6;font-size:13px;margin:0 0 12px 0;font-style:italic}
+    .project ul{margin:0;padding-left:20px;color:#e5e7eb}
+    .project li{margin-bottom:8px;line-height:1.6}
+    .project-links{margin-top:12px;color:#60a5fa;font-size:14px}
+    .project-links a{color:#60a5fa;text-decoration:none;margin-right:16px}
+    .project-links a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
@@ -101,34 +115,124 @@
   <section id="education">
     <h2>Education</h2>
     <ul>
+      <li><b>M.S., Mechanical Engineering</b>, University of North Carolina at Charlotte — December 2025, GPA 4.00/4.00</li>
       <li><b>Ph.D., Mechanical Engineering</b>, University of North Carolina at Charlotte — 2024–present (3rd year), GPA 4.00/4.00; Advisor: Prof. Qiang Zhu</li>
       <li><b>B.Sc., Naval Architecture & Marine Engineering</b>, BUET — 2017–2022; Thesis on earth-pipe cooling system thermal performance (MARTEC 2022 proceedings, 2023).</li>
     </ul>
   </section>
 
-  <!-- EXPERIENCE HIGHLIGHTS -->
+  <!-- RESEARCH PROJECTS -->
   <section id="experience">
-    <h2>Research Experience (selected)</h2>
-    <ul>
-      <li><b>LEGO-xtal:</b> symmetry-aware AI framework for crystal generation targeting specific local environments; enabled generation of 1,700+ novel sp²-carbon allotropes from only 25 seeds (first-authored manuscript under review). <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank">Code</a></li>
-      <li><b>PyXtal-DFTB:</b> automated elastic constants for organic crystals; collaboration with CUNY on mechanical properties of peptide hydrates (co-authored manuscript under review). <a href="https://github.com/MaterSim/PyXtal_DFTB" target="_blank">Code</a></li>
-      <li><b>Symmetry-driven structure generator in PyXtal:</b> leveraged crystallographic symmetry; collaboration with LLNL to curate ~200 hypothetical boron nitrides for XAS analysis (co-authored manuscript under review). <a href="https://github.com/MaterSim/PyXtal" target="_blank">Code</a></li>
-      <li><b>Reciprocal-space representations:</b> physics-informed 4D scattering-based descriptors for matching/reconstruction (first-authored manuscript in prep.).</li>
-      <li><b>Latent space exploration:</b> investigating crystal representations in latent space for enhanced optimization (in preparation).</li>
-      <li><b>Developing crystal structure determination from PXRD by incorporating physical knowledge into existing LLM foundation models, with plans to integrate agentic systems to enhance model accuracy.</li>
-    </ul>
+    <h2>Research Projects</h2>
+    
+    <div class="project">
+      <h3>LEGO-xtal: Symmetry-Aware Generative System for Crystal Design</h3>
+      <p class="tech-stack">PyTorch, Deep Generative Models, PyXtal, ASE, VASP, HPC</p>
+      <ul>
+        <li>Developed a symmetry-informed generative model that respects space-group constraints and periodicity for crystal structure generation.</li>
+        <li>Expanded from 25 known low-energy sp²-carbon allotropes to over 1,700 new candidate structures within 0.5 eV/atom of graphite.</li>
+        <li>Enabled targeted generation toward local chemical environments using geometry-aware latent representations.</li>
+      </ul>
+      <p class="project-links"><a href="https://github.com/MaterSim/LEGO-xtal" target="_blank">Code</a> | <a href="https://arxiv.org/abs/2506.08224" target="_blank">arXiv</a></p>
+    </div>
+
+    <div class="project">
+      <h3>LEGO-xtal-GPU: Differentiable CSP and Latent Optimization</h3>
+      <p class="tech-stack">GPU parallelization and batching, CVAE, SO(3) descriptors, differentiable optimization</p>
+      <ul>
+        <li>Implemented GPU-parallel batched evaluation of structure descriptors and objectives to scale candidate generation and refinement.</li>
+        <li>Built a fully differentiable pipeline that backpropagates through representation-space objectives and couples them with latent-space refinement.</li>
+        <li>Achieved ~5× speedup via batching and GPU acceleration, with improved success in meeting target local-environment constraints.</li>
+      </ul>
+    </div>
+
+    <div class="project">
+      <h3>PyXtal-DFTB: High-Throughput Property Screening</h3>
+      <p class="tech-stack">ASE, DFTB+, automated workflows</p>
+      <ul>
+        <li>Built an automated pipeline for elastic-constant computation of organic crystals.</li>
+        <li>Enabled mechanical screening of peptide hydrates in collaboration with experimental partners.</li>
+      </ul>
+      <p class="project-links"><a href="https://github.com/MaterSim/PyXtal_DFTB" target="_blank">Code</a></p>
+    </div>
+
+    <div class="project">
+      <h3>ML-Assisted X-ray Absorption and Optical Modeling of Boron Nitride</h3>
+      <p class="tech-stack">DFT (VASP), first-principles spectroscopy</p>
+      <ul>
+        <li>Conducted DFT simulations and collaborated with LLNL on ML-assisted X-ray absorption spectroscopy and optical modeling of boron nitride.</li>
+      </ul>
+    </div>
+
+    <div class="project">
+      <h3>Reciprocal-Space Representations for Structure Matching</h3>
+      <p class="tech-stack">Scattering features, geometric embeddings, PyTorch</p>
+      <ul>
+        <li>Developed 4D scattering-informed representations for structure matching and reconstruction.</li>
+        <li>Enabled quantitative comparison between simulation outputs and experimental signals.</li>
+      </ul>
+    </div>
+
+    <div class="project">
+      <h3>xtal-builder: Agentic Crystal Design Assistant</h3>
+      <p class="tech-stack">LLM tool-calling, Ollama, LangChain/LangGraph, ASE, PyXtal, MLIP</p>
+      <ul>
+        <li>Building an agent that orchestrates structure generation, simulation, and refinement.</li>
+        <li>Implements log parsing, failure detection, and auto-retry loops on HPC.</li>
+        <li>Goal: autonomous crystal design from minimal user input.</li>
+      </ul>
+    </div>
   </section>
 
   <section id="news">
     <h2>News</h2>
-    <ul>
-      <li><b>Jan 2026:</b> <i>AI-Assisted Rapid Crystal Structure Generation Towards a Target Local Environment</i> accepted and online in <i>npj Comput. Mater.</i>, <b>12</b>, 7 (2026).</li>
-      <li><b>Jan 2026:</b> <i>Context-Adaptive Nanotopology in Peptide Crystals</i> accepted in <i>Matter</i>.</li>
-      <li><b>Jan 2026:</b> <i>Crystal Generation using the Fully Differentiable Pipeline and Latent Space Optimization</i> uploaded to arXiv.</li>
-      <li><b>Aug 2025:</b> Best Poster Award — CITRANS Symposium, UNC Charlotte.</li>
-      <li><b>Jul 2025:</b> LEGO‑xtal preprint updated on arXiv; code refactor released.</li>
-      <li><b>Mar 2024:</b> Spotlight poster preview at Gordon Research Conference.</li>
-    </ul>
+    <article class="news-article">
+      <div class="news-header">
+        <h3>AI-Assisted Crystal Generation Paper Published in <i>npj Computational Materials</i></h3>
+        <span class="news-date">Jan 2026</span>
+      </div>
+      <p><i>AI-Assisted Rapid Crystal Structure Generation Towards a Target Local Environment</i> is now online. The work presents LEGO-xtal, a symmetry-aware generative framework capable of discovering 1,700+ novel sp²-carbon allotropes. Published in <i>npj Comput. Mater.</i>, <b>12</b>, 7.</p>
+    </article>
+
+    <article class="news-article">
+      <div class="news-header">
+        <h3>New Preprint: Fully Differentiable Pipeline for Crystal Generation</h3>
+        <span class="news-date">Jan 2026</span>
+      </div>
+      <p><i>Crystal Generation using the Fully Differentiable Pipeline and Latent Space Optimization</i> now available on arXiv. This work extends crystal design with GPU-accelerated optimization in latent space.</p>
+    </article>
+
+    <article class="news-article">
+      <div class="news-header">
+        <h3>Peptide Crystal Topology Work Accepted in <i>Matter</i></h3>
+        <span class="news-date">Jan 2026</span>
+      </div>
+      <p><i>Context-Adaptive Nanotopology in Peptide Crystals</i> has been accepted for publication in <i>Matter</i>. Co-authored work exploring adaptive structure-property relationships in peptide systems.</p>
+    </article>
+
+    <article class="news-article">
+      <div class="news-header">
+        <h3>Master's Degree Completed</h3>
+        <span class="news-date">Dec 2025</span>
+      </div>
+      <p>Completed M.S. in Mechanical Engineering at UNC Charlotte with perfect 4.00/4.00 GPA. Research focused on symmetry-aware generative models and crystal design.</p>
+    </article>
+
+    <article class="news-article">
+      <div class="news-header">
+        <h3>Awarded Best Poster at CITRANS Symposium</h3>
+        <span class="news-date">Aug 2025</span>
+      </div>
+      <p>Recognition for research presented at the CITRANS Symposium, University of North Carolina at Charlotte.</p>
+    </article>
+
+    <article class="news-article">
+      <div class="news-header">
+        <h3>LEGO-xtal Preprint and Code Released</h3>
+        <span class="news-date">Jul 2025</span>
+      </div>
+      <p>Major update to LEGO-xtal preprint with complete code refactor and release on arXiv. Open-source implementation now available for reproducibility.</p>
+    </article>
   </section>
 
   <!-- PUBLICATIONS -->
