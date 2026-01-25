@@ -111,7 +111,7 @@
     </p>
     </div>
     <div class="hero-photo">
-      <img src="assets/image_OGR.jpg" alt="Osman Goni Ridwan portrait" class="avatar" width="260" height="260" decoding="async" fetchpriority="high" sizes="(max-width: 900px) 180px, 260px">
+      <img src="assets/image_OGR.jpg" alt="Osman Goni Ridwan portrait" class="avatar" decoding="async" fetchpriority="high" sizes="(max-width: 900px) 180px, 260px">
     </div>
     </div>
   </section>
@@ -120,12 +120,8 @@
   <section id="interests">
     <h2>Research Interests</h2>
     <ul>
-      <li>Atomistic materials modeling & crystal structure prediction</li>
-      <li>AI generative models for materials (diffusion, LLMs, VAE with symmetry-aware representations)</li>
-      <li>Energy, molecular and battery materials</li>
-    </ul>
-  </section>
-
+        
+      </li>
   <section id="news">
     <h2>News</h2>
     <div class="news-grid">
@@ -216,89 +212,88 @@
   <!-- RESEARCH PROJECTS -->
   <section id="experience">
     <h2>Research Projects</h2>
-    
     <div class="projects-grid">
       <div class="project">
-      <h3>LEGO-xtal: Symmetry-Aware Generative System for Crystal Design</h3>
-      <p class="tech-stack">PyTorch, Deep Generative Models, PyXtal, ASE, VASP, HPC</p>
-      <ul>
-        <li>Developed a symmetry-informed generative model that respects space-group constraints and periodicity for crystal structure generation.</li>
-        <li>Expanded from 25 known low-energy sp²-carbon allotropes to over 1,700 new candidate structures within 0.5 eV/atom of graphite.</li>
-        <li>Enabled targeted generation toward local chemical environments using geometry-aware latent representations.</li>
-      </ul>
-      <p class="project-links"><a href="https://github.com/MaterSim/LEGO-xtal" target="_blank">Code</a> | <a href="https://arxiv.org/abs/2506.08224" target="_blank">arXiv</a></p>
-    </div>
+        <h3>LEGO-xtal: Symmetry-Aware Generative System for Crystal Design</h3>
+        <p class="tech-stack">PyTorch, Deep Generative Models, PyXtal, ASE, VASP, HPC</p>
+        <ul>
+          <li>Developed a symmetry-informed generative model that respects space-group constraints and periodicity for crystal structure generation.</li>
+          <li>Expanded from 25 known low-energy sp²-carbon allotropes to over 1,700 new candidate structures within 0.5 eV/atom of graphite.</li>
+          <li>Enabled targeted generation toward local chemical environments using geometry-aware latent representations.</li>
+        </ul>
+        <p class="project-links"><a href="https://github.com/MaterSim/LEGO-xtal" target="_blank">Code</a> | <a href="https://arxiv.org/abs/2506.08224" target="_blank">arXiv</a></p>
+      </div>
 
-    <div class="project">
-      <h3>LEGO-xtal-GPU: Differentiable CSP and Latent Optimization</h3>
-      <p class="tech-stack">GPU parallelization and batching, CVAE, SO(3) descriptors, differentiable optimization</p>
-      <ul>
-        <li>Implemented GPU-parallel batched evaluation of structure descriptors and objectives to scale candidate generation and refinement.</li>
-        <li>Built a fully differentiable pipeline that backpropagates through representation-space objectives and couples them with latent-space refinement.</li>
-        <li>Achieved ~5× speedup via batching and GPU acceleration, with improved success in meeting target local-environment constraints.</li>
-        </div>
-    </div>
-        <div class="project">
-    <div class="project">
-      <h3>PyXtal-DFTB: High-Throughput Property Screening</h3>
-      <p class="tech-stack">ASE, DFTB+, automated workflows</p>
-      <ul>
-        <li>Built an automated pipeline for elastic-constant computation of organic crystals.</li>
-        <li>Enabled mechanical screening of peptide hydrates in collaboration with experimental partners.</li>
-      </ul>
-      <p class="project-links"><a href="https://github.com/MaterSim/PyXtal_DFTB" target="_blank">Code</a></p>
-    </div>
+      <div class="project">
+        <h3>LEGO-xtal-GPU: Differentiable CSP and Latent Optimization</h3>
+        <p class="tech-stack">GPU parallelization and batching, CVAE, SO(3) descriptors, differentiable optimization</p>
+        <ul>
+          <li>Implemented GPU-parallel batched evaluation of structure descriptors and objectives to scale candidate generation and refinement.</li>
+          <li>Built a fully differentiable pipeline that backpropagates through representation-space objectives and couples them with latent-space refinement.</li>
+          <li>Achieved ~5× speedup via batching and GPU acceleration, with improved success in meeting target local-environment constraints.</li>
+        </ul>
+      </div>
 
-    <div class="project">
-      <h3>ML-Assisted X-ray Absorption and Optical Modeling of Boron Nitride</h3>
-      <p class="tech-stack">DFT (VASP), first-principles spectroscopy</p>
-      <ul>
-        <li>Conducted DFT simulations and collaborated with LLNL on ML-assisted X-ray absorption spectroscopy and optical modeling of boron nitride.</li>
-        </div>
-    </div>
-        <div class="project">
-    <div class="project">
-      <h3>Reciprocal-Space Representations for Structure Matching</h3>
-      <p class="tech-stack">Scattering features, geometric embeddings, PyTorch</p>
-      <ul>
-        <li>Developed 4D scattering-informed representations for structure matching and reconstruction.</li>
-        <li>Enabled quantitative comparison between simulation outputs and experimental signals.</li>
-      </ul>
-    </div>
+      <div class="project">
+        <h3>PyXtal-DFTB: High-Throughput Property Screening</h3>
+        <p class="tech-stack">ASE, DFTB+, automated workflows</p>
+        <ul>
+          <li>Built an automated pipeline for elastic-constant computation of organic crystals.</li>
+          <li>Enabled mechanical screening of peptide hydrates in collaboration with experimental partners.</li>
+        </ul>
+        <p class="project-links"><a href="https://github.com/MaterSim/PyXtal_DFTB" target="_blank">Code</a></p>
+      </div>
 
-    <div class="project">
-      <h3>xtal-builder: Agentic Crystal Design Assistant</h3>
-      <p class="tech-stack">LLM tool-calling, Ollama, LangChain/LangGraph, ASE, PyXtal, MLIP</p>
-      <ul>
-        <li>Building an agent that orchestrates structure generation, simulation, and refinement.</li>
-        <li>Implements log parsing, failure detection, and auto-retry loops on HPC.</li>
-        <li>Goal: autonomous crystal design from minimal user input.</li>
-        </div>
+      <div class="project">
+        <h3>ML-Assisted X-ray Absorption and Optical Modeling of Boron Nitride</h3>
+        <p class="tech-stack">DFT (VASP), first-principles spectroscopy</p>
+        <ul>
+          <li>Conducted DFT simulations and collaborated with LLNL on ML-assisted X-ray absorption spectroscopy and optical modeling of boron nitride.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <h3>Reciprocal-Space Representations for Structure Matching</h3>
+        <p class="tech-stack">Scattering features, geometric embeddings, PyTorch</p>
+        <ul>
+          <li>Developed 4D scattering-informed representations for structure matching and reconstruction.</li>
+          <li>Enabled quantitative comparison between simulation outputs and experimental signals.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <h3>xtal-builder: Agentic Crystal Design Assistant</h3>
+        <p class="tech-stack">LLM tool-calling, Ollama, LangChain/LangGraph, ASE, PyXtal, MLIP</p>
+        <ul>
+          <li>Building an agent that orchestrates structure generation, simulation, and refinement.</li>
+          <li>Implements log parsing, failure detection, and auto-retry loops on HPC.</li>
+          <li>Goal: autonomous crystal design from minimal user input.</li>
+        </ul>
+      </div>
     </div>
-        <div class="project">
   <section id="pubs">
     <h2>Publications & Preprints</h2>
     <ol>
       <li>
-        <b>AI-Assisted Rapid Crystal Structure Generation Towards a Target Local Environment (LEGO-xtal)</b> — 2026.  
-        O. G. Ridwan, S. Pitié, M. S. Raj, D. Dai, G. Frapper, H-F. Xue, Q. Zhu. Published in <i>npj Computational Materials</i>, <b>12</b>, 7.  
+        <b>AI-Assisted Rapid Crystal Structure Generation Towards a Target Local Environment (LEGO-xtal)</b> — 2026.
+        O. G. Ridwan, S. Pitié, M. S. Raj, D. Dai, G. Frapper, H‑F. Xue, Q. Zhu. Published in <i>npj Computational Materials</i>, <b>12</b>, 7.
         <a href="https://doi.org/10.1038/s41524-025-01931-9" target="_blank">Journal</a> | <a href="https://arxiv.org/abs/2506.08224" target="_blank">arXiv</a>
         <div class="badges">
           <span class="badge">published</span>
           <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
         </div>
       </li>
-        </div>
-        <b>Unveiling X-ray Absorption Signatures of Boron Nitride via First-Principles Simulation and Machine Learning</b> — 2025.  
-        <div class="project">
+      <li>
+        <b>Unveiling X‑ray Absorption Signatures of Boron Nitride via First‑Principles Simulation and Machine Learning</b> — 2025.
+        W‑Y Sun, O. G. Ridwan, S. O. Kucheyev, Q. Zhu, L‑W Wan. Accepted for publication in <i>Next Materials</i>.
         <div class="badges">
           <span class="badge">preprint</span>
           <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
         </div>
       </li>
       <li>
-        <b>Crystal Generation using the Fully Differentiable Pipeline and Latent Space Optimization</b> — 2026.  
-        O. G. Ridwan, H-F. Xue, Q. Zhu.  
+        <b>Crystal Generation using the Fully Differentiable Pipeline and Latent Space Optimization</b> — 2026.
+        O. G. Ridwan, H‑F. Xue, Q. Zhu.
         <a href="https://arxiv.org/abs/2601" target="_blank">arXiv</a>
         <div class="badges">
           <span class="badge">preprint</span>
@@ -306,8 +301,8 @@
         </div>
       </li>
       <li>
-        <b>Context-Adaptive Nanotopology in Peptide Crystals</b> — 2026.  
-        V. Athiyarath, E. Naranjo, D. Dave, O. G. Ridwan, …, R. V. Ulijn, X. Chen. Accepted in <i>Matter</i>.  
+        <b>Context‑Adaptive Nanotopology in Peptide Crystals</b> — 2026.
+        V. Athiyarath, E. Naranjo, D. Dave, O. G. Ridwan, …, R. V. Ulijn, X. Chen. Accepted in <i>Matter</i>.
         <a href="https://chemrxiv.org/engage/chemrxiv/article-details/67818f64fa469535b981d92c" target="_blank">ChemRxiv</a>
         <div class="badges">
           <span class="badge">accepted</span>
@@ -315,22 +310,22 @@
         </div>
       </li>
       <li>
-        <b>Crystal Representation in the Reciprocal Space</b> — 2025. O. G. Ridwan, H-F. Xue, Y-X. Chen, H. Cherukuri, Q. Zhu. (to submit)
+        <b>Crystal Representation in the Reciprocal Space</b> — 2025. (to submit)
         <div class="badges">
           <span class="badge">preprint</span>
           <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
         </div>
       </li>
       <li>
-        <b>Enhancing Crystal Optimization at the Latent Space</b> — 2025. O. G. Ridwan, H-F. Xue, Q. Zhu. (in preparation)
+        <b>Enhancing Crystal Optimization at the Latent Space</b> — 2025. (in preparation)
         <div class="badges">
           <span class="badge">preprint</span>
           <a class="badge" href="#" target="_blank" rel="noopener">BibTeX</a>
         </div>
       </li>
       <li>
-        <b>Numerical Computation of Thermal Performance of Earth Pipe Cooling Systems</b> — 2023.  
-        O. G. Ridwan, S. S. Sifat, F. E. Idrish, M. M. Karim. Proceedings of the 13th International Conference on Marine Technology (MARTEC 2022).  
+        <b>Numerical Computation of Thermal Performance of Earth Pipe Cooling Systems</b> — 2023.
+        O. G. Ridwan, S. S. Sifat, F. E. Idrish, M. M. Karim. Proceedings of the 13th International Conference on Marine Technology (MARTEC 2022).
         <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=XXXXXX" target="_blank">SSRN</a>
         <div class="badges">
           <span class="badge">conference</span>
