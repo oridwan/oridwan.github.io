@@ -140,6 +140,10 @@ footer {
   .news-grid{grid-template-columns:1fr 1fr}
 }
 .news-article{border-left:3px solid var(--accent);padding:16px 0 16px 16px}
+@media (min-width: 900px){
+  /* Avoid a vertical accent line down the middle on desktop */
+  .news-article{border-left:none;border-top:3px solid var(--accent);padding:16px 0 0 0}
+}
 .news-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:8px}
 .news-header h3{margin:0;font-size:18px;line-height:1.4;flex:1}
 .news-date{color:var(--muted);font-size:14px;white-space:nowrap}
