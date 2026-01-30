@@ -152,7 +152,7 @@ section h2 { display: inline-block; padding-bottom: 6px; border-bottom: 2px soli
   position:relative;
   overflow:hidden;
 }
-.project::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 20% 20%,rgba(106,168,255,0.12),transparent 45%);opacity:0;transition:opacity 180ms ease}
+.project::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 20% 20%,rgba(106,168,255,0.12),transparent 45%);opacity:0;transition:opacity 180ms ease;pointer-events:none}
 .project:hover::after{opacity:1}
 
 ul, ol { padding-left: 18px; }
