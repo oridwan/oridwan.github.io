@@ -1,0 +1,37 @@
+{
+  "_README": "Manual additions merged on top of Google Scholar data. Keys are Scholar citation IDs (the part after ':' in a Scholar 'citation_for_view' URL). Supported fields: title, authors, venue, date, type (journal|preprint|conference), doi, arxiv, links [{label,url}], highlight, featured, hidden.",
+
+  "2osOgNQ5qMEC": {
+    "_title": "AI-assisted rapid crystal structure generation towards a target local environment",
+    "arxiv": "2506.08224",
+    "links": [{"label": "Code", "url": "https://github.com/MaterSim/LEGO-xtal"}],
+    "highlight": "LEGO-xtal: symmetry-aware generation that expanded 25 known sp² carbon allotropes into 1,700+ new low-energy candidates.",
+    "featured": true
+  },
+  "Tyk-4Ss8FVUC": {
+    "_title": "Crystal generation using the fully differentiable pipeline and latent space optimization",
+    "arxiv": "2601.04606",
+    "links": [{"label": "Code", "url": "https://github.com/MaterSim/LEGO-Xtal-GPU"}],
+    "highlight": "End-to-end differentiable, GPU-batched crystal generation with latent-space refinement (~5× speedup).",
+    "featured": true
+  },
+  "W7OEmFMy1HYC": {
+    "_title": "Crystal Representation in the Reciprocal Space",
+    "highlight": "Physics-informed 4D scattering representation for symmetry-aware structure matching and reconstruction.",
+    "featured": true
+  },
+  "WF5omc3nYNoC": {
+    "_title": "Water-mediated reconfigurable topology and mechanics in porous peptide materials",
+    "doi": "10.1016/j.matt.2026.102669"
+  },
+  "qjMakFHDy7sC": {
+    "_title": "Unveiling X-ray absorption signatures of boron nitride via first-principles simulation and machine learning",
+    "doi": "10.1016/j.nxmate.2025.101271"
+  },
+  "u-x6o8ySG0sC": {
+    "_title": "Numerical computation of thermal performance of earth pipe cooling systems",
+    "title": "Numerical Computation of Thermal Performance of Earth Pipe Cooling Systems",
+    "venue": "Proc. 13th International Conference on Marine Technology (MARTEC 2022)",
+    "type": "conference"
+  }
+}

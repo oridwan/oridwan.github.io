@@ -1,0 +1,527 @@
+{
+  "metrics": {
+    "citations": 15,
+    "h_index": 2,
+    "i10_index": 0,
+    "citations_per_year": {
+      "2025": 1,
+      "2026": 13
+    },
+    "publications": 9,
+    "first_author": 4,
+    "updated": "2026-10-21"
+  },
+  "publications": [
+    {
+      "id": "LkGwnXOMwfcC",
+      "title": "Benchmarking Universal Machine Learning Force Fields for Crystal Structure Prediction of High-Energy Molecular Systems",
+      "authors": [
+        "M. M. Mukta",
+        "O. G. Ridwan",
+        "R. Perriot",
+        "Q. Zhu"
+      ],
+      "first_author": false,
+      "venue": "arXiv",
+      "detail": "2609.07477",
+      "type": "preprint",
+      "date": "2026-09-07",
+      "year": 2026,
+      "citations": 0,
+      "doi": null,
+      "links": [
+        {
+          "label": "arXiv",
+          "url": "https://arxiv.org/abs/2609.07477"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:LkGwnXOMwfcC"
+        }
+      ],
+      "highlight": null,
+      "featured": false,
+      "_scholar": {
+        "scholar_id": "LkGwnXOMwfcC",
+        "scholar_title": "Benchmarking Universal Machine Learning Force Fields for Crystal Structure Prediction of High-Energy Molecular Systems",
+        "scholar_authors": "MM Mukta, OG Ridwan, R Perriot, Q Zhu",
+        "scholar_venue": "arXiv preprint arXiv:2609.07477, 2026",
+        "citations": 0,
+        "year": 2026
+      },
+      "_meta": {
+        "arxiv": "2609.07477",
+        "authors": [
+          "Musiha Mahfuza Mukta",
+          "Osman Goni Ridwan",
+          "Romain Perriot",
+          "Qiang Zhu"
+        ],
+        "date": "2026-09-07",
+        "_enriched_for": "arXiv preprint arXiv:2609.07477, 2026"
+      }
+    },
+    {
+      "id": "_FxGoFyzp5QC",
+      "title": "High-throughput Discovery of Magnetic Rare Earth Transition Metal Alloys",
+      "authors": [
+        "S. Tao",
+        "O. G. Ridwan",
+        "L. Ke",
+        "Q. Zhu"
+      ],
+      "first_author": false,
+      "venue": "arXiv",
+      "detail": "2608.25270",
+      "type": "preprint",
+      "date": "2026-08-26",
+      "year": 2026,
+      "citations": 0,
+      "doi": null,
+      "links": [
+        {
+          "label": "arXiv",
+          "url": "https://arxiv.org/abs/2608.25270"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:_FxGoFyzp5QC"
+        }
+      ],
+      "highlight": null,
+      "featured": false,
+      "_scholar": {
+        "scholar_id": "_FxGoFyzp5QC",
+        "scholar_title": "High-throughput Discovery of Magnetic Rare Earth Transition Metal Alloys",
+        "scholar_authors": "S Tao, OG Ridwan, L Ke, Q Zhu",
+        "scholar_venue": "arXiv preprint arXiv:2608.25270, 2026",
+        "citations": 0,
+        "year": 2026
+      },
+      "_meta": {
+        "arxiv": "2608.25270",
+        "authors": [
+          "Shuo Tao",
+          "Osman Goni Ridwan",
+          "Liqin Ke",
+          "Qiang Zhu"
+        ],
+        "date": "2026-08-26",
+        "_enriched_for": "arXiv preprint arXiv:2608.25270, 2026"
+      }
+    },
+    {
+      "id": "ufrVoPGSRksC",
+      "title": "Ab-initio Crystal Structure Determination from Powder X-Ray Diffraction",
+      "authors": [
+        "K. Su",
+        "O. G. Ridwan",
+        "H. Xue",
+        "Q. Zhu"
+      ],
+      "first_author": false,
+      "venue": "arXiv",
+      "detail": "2605.24594",
+      "type": "preprint",
+      "date": "2026-05-23",
+      "year": 2026,
+      "citations": 0,
+      "doi": null,
+      "links": [
+        {
+          "label": "arXiv",
+          "url": "https://arxiv.org/abs/2605.24594"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:ufrVoPGSRksC"
+        }
+      ],
+      "highlight": null,
+      "featured": false,
+      "_scholar": {
+        "scholar_id": "ufrVoPGSRksC",
+        "scholar_title": "Ab-initio Crystal Structure Determination from Powder X-Ray Diffraction",
+        "scholar_authors": "K Su, OG Ridwan, H Xue, Q Zhu",
+        "scholar_venue": "arXiv preprint arXiv:2605.24594, 2026",
+        "citations": 0,
+        "year": 2026
+      },
+      "_meta": {
+        "arxiv": "2605.24594",
+        "authors": [
+          "Kaixiang Su",
+          "Osman Goni Ridwan",
+          "Hongfei Xue",
+          "Qiang Zhu"
+        ],
+        "date": "2026-05-23",
+        "_enriched_for": "arXiv preprint arXiv:2605.24594, 2026"
+      }
+    },
+    {
+      "id": "Tyk-4Ss8FVUC",
+      "title": "Crystal generation using the fully differentiable pipeline and latent space optimization",
+      "authors": [
+        "O. G. Ridwan",
+        "G. Frapper",
+        "H. Xue",
+        "Q. Zhu"
+      ],
+      "first_author": true,
+      "venue": "Machine Learning: Science and Technology",
+      "detail": "7, 035026",
+      "type": "journal",
+      "date": "2026-05-21",
+      "year": 2026,
+      "citations": 1,
+      "doi": "10.1088/2632-2153/ae6751",
+      "links": [
+        {
+          "label": "Paper",
+          "url": "https://doi.org/10.1088/2632-2153/ae6751"
+        },
+        {
+          "label": "arXiv",
+          "url": "https://arxiv.org/abs/2601.04606"
+        },
+        {
+          "label": "Code",
+          "url": "https://github.com/MaterSim/LEGO-Xtal-GPU"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:Tyk-4Ss8FVUC"
+        }
+      ],
+      "highlight": "End-to-end differentiable, GPU-batched crystal generation with latent-space refinement (~5× speedup).",
+      "featured": true,
+      "_scholar": {
+        "scholar_id": "Tyk-4Ss8FVUC",
+        "scholar_title": "Crystal generation using the fully differentiable pipeline and latent space optimization",
+        "scholar_authors": "OG Ridwan, G Frapper, H Xue, Q Zhu",
+        "scholar_venue": "Machine Learning: Science and Technology 7 (3), 035026, 2026",
+        "citations": 1,
+        "year": 2026
+      },
+      "_meta": {
+        "doi": "10.1088/2632-2153/ae6751",
+        "journal": "Machine Learning: Science and Technology",
+        "volume": "7",
+        "issue": "3",
+        "article": "035026",
+        "date": "2026-05-21",
+        "authors": [
+          "Osman Goni Ridwan",
+          "Gilles Frapper",
+          "Hongfei Xue",
+          "Qiang Zhu"
+        ],
+        "_enriched_for": "Machine Learning: Science and Technology 7 (3), 035026, 2026"
+      }
+    },
+    {
+      "id": "WF5omc3nYNoC",
+      "title": "Water-mediated reconfigurable topology and mechanics in porous peptide materials",
+      "authors": [
+        "V. Athiyarath",
+        "E. Naranjo",
+        "D. Dave",
+        "O. G. Ridwan",
+        "D. A. A. Rodriguez",
+        "Q. Zhu",
+        "M. Monti",
+        "G. D. Mirón",
+        "D. Banerjee",
+        "A. Hassanali",
+        "M. C. Neary",
+        "E. G. Keeler",
+        "S. Zhang",
+        "R. V. Ulijn",
+        "X. Chen"
+      ],
+      "first_author": false,
+      "venue": "Matter",
+      "detail": "9, 102669",
+      "type": "journal",
+      "date": "2026-04",
+      "year": 2026,
+      "citations": 7,
+      "doi": "10.1016/j.matt.2026.102669",
+      "links": [
+        {
+          "label": "Paper",
+          "url": "https://doi.org/10.1016/j.matt.2026.102669"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:WF5omc3nYNoC"
+        }
+      ],
+      "highlight": null,
+      "featured": false,
+      "_scholar": {
+        "scholar_id": "WF5omc3nYNoC",
+        "scholar_title": "Water-mediated reconfigurable topology and mechanics in porous peptide materials",
+        "scholar_authors": "V Athiyarath, E Naranjo, D Dave, OG Ridwan, DAA Rodriguez, Q Zhu, ...",
+        "scholar_venue": "Matter 9 (4), 2026",
+        "citations": 7,
+        "year": 2026
+      },
+      "_meta": {
+        "doi": "10.1016/j.matt.2026.102669",
+        "journal": "Matter",
+        "volume": "9",
+        "issue": "4",
+        "article": "102669",
+        "date": "2026-04",
+        "authors": [
+          "Vignesh Athiyarath",
+          "Elma Naranjo",
+          "Dhwanit Dave",
+          "Osman Goni Ridwan",
+          "Danilo A. Arturo Rodriguez",
+          "Qiang Zhu",
+          "Marta Monti",
+          "Gonzalo Díaz Mirón",
+          "Debarshi Banerjee",
+          "Ali Hassanali",
+          "Michelle C. Neary",
+          "Eric G. Keeler",
+          "Sheng Zhang",
+          "Rein V. Ulijn",
+          "Xi Chen"
+        ],
+        "_enriched_for": "Matter 9 (4), 2026"
+      }
+    },
+    {
+      "id": "W7OEmFMy1HYC",
+      "title": "Crystal Representation in the Reciprocal Space",
+      "authors": [
+        "O. G. Ridwan",
+        "H. Xue",
+        "Y. Chen",
+        "H. Cherukuri",
+        "Q. Zhu"
+      ],
+      "first_author": true,
+      "venue": "arXiv",
+      "detail": "2601.17981",
+      "type": "preprint",
+      "date": "2026-01-25",
+      "year": 2026,
+      "citations": 0,
+      "doi": null,
+      "links": [
+        {
+          "label": "arXiv",
+          "url": "https://arxiv.org/abs/2601.17981"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:W7OEmFMy1HYC"
+        }
+      ],
+      "highlight": "Physics-informed 4D scattering representation for symmetry-aware structure matching and reconstruction.",
+      "featured": true,
+      "_scholar": {
+        "scholar_id": "W7OEmFMy1HYC",
+        "scholar_title": "Crystal Representation in the Reciprocal Space",
+        "scholar_authors": "OG Ridwan, H Xue, Y Chen, H Cherukuri, Q Zhu",
+        "scholar_venue": "arXiv preprint arXiv:2601.17981, 2026",
+        "citations": 0,
+        "year": 2026
+      },
+      "_meta": {
+        "arxiv": "2601.17981",
+        "authors": [
+          "Osman Goni Ridwan",
+          "Hongfei Xue",
+          "Youxing Chen",
+          "Harish Cherukuri",
+          "Qiang Zhu"
+        ],
+        "date": "2026-01-25",
+        "_enriched_for": "arXiv preprint arXiv:2601.17981, 2026"
+      }
+    },
+    {
+      "id": "2osOgNQ5qMEC",
+      "title": "AI-assisted rapid crystal structure generation towards a target local environment",
+      "authors": [
+        "O. G. Ridwan",
+        "S. Pitié",
+        "M. S. Raj",
+        "D. Dai",
+        "G. Frapper",
+        "H. Xue",
+        "Q. Zhu"
+      ],
+      "first_author": true,
+      "venue": "npj Computational Materials",
+      "detail": "12, 64",
+      "type": "journal",
+      "date": "2026-01-06",
+      "year": 2026,
+      "citations": 6,
+      "doi": "10.1038/s41524-025-01931-9",
+      "links": [
+        {
+          "label": "Paper",
+          "url": "https://doi.org/10.1038/s41524-025-01931-9"
+        },
+        {
+          "label": "arXiv",
+          "url": "https://arxiv.org/abs/2506.08224"
+        },
+        {
+          "label": "Code",
+          "url": "https://github.com/MaterSim/LEGO-xtal"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:2osOgNQ5qMEC"
+        }
+      ],
+      "highlight": "LEGO-xtal: symmetry-aware generation that expanded 25 known sp² carbon allotropes into 1,700+ new low-energy candidates.",
+      "featured": true,
+      "_scholar": {
+        "scholar_id": "2osOgNQ5qMEC",
+        "scholar_title": "AI-assisted rapid crystal structure generation towards a target local environment",
+        "scholar_authors": "OG Ridwan, S Pitié, MS Raj, D Dai, G Frapper, H Xue, Q Zhu",
+        "scholar_venue": "npj Computational Materials 12 (1), 64, 2026",
+        "citations": 6,
+        "year": 2026
+      },
+      "_meta": {
+        "doi": "10.1038/s41524-025-01931-9",
+        "journal": "npj Computational Materials",
+        "volume": "12",
+        "issue": "1",
+        "article": "64",
+        "date": "2026-01-06",
+        "authors": [
+          "Osman Goni Ridwan",
+          "Sylvain Pitié",
+          "Monish Soundar Raj",
+          "Dong Dai",
+          "Gilles Frapper",
+          "Hongfei Xue",
+          "Qiang Zhu"
+        ],
+        "_enriched_for": "npj Computational Materials 12 (1), 64, 2026"
+      }
+    },
+    {
+      "id": "qjMakFHDy7sC",
+      "title": "Unveiling X-ray absorption signatures of boron nitride via first-principles simulation and machine learning",
+      "authors": [
+        "W. Sun",
+        "O. G. Ridwan",
+        "W. Jeong",
+        "S. O. Kucheyev",
+        "Q. Zhu",
+        "L. F. Wan"
+      ],
+      "first_author": false,
+      "venue": "Next Materials",
+      "detail": "9, 101271",
+      "type": "journal",
+      "date": "2025-10",
+      "year": 2025,
+      "citations": 1,
+      "doi": "10.1016/j.nxmate.2025.101271",
+      "links": [
+        {
+          "label": "Paper",
+          "url": "https://doi.org/10.1016/j.nxmate.2025.101271"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:qjMakFHDy7sC"
+        }
+      ],
+      "highlight": null,
+      "featured": false,
+      "_scholar": {
+        "scholar_id": "qjMakFHDy7sC",
+        "scholar_title": "Unveiling X-ray absorption signatures of boron nitride via first-principles simulation and machine learning",
+        "scholar_authors": "W Sun, OG Ridwan, W Jeong, SO Kucheyev, Q Zhu, LF Wan",
+        "scholar_venue": "Next Materials 9, 101271, 2025",
+        "citations": 1,
+        "year": 2025
+      },
+      "_meta": {
+        "doi": "10.1016/j.nxmate.2025.101271",
+        "journal": "Next Materials",
+        "volume": "9",
+        "issue": null,
+        "article": "101271",
+        "date": "2025-10",
+        "authors": [
+          "Wenyu Sun",
+          "Osman Goni Ridwan",
+          "Wonseok Jeong",
+          "Sergei O. Kucheyev",
+          "Qiang Zhu",
+          "Liwen F. Wan"
+        ],
+        "_enriched_for": "Next Materials 9, 101271, 2025"
+      }
+    },
+    {
+      "id": "u-x6o8ySG0sC",
+      "title": "Numerical Computation of Thermal Performance of Earth Pipe Cooling Systems",
+      "authors": [
+        "O. G. Ridwan",
+        "S. S. Sifat",
+        "F. E. Idrish",
+        "M. M. Karim"
+      ],
+      "first_author": true,
+      "venue": "Proc. 13th International Conference on Marine Technology (MARTEC 2022)",
+      "detail": "",
+      "type": "conference",
+      "date": "2023",
+      "year": 2023,
+      "citations": 0,
+      "doi": "10.2139/ssrn.4440503",
+      "links": [
+        {
+          "label": "Paper",
+          "url": "https://doi.org/10.2139/ssrn.4440503"
+        },
+        {
+          "label": "Scholar",
+          "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:u-x6o8ySG0sC"
+        }
+      ],
+      "highlight": null,
+      "featured": false,
+      "_scholar": {
+        "scholar_id": "u-x6o8ySG0sC",
+        "scholar_title": "NUMERICAL COMPUTATION OF THERMAL PERFORMANCE OF EARTH PIPE COOLING SYSTEMS",
+        "scholar_authors": "OG Ridwan, SS Sifat, FE Idrish, MM Karim",
+        "scholar_venue": "Proceedings of the 13th International Conference on Marine Technology …, 2023",
+        "citations": 0,
+        "year": 2023
+      },
+      "_meta": {
+        "doi": "10.2139/ssrn.4440503",
+        "journal": "",
+        "volume": null,
+        "issue": null,
+        "article": null,
+        "date": "2023",
+        "authors": [
+          "Osman Goni Ridwan",
+          "Shameem Shahrear Sifat",
+          "Fahim Ebnne Idrish",
+          "Md. Mashud Karim"
+        ],
+        "_enriched_for": "Proceedings of the 13th International Conference on Marine Technology …, 2023"
+      }
+    }
+  ]
+}
