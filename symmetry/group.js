@@ -84,16 +84,33 @@
   }
 
   // ---------- state ----------
+  // Generic trial points for placing the atom (declared before state, which calls pickStart).
+  const SEEDS = [[0.19, 0.11, 0.31], [0.13, 0.27, 0.38], [0.31, 0.07, 0.17], [0.09, 0.22, 0.41], [0.36, 0.14, 0.03], [0.07, 0.17, 0.29]];
   const state = { x: pickStart(), step: 0, played: new Set(), sel: null, showClass: false, hidden: new Set(), orb: null, timer: 0 };
 
   function pickStart() {
     // the candidate whose copies stay farthest apart
     let best = null, sep = -1;
-    for (const x of [[0.19, 0.11, 0.31], [0.13, 0.27, 0.38], [0.31, 0.07, 0.17], [0.09, 0.22, 0.41], [0.36, 0.14, 0.03], [0.07, 0.17, 0.29]]) {
+    for (const x of SEEDS) {
       const o = C.orbit(ops, x, A);
       if (o.clusters.length === ops.length && o.minSep > sep) { best = x; sep = o.minSep; }
     }
-    return best || [0.19, 0.11, 0.31];
+    return best || SEEDS[0];
+  }
+
+  // A point of Wyckoff position w with exactly w.m distinct copies. Projecting the current atom
+  // keeps the move small, but can land on a more special site (on x,x,z with x = 0 the atom sits
+  // on the 4-fold axis); then the seed whose projected copies stay farthest apart is used.
+  function placeOn(w) {
+    const t = w.parsed[0], onW = x => C.wrapv(add(mv(t.W, x), t.w));
+    const here = onW(state.x);
+    if (C.orbit(ops, here, A).clusters.length === w.m) return here;
+    let best = here, sep = -1;
+    for (const s of SEEDS) {
+      const x = onW(s), o = C.orbit(ops, x, A);
+      if (o.clusters.length === w.m && o.minSep > sep) { best = x; sep = o.minSep; }
+    }
+    return best;
   }
 
   // ======================================================================
@@ -462,8 +479,8 @@
           break;
         case 'pairpick': playPair(+$('#pA').value, +$('#pB').value); break;
         case 'wyck': {
-          const w = D.wyckoff.find(v => v.l === t.dataset.l), first = w.parsed[0];
-          setX(w === D.wyckoff[0] ? pickStart() : C.wrapv(add(mv(first.W, state.x), first.w)));
+          const w = D.wyckoff.find(v => v.l === t.dataset.l);
+          setX(w === D.wyckoff[0] ? pickStart() : placeOn(w));
           break;
         }
       }
