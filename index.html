@@ -368,7 +368,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20bcea37">
+  <link rel="stylesheet" href="style.css?v=45793665">
   <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -383,10 +383,12 @@
     <div class="nav-links" id="primary-nav">
       <a href="#research">Research</a>
       <a href="#expertise">Expertise</a>
+      <a href="#learn">Learn with me</a>
       <a href="#publications">Publications</a>
       <a href="#experience">Experience</a>
       <a href="#honors">Honors</a>
       <a href="#contact">Contact</a>
+      <a href="symmetry/">Space groups</a>
       <a class="nav-cv" href="assets/OGR.pdf" target="_blank" rel="noopener">CV</a>
     </div>
   </nav>
@@ -614,6 +616,64 @@
             <li><a href="https://github.com/MaterSim/LEGO-xtal" target="_blank" rel="noopener">LEGO-xtal open-source release</a><span>GitHub · 2025</span></li>
           </ul>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section class="section" id="learn">
+    <div class="container">
+      <div class="section-head">
+        <h2>Learn with me</h2>
+        <p class="lede">Open, interactive tutorials on the foundations of computational materials science.</p>
+      </div>
+      <div class="learn-grid">
+        <article class="learn-card reveal">
+          <a class="learn-media" href="symmetry/"><img src="assets/fig/learn-symmetry.webp" alt="Interactive two-dimensional lattice figure from the symmetry tutorial: a draggable motif inside a highlighted unit cell, with sliders for the cell parameters." width="1200" height="776" loading="lazy"></a>
+          <div class="learn-body">
+            <p class="learn-status is-ready">Available</p>
+            <h3>Crystallographic symmetry</h3>
+            <p>An interactive introduction, from lattices and symmetry operations to Wyckoff positions, with a 3D page for each of the 230 space groups.</p>
+            <p class="learn-label">Chapters</p>
+            <ol class="learn-outline">
+              <li>Lattice and motif</li>
+              <li>Symmetry operations</li>
+              <li>Crystal systems</li>
+              <li>Bravais lattices</li>
+              <li>From point groups to space groups</li>
+              <li>Hermann–Mauguin symbols</li>
+              <li>Wyckoff positions</li>
+              <li>The 230 space groups</li>
+            </ol>
+            <p class="learn-note">Data follow the standard settings of the <em>International Tables for Crystallography</em>, Vol. A, generated with PyXtal and spglib; every group page links to the Bilbao Crystallographic Server for comparison.</p>
+            <p class="learn-actions">
+              <a class="btn btn-primary btn-sm" href="symmetry/">Start the tutorial</a>
+              <a href="symmetry/#groups">Browse all 230 space groups</a>
+            </p>
+          </div>
+        </article>
+        <article class="learn-card reveal">
+          <div class="learn-ks" aria-hidden="true">
+            <p>[ −½∇² + <i>v</i><sub>eff</sub>(<b>r</b>) ] <i>ψ</i><sub><i>i</i></sub>(<b>r</b>) = <i>ε</i><sub><i>i</i></sub> <i>ψ</i><sub><i>i</i></sub>(<b>r</b>)</p>
+            <small>The Kohn–Sham equations</small>
+          </div>
+          <div class="learn-body">
+            <p class="learn-status">In Progress</p>
+            <h3>DFT fundamentals and VASP</h3>
+            <p>A practical guide to density functional theory with VASP, from the Kohn–Sham equations to the calculations used in research.</p>
+            <p class="learn-label">Planned chapters</p>
+            <ol class="learn-outline">
+              <li>Kohn–Sham DFT in practice</li>
+              <li>Exchange–correlation functionals: PBE, r²SCAN, DFT+U</li>
+              <li>PAW potentials and POTCAR choices, including frozen-4f</li>
+              <li>Convergence: cutoff energy, k-points, smearing</li>
+              <li>Structure relaxation and equations of state</li>
+              <li>Magnetism and spin-polarized calculations</li>
+              <li>Phonons and dynamical stability</li>
+              <li>Migration barriers with the nudged elastic band</li>
+            </ol>
+          </div>
+        </article>
       </div>
     </div>
   </section>

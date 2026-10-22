@@ -307,7 +307,11 @@
         out.push({ op: i, e, geom, primary: a === 0 && b === 0 && c === 0 });
       }
     });
-    return out;
+    // Where a screw axis lies on a rotation axis (or a glide plane on a mirror) only the simpler
+    // element is drawn, as in the International Tables.
+    const plain = new Set(out.filter(x => (x.e.kind === 'rotation' && !x.e.screw) || (x.e.kind === 'mirror' && x.e.glide === 'm'))
+      .map(x => x.e.kind + (x.e.N || '') + whereOf(x.e)));
+    return out.filter(x => !((x.e.screw || (x.e.kind === 'mirror' && x.e.glide !== 'm')) && plain.has(x.e.kind + (x.e.N || '') + whereOf(x.e))));
   }
 
   // ---------- orbits, Wyckoff positions, products ----------
@@ -360,7 +364,7 @@
 
   // ---------- Hermann–Mauguin symbols ----------
   // 'P2_1/c' -> 'P2<sub>1</sub>/c', '-3' -> overbar 3
-  const hmHTML = s => s.replace(/_(\d)/g, '<sub>$1</sub>').replace(/-(\d)/g, (m, d) => bar(d)).replace(/ /g, '&#8239;');
+  const hmHTML = s => s.replace(/ /g, '\u202f').replace(/_(\d)/g, '<sub>$1</sub>').replace(/-(\d)/g, (m, d) => bar(d));
 
   // Cell used for drawing; real crystals of the group have their own parameters.
   const DISPLAY_CELL = {

@@ -25,6 +25,9 @@ jobs:
       - name: Sync publications
         run: python scripts/update_publications.py
 
+      - name: Rebuild sitemap
+        run: python scripts/build_sitemap.py
+
       - name: Commit changes
         run: |
           if git diff --quiet -- index.html data/ sitemap.xml; then

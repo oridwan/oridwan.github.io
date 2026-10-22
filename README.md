@@ -23,3 +23,20 @@ publication section of `index.html`.
   the job still succeeds; run it locally to refresh.
 - To add a code link or highlight to a paper, find its Scholar ID in `data/publications.json` (`id`)
   and add an entry in `data/pub_overrides.json`.
+
+## Space-group pages (`symmetry/`)
+
+An interactive guide to crystallographic symmetry (`symmetry/index.html`) plus one page per space group
+(`symmetry/<n>/index.html`, n = 1–230).
+
+| File | Purpose |
+| --- | --- |
+| `symmetry/sg-core.js` | Symmetry engine: parses operations such as `-x,y+1/2,-z+1/2` and derives each one's axis / plane / centre and screw or glide part. No DOM; runs under Node. |
+| `symmetry/sg-view.js` | Shared three.js viewer (cell, handedness motif, symmetry elements, animated operations). |
+| `symmetry/group.js`, `group-template.html` | The space-group page. |
+| `symmetry/guide.js` | Figures and the group browser on the guide page. |
+| `symmetry/<n>/index.html`, `symmetry/data/index.js` | **Generated** — do not edit by hand. |
+
+Regenerate after changing the template or the data: `python3 scripts/build_symmetry.py` (needs `pyxtal` and
+`spglib`). Settings follow the International Tables / Bilbao defaults: unique axis b, origin choice 2,
+hexagonal axes for R groups.

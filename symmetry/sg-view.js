@@ -18,8 +18,14 @@
   };
   const AXIS_CSS = { a: '#b8434f', b: '#3d8a5a', c: '#2f62b0' };
 
-  let geoSphere;
-  const mat = (color, extra) => new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.5, metalness: 0 }, extra));
+  // Shared geometries and materials keep large groups (hundreds of copies) cheap to draw.
+  let geoSphere, geoCyl;
+  const mats = new Map();
+  function mat(color, extra) {
+    const key = color + JSON.stringify(extra || {});
+    if (!mats.has(key)) mats.set(key, new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.5, metalness: 0 }, extra)));
+    return mats.get(key);
+  }
   function ball(r, color, extra) {
     geoSphere = geoSphere || new THREE.SphereGeometry(1, 28, 18);
     const m = new THREE.Mesh(geoSphere, mat(color, extra));
@@ -27,16 +33,19 @@
     return m;
   }
   function cylinder(r, color, extra) {
-    const g = new THREE.CylinderGeometry(r, r, 1, 14, 1);
-    g.translate(0, 0.5, 0);
-    return new THREE.Mesh(g, mat(color, extra));
+    if (!geoCyl) { geoCyl = new THREE.CylinderGeometry(1, 1, 1, 14, 1); geoCyl.translate(0, 0.5, 0); }
+    const m = new THREE.Mesh(geoCyl, mat(color, extra));
+    m.userData.r = r;
+    m.scale.set(r, 1, r);
+    return m;
   }
   function placeCyl(mesh, from, to) {
     const d = to.clone().sub(from), L = d.length();
     mesh.visible = L > 1e-4;
     if (!mesh.visible) return;
     mesh.position.copy(from);
-    mesh.scale.set(1, L, 1);
+    const r = mesh.userData.r || 1;
+    mesh.scale.set(r, L, r);
     mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
   }
 
@@ -238,9 +247,9 @@
         const v = v3(mv(L, f.d));
         placeCyl(f.s, o, v);
         f.tip.position.copy(v);
-        f.tip.material.color.setHex(right ? COL.rightTip : COL.leftTip);
+        f.tip.material = mat(right ? COL.rightTip : COL.leftTip);
       });
-      m.userData.body.material.color.setHex(right ? COL.right : COL.left);
+      m.userData.body.material = mat(right ? COL.right : COL.left);
     }
 
     // ---------- symmetry elements ----------
@@ -415,10 +424,10 @@
     }
 
     // Play operation e on a motif at fractional point x; returns the segments for chaining.
-    function playOp(e, x, { tag = '', title = '', onDone } = {}) {
+    function playOp(e, x, { tag = '', title = '', onDone, wrap = true } = {}) {
       const st0 = { pos: mv(V.A, x), L: I3() };
       const segs = [hold(350, title, st0), ...opSegments(e, st0, tag)];
-      const w = wrapSegment(endOf(segs, st0));
+      const w = wrap && wrapSegment(endOf(segs, st0));
       if (w) segs.push(w);
       run(segs, onDone);
     }

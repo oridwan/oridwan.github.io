@@ -64,8 +64,13 @@
   function ensureElements() {
     if (elements) return elements;
     elements = C.enumerateElements(ops, A, Ainv);
-    elements.forEach(el => { el.key = C.symText(el.e); el.obj = view.elementObject(el.e, el.geom, false); el.obj.visible = false; elemRoot.add(el.obj); });
+    elements.forEach(el => { el.key = C.symText(el.e); });
     return elements;
+  }
+  function setElementVisible(el, on) {
+    if (!on && !el.obj) return;
+    if (!el.obj) { el.obj = view.elementObject(el.e, el.geom, false); elemRoot.add(el.obj); }
+    el.obj.visible = on;
   }
   const focusCache = {};
   function focusFor(i) {
@@ -83,10 +88,13 @@
   const state = { x: pickStart(), step: 0, played: new Set(), sel: null, showClass: false, hidden: new Set(), orb: null, timer: 0 };
 
   function pickStart() {
-    for (const x of [[0.19, 0.11, 0.31], [0.13, 0.27, 0.38], [0.31, 0.07, 0.17], [0.09, 0.22, 0.41]]) {
-      if (C.orbit(ops, x, A).clusters.length === ops.length) return x;
+    // the candidate whose copies stay farthest apart
+    let best = null, sep = -1;
+    for (const x of [[0.19, 0.11, 0.31], [0.13, 0.27, 0.38], [0.31, 0.07, 0.17], [0.09, 0.22, 0.41], [0.36, 0.14, 0.03], [0.07, 0.17, 0.29]]) {
+      const o = C.orbit(ops, x, A);
+      if (o.clusters.length === ops.length && o.minSep > sep) { best = x; sep = o.minSep; }
     }
-    return [0.19, 0.11, 0.31];
+    return best || [0.19, 0.11, 0.31];
   }
 
   // ======================================================================
@@ -165,8 +173,8 @@
       <p>Symmetry is easiest to see by following a single point. The model shows one atom at fractional coordinates <i>(x, y, z)</i>. Each coordinate is a fraction of the corresponding cell edge, so <i>x</i> = 0.5 lies halfway along <i>a</i>. The sliders below the model move it.</p>
       <p>A sphere looks the same after any rotation, so the atom carries three arms of different length that act as a <b>handedness marker</b>. You can read it as the atom's local environment.</p>
       <dl class="facts">
-        <dt><span class="swatch r"></span>Blue</dt><dd>same handedness as the starting atom</dd>
-        <dt><span class="swatch l"></span>Orange</dt><dd>mirror image (opposite handedness)</dd>
+        <dt><i class="sw r"></i> Blue</dt><dd>same handedness as the starting atom</dd>
+        <dt><i class="sw l"></i> Orange</dt><dd>mirror image (opposite handedness)</dd>
       </dl>
       <p>Every symmetry operation of the group must map this atom onto an atom of the same kind. The ${ops.length} positions generated this way form the general position, built up in the next steps.</p>`;
   }
@@ -337,7 +345,7 @@
     });
 
     if (elements) elements.forEach(el => {
-      el.obj.visible = (s.elems && !state.hidden.has(el.key)) || (s.cls && state.showClass && el.key === s.cls.key);
+      setElementVisible(el, (s.elems && !state.hidden.has(el.key)) || (s.cls && state.showClass && el.key === s.cls.key));
     });
     Object.entries(focusCache).forEach(([i, f]) => {
       if (!f) return;
@@ -365,7 +373,7 @@
     seen.forEach(e => {
       const sw = e.kind === 'mirror' ? `<i class="sw plane ${e.glide !== 'm' ? 'glide' : ''}"></i>`
         : e.kind === 'rotation' ? `<i class="sw axis ${e.screw ? 'screw' : ''}"></i>` : '<i class="sw inv"></i>';
-      parts.push(`<span>${sw}${sym(e)} ${C.nameOf(e).toLowerCase()}</span>`);
+      parts.push(`<span>${sw}<em>${sym(e)} ${C.nameOf(e).toLowerCase()}</em></span>`);
     });
     $('#legend').innerHTML = parts.join('');
   }
@@ -451,7 +459,7 @@
         <div><dt>Operations</dt><dd>${ops.length}</dd></div>
         <div><dt>Wyckoff positions</dt><dd>${D.wyckoff.length}</dd></div>
       </dl>`;
-    $('#steps').innerHTML = steps.map((s, k) => `<li><button type="button" data-k="${k}">${s.title}</button></li>`).join('');
+    $('#steps').innerHTML = steps.map((s, k) => `<li><button type="button" data-k="${k}"><span>${s.title}</span></button></li>`).join('');
     // Large groups start with only the first kind of element switched on.
     if (big) ensureElements().forEach(el => { if (classes[0] && el.key !== classes[0].key) state.hidden.add(el.key); });
 
