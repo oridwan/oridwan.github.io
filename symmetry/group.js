@@ -45,7 +45,6 @@
 
   const symbolHTML = C.hmHTML(D.short);
   const fullHTML = C.hmHTML(D.full);
-  document.title = `${D.short.replace(/_(\d)/g, (m, d) => '₀₁₂₃₄₅₆'[d])} (No. ${D.number}) · Space groups`;
 
   // ---------- viewer ----------
   const view = SGView.create($('#viewer'));
@@ -112,12 +111,12 @@
     })),
     { key: 'general-position', title: 'The general position', atoms: () => all, elems: true, sliders: true, render: renderTogether },
     { key: 'products', title: 'Combining operations', atoms: () => all, sliders: true, render: renderCombine },
-    { key: 'wyckoff', title: 'Wyckoff positions', atoms: () => all, elems: true, sliders: true, render: renderWyckoff },
-    { key: 'tables', title: 'Reference tables', atoms: () => all, sliders: true, render: renderTables }
+    { key: 'wyckoff', title: 'Wyckoff positions', atoms: () => all, elems: true, sliders: true, render: renderWyckoff }
   ];
   function plural(name) { return name.replace(/(axis)$/, 'axes').replace(/(plane|centre|translation)$/, '$1s'); }
 
-  function go(k) {
+  // keepHash: leave a non-step anchor such as #reference in the address bar.
+  function go(k, keepHash = false) {
     k = Math.max(0, Math.min(steps.length - 1, k));
     view.cancel();
     view.trailReset();
@@ -127,7 +126,7 @@
     const s = steps[k];
     state.sel = s.list ? s.list[0] : null;
     $('#step').innerHTML = s.render();
-    history.replaceState(null, '', '#' + s.key);
+    if (!keepHash) history.replaceState(null, '', '#' + s.key);
     $('#steps').querySelectorAll('li').forEach((li, j) => li.classList.toggle('on', j === k));
     const prev = steps[k - 1], next = steps[k + 1];
     $('#prev').innerHTML = prev ? `<span>Previous</span>${prev.title}` : '';
@@ -142,7 +141,7 @@
   function renderOverview() {
     const dec = C.decodeHM(D.full, SYS);
     const rows = [`<tr><td class="m">${dec.letter}</td><td>Lattice</td><td>${dec.letterWords}</td></tr>`]
-      .concat(dec.positions.map(p => `<tr class="${p.token === '1' ? 'muted' : ''}"><td class="m">${p.html}</td><td>${p.dir}</td><td>${p.words[0].toUpperCase() + p.words.slice(1)}</td></tr>`));
+      .concat(dec.positions.map(p => `<tr class="${p.token === '1' ? 'muted' : ''}"><td class="m">${p.html}</td><td>${p.dir}</td><td>${p.words}</td></tr>`));
     const yes = b => (b ? 'yes' : 'no');
     return `<h2>Overview</h2>
       <p>Space group ${symbolHTML} (No. ${D.number}) belongs to the ${SYS} crystal system and to the crystal class (point group) <span class="m">${C.hmHTML(D.pointGroup)}</span>.
@@ -301,26 +300,8 @@
       <p>If the atom lies on a symmetry element that leaves points fixed, the corresponding operation maps it onto itself and some copies coincide. The atom then occupies a <b>special position</b> with fewer copies per cell.</p>
       <p>Each set of equivalent positions is labelled by its <b>multiplicity</b> (copies per cell) and a <b>Wyckoff letter</b>, from <i>a</i> for the most special up to the general position. The <b>site symmetry</b> lists the operations that leave the point fixed. In its oriented form, each character refers to one symmetry direction of the full symbol, and a dot marks a direction with no symmetry at the site. Select a row to move the atom there.</p>
       <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="note">The complete tables, with every coordinate triplet, are <a href="#reference">below the viewer</a>.</p>
       ${slides.length && still.length ? `<p class="note">Only ${still.map(c => `${sym(c.e)}`).join(', ')} elements can host special positions here. The ${slides.map(c => sym(c.e)).join(', ')} operations include a translation and leave no point fixed.</p>` : ''}`;
-  }
-
-  function renderTables() {
-    const reps = all.slice(0, nRep);
-    return `<h2>Reference tables</h2>
-      <p>The listing in the format of the International Tables, Vol. A. It can be compared with the Bilbao Crystallographic Server, which uses the same setting.</p>
-      <form class="ext" method="post" action="https://cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list" target="_blank">
-        <input type="hidden" name="gnum" value="${D.number}">
-        <button type="submit" name="standard" value="Standard/Default Setting">Open No. ${D.number} on the Bilbao server (WYCKPOS) ↗</button>
-      </form>
-      <h3>Symmetry operations</h3>
-      ${nc > 1 ? `<p class="m">${['0,0,0', ...centring.map(t => t.map(C.fmtFrac).join(','))].map(t => `(${t})+`).join('&ensp;')}</p>` : ''}
-      <table class="tbl ops"><thead><tr><th></th><th>Coordinates</th><th>Symmetry element</th></tr></thead><tbody>${
-        reps.map(i => `<tr><td>${NUM(i)}</td><td class="m">${C.fmtAffine(ops[i].W, ops[i].w)}</td><td class="m">${sym(ops[i].e)}&ensp;${C.whereOf(ops[i].e)}</td></tr>`).join('')
-      }</tbody></table>
-      <h3>Wyckoff positions</h3>
-      <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>${
-        D.wyckoff.map(w => `<tr><td class="m">${w.m}</td><td class="m"><i>${w.l}</i></td><td class="m">${siteHTML(w.site)}</td><td class="m coords">${wyckCoords(w)}</td></tr>`).join('')
-      }</tbody></table></div>`;
   }
 
   // ======================================================================
@@ -449,16 +430,6 @@
   }
 
   function init() {
-    $('#groupHead').innerHTML = `
-      <p class="no">No. ${D.number}</p>
-      <h1>${symbolHTML}</h1>
-      <dl class="head-facts">
-        <div><dt>Full symbol</dt><dd>${fullHTML}</dd></div>
-        <div><dt>Crystal system</dt><dd>${SYS}</dd></div>
-        <div><dt>Point group</dt><dd>${C.hmHTML(D.pointGroup)}</dd></div>
-        <div><dt>Operations</dt><dd>${ops.length}</dd></div>
-        <div><dt>Wyckoff positions</dt><dd>${D.wyckoff.length}</dd></div>
-      </dl>`;
     $('#steps').innerHTML = steps.map((s, k) => `<li><button type="button" data-k="${k}"><span>${s.title}</span></button></li>`).join('');
     // Large groups start with only the first kind of element switched on.
     if (big) ensureElements().forEach(el => { if (classes[0] && el.key !== classes[0].key) state.hidden.add(el.key); });
@@ -506,23 +477,7 @@
 
     setX(state.x);
     const k = steps.findIndex(s => '#' + s.key === location.hash);
-    go(k < 0 ? 0 : k);
-    loadNeighbours();
-  }
-
-  // Previous / next group links, using the summary list.
-  function loadNeighbours() {
-    const s = document.createElement('script');
-    s.src = '../data/index.js';
-    s.onload = () => {
-      const idx = window.SG_INDEX || [];
-      const link = (n, rel) => {
-        const g = idx[n - 1];
-        return g ? `<a href="../${n}/" rel="${rel}">${rel === 'prev' ? '←' : ''} ${n} ${C.hmHTML(g.s)} ${rel === 'next' ? '→' : ''}</a>` : '';
-      };
-      $('#groupNav').innerHTML = link(D.number - 1, 'prev') + link(D.number + 1, 'next');
-    };
-    document.head.appendChild(s);
+    go(k < 0 ? 0 : k, k < 0);
   }
 
   init();

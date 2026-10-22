@@ -4,8 +4,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>P4₂/mmc (No. 131) · Space groups · Osman Goni Ridwan</title>
-  <meta name="description" content="Space group P4₂/mmc (No. 131), tetragonal: symmetry operations, symmetry elements and Wyckoff positions, shown step by step in 3D.">
+  <title>Space group 131 (P42/mmc): Wyckoff positions and symmetry operations</title>
+  <meta name="description" content="Space group 131, P42/mmc (full symbol P 42/m 2/m 2/c): tetragonal, point group 4/mmm. Interactive 3D view of its 16 symmetry operations and 18 Wyckoff positions.">
+  <meta name="author" content="Osman Goni Ridwan">
+  <link rel="canonical" href="https://oridwan.github.io/symmetry/131/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Space group 131 (P42/mmc): Wyckoff positions and symmetry operations">
+  <meta property="og:description" content="Space group 131, P42/mmc (full symbol P 42/m 2/m 2/c): tetragonal, point group 4/mmm. Interactive 3D view of its 16 symmetry operations and 18 Wyckoff positions.">
+  <meta property="og:url" content="https://oridwan.github.io/symmetry/131/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Space group 131 (P42/mmc): Wyckoff positions and symmetry operations">
+  <meta name="twitter:description" content="Space group 131, P42/mmc (full symbol P 42/m 2/m 2/c): tetragonal, point group 4/mmm. Interactive 3D view of its 16 symmetry operations and 18 Wyckoff positions.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <script type="application/ld+json">[
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Space groups",
+    "item": "https://oridwan.github.io/symmetry/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "No. 131 P42/mmc",
+    "item": "https://oridwan.github.io/symmetry/131/"
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Space group 131 (P42/mmc): Wyckoff positions and symmetry operations",
+  "description": "Space group 131, P42/mmc (full symbol P 42/m 2/m 2/c): tetragonal, point group 4/mmm. Interactive 3D view of its 16 symmetry operations and 18 Wyckoff positions.",
+  "url": "https://oridwan.github.io/symmetry/131/",
+  "learningResourceType": "interactive resource",
+  "educationalLevel": "university",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": {
+   "@type": "Person",
+   "name": "Osman Goni Ridwan",
+   "url": "https://oridwan.github.io/"
+  },
+  "about": {
+   "@type": "Thing",
+   "name": "Space group P42/mmc"
+  },
+  "isPartOf": {
+   "@type": "LearningResource",
+   "name": "Space-group symmetry",
+   "url": "https://oridwan.github.io/symmetry/"
+  }
+ }
+]</script>
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,40 +76,107 @@
   <div class="sym-top-in">
     <a class="brand" href="../../">Osman Goni Ridwan</a>
     <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><span>No. 131</span></nav>
-    <nav class="group-nav" id="groupNav" aria-label="Neighbouring groups"></nav>
+    <nav class="group-nav" aria-label="Neighbouring groups"><a href="../130/" rel="prev">← 130 P4/ncc</a><a href="../132/" rel="next">132 P4<sub>2</sub>/mcm →</a></nav>
   </div>
 </header>
 
 <main class="group" id="main">
-  <section class="group-head" id="groupHead"></section>
+  <section class="group-head">
+      <h1><span class="no">Space group 131</span>P4<sub>2</sub>/mmc</h1>
+      <dl class="head-facts">
+        <div><dt>Full symbol</dt><dd>P 4<sub>2</sub>/m 2/m 2/c</dd></div>
+        <div><dt>Crystal system</dt><dd>tetragonal</dd></div>
+        <div><dt>Point group</dt><dd>4/mmm</dd></div>
+        <div><dt>Schoenflies</dt><dd>D<sub>4h</sub><sup>9</sup></dd></div>
+        <div><dt>Operations</dt><dd>16</dd></div>
+        <div><dt>Wyckoff positions</dt><dd>18</dd></div>
+      </dl>
+  </section>
 
   <div class="group-body">
     <section class="stage" aria-label="3D view">
       <div id="viewer"></div>
       <div class="atom-panel" id="atomPanel" hidden>
         <div class="sliders">
-          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0"><output></output></label>
-          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1"><output></output></label>
-          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2"><output></output></label>
+          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0" aria-label="x coordinate"><output></output></label>
+          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1" aria-label="y coordinate"><output></output></label>
+          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2" aria-label="z coordinate"><output></output></label>
         </div>
         <p class="status" id="status"></p>
       </div>
       <p class="legend" id="legend"></p>
     </section>
 
-    <section class="lesson" aria-label="Lesson">
+    <section class="lesson" aria-label="Step-by-step walk-through">
       <ol class="toc-steps" id="steps"></ol>
-      <article class="step prose" id="step" tabindex="-1"></article>
+      <article class="step prose" id="step" tabindex="-1">
+        <noscript><p>The interactive walk-through needs JavaScript. The reference tables below work without it.</p></noscript>
+      </article>
       <nav class="step-nav">
-        <button type="button" id="prev"></button>
-        <button type="button" id="next"></button>
+        <button type="button" id="prev" hidden></button>
+        <button type="button" id="next" hidden></button>
       </nav>
     </section>
   </div>
+
+  <section class="group-ref prose" id="reference">
+      <h2>P4<sub>2</sub>/mmc at a glance</h2>
+      <p class="summary">P4<sub>2</sub>/mmc (No. 131; full symbol P 4<sub>2</sub>/m 2/m 2/c; Schoenflies symbol D<sub>4h</sub><sup>9</sup>) is a tetragonal space group in the crystal class 4/mmm. Its lattice is primitive. It is centrosymmetric. A general point has 16 equivalent positions per conventional cell. There are 18 Wyckoff positions, from 2<i>a</i> (site symmetry mmm.) to the general position 16<i>r</i>. The symbol is also written P42/mmc, P42/m2/m2/c.</p>
+      <h3>Symmetry operations</h3>
+      <p>Coordinate triplets of the general position in the standard setting.</p>
+      
+      <div class="scroll-x"><table class="tbl ops"><thead><tr><th></th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td>(1)</td><td class="m">x, y, z</td></tr>
+<tr><td>(2)</td><td class="m">−x, −y, z</td></tr>
+<tr><td>(3)</td><td class="m">−y, x, z+½</td></tr>
+<tr><td>(4)</td><td class="m">y, −x, z+½</td></tr>
+<tr><td>(5)</td><td class="m">−x, y, −z</td></tr>
+<tr><td>(6)</td><td class="m">x, −y, −z</td></tr>
+<tr><td>(7)</td><td class="m">y, x, −z+½</td></tr>
+<tr><td>(8)</td><td class="m">−y, −x, −z+½</td></tr>
+<tr><td>(9)</td><td class="m">−x, −y, −z</td></tr>
+<tr><td>(10)</td><td class="m">x, y, −z</td></tr>
+<tr><td>(11)</td><td class="m">y, −x, −z+½</td></tr>
+<tr><td>(12)</td><td class="m">−y, x, −z+½</td></tr>
+<tr><td>(13)</td><td class="m">x, −y, z</td></tr>
+<tr><td>(14)</td><td class="m">−x, y, z</td></tr>
+<tr><td>(15)</td><td class="m">−y, −x, z+½</td></tr>
+<tr><td>(16)</td><td class="m">y, x, z+½</td></tr>
+      </tbody></table></div>
+      <h3>Wyckoff positions</h3>
+      <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td class="m">16</td><td class="m"><i>r</i></td><td class="m">1</td><td class="m coords">(x, y, z) (−x, −y, z) (−y, x, z+½) (y, −x, z+½) (−x, y, −z) (x, −y, −z) (y, x, −z+½) (−y, −x, −z+½) (−x, −y, −z) (x, y, −z) (y, −x, −z+½) (−y, x, −z+½) (x, −y, z) (−x, y, z) (−y, −x, z+½) (y, x, z+½)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>q</i></td><td class="m">m..</td><td class="m coords">(x, y, 0) (−x, −y, 0) (−y, x, ½) (y, −x, ½) (−x, y, 0) (x, −y, 0) (y, x, ½) (−y, −x, ½)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>p</i></td><td class="m">.m.</td><td class="m coords">(½, y, z) (½, −y, z) (−y, ½, z+½) (y, ½, z+½) (½, y, −z) (½, −y, −z) (y, ½, −z+½) (−y, ½, −z+½)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>o</i></td><td class="m">.m.</td><td class="m coords">(0, y, z) (0, −y, z) (−y, 0, z+½) (y, 0, z+½) (0, y, −z) (0, −y, −z) (y, 0, −z+½) (−y, 0, −z+½)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>n</i></td><td class="m">..2</td><td class="m coords">(x, x, ¼) (−x, −x, ¼) (−x, x, ¾) (x, −x, ¾) (−x, −x, ¾) (x, x, ¾) (x, −x, ¼) (−x, x, ¼)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>m</i></td><td class="m">m2m.</td><td class="m coords">(x, ½, 0) (−x, ½, 0) (½, x, ½) (½, −x, ½)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>l</i></td><td class="m">m2m.</td><td class="m coords">(x, 0, ½) (−x, 0, ½) (0, x, 0) (0, −x, 0)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>k</i></td><td class="m">m2m.</td><td class="m coords">(x, ½, ½) (−x, ½, ½) (½, x, 0) (½, −x, 0)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>j</i></td><td class="m">m2m.</td><td class="m coords">(x, 0, 0) (−x, 0, 0) (0, x, ½) (0, −x, ½)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>i</i></td><td class="m">2mm.</td><td class="m coords">(0, ½, z) (½, 0, z+½) (0, ½, −z) (½, 0, −z+½)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>h</i></td><td class="m">2mm.</td><td class="m coords">(½, ½, z) (½, ½, z+½) (½, ½, −z) (½, ½, −z+½)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>g</i></td><td class="m">2mm.</td><td class="m coords">(0, 0, z) (0, 0, z+½) (0, 0, −z) (0, 0, −z+½)</td></tr>
+<tr><td class="m">2</td><td class="m"><i>f</i></td><td class="m"><span class="ob">4</span>m2</td><td class="m coords">(½, ½, ¼) (½, ½, ¾)</td></tr>
+<tr><td class="m">2</td><td class="m"><i>e</i></td><td class="m"><span class="ob">4</span>m2</td><td class="m coords">(0, 0, ¼) (0, 0, ¾)</td></tr>
+<tr><td class="m">2</td><td class="m"><i>d</i></td><td class="m">mmm.</td><td class="m coords">(0, ½, ½) (½, 0, 0)</td></tr>
+<tr><td class="m">2</td><td class="m"><i>c</i></td><td class="m">mmm.</td><td class="m coords">(0, ½, 0) (½, 0, ½)</td></tr>
+<tr><td class="m">2</td><td class="m"><i>b</i></td><td class="m">mmm.</td><td class="m coords">(½, ½, 0) (½, ½, ½)</td></tr>
+<tr><td class="m">2</td><td class="m"><i>a</i></td><td class="m">mmm.</td><td class="m coords">(0, 0, 0) (0, 0, ½)</td></tr>
+      </tbody></table></div>
+      <form class="ext" method="post" action="https://cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list" target="_blank">
+        <input type="hidden" name="gnum" value="131">
+        <button type="submit" name="standard" value="Standard/Default Setting">Compare with the Bilbao Crystallographic Server (WYCKPOS) ↗</button>
+      </form>
+      <h3>Related space groups</h3>
+      <p><b>Same crystal class (4/mmm):</b> <a href="../123/">123 P4/mmm</a>, <a href="../124/">124 P4/mcc</a>, <a href="../125/">125 P4/nbm</a>, <a href="../126/">126 P4/nnc</a>, <a href="../127/">127 P4/mbm</a>, <a href="../128/">128 P4/mnc</a>, <a href="../129/">129 P4/nmm</a>, <a href="../130/">130 P4/ncc</a>, <a href="../132/">132 P4<sub>2</sub>/mcm</a>, <a href="../133/">133 P4<sub>2</sub>/nbc</a>, <a href="../134/">134 P4<sub>2</sub>/nnm</a>, <a href="../135/">135 P4<sub>2</sub>/mbc</a>, <a href="../136/">136 P4<sub>2</sub>/mnm</a>, <a href="../137/">137 P4<sub>2</sub>/nmc</a>, <a href="../138/">138 P4<sub>2</sub>/ncm</a>, <a href="../139/">139 I4/mmm</a>, <a href="../140/">140 I4/mcm</a>, <a href="../141/">141 I4<sub>1</sub>/amd</a>, <a href="../142/">142 I4<sub>1</sub>/acd</a>.</p>
+      <p><b>Neighbouring numbers:</b> <a href="../130/">130 P4/ncc</a>, <a href="../132/">132 P4<sub>2</sub>/mcm</a>.
+        <a href="../#sys-tetragonal">All tetragonal space groups</a> ·
+        <a href="../">Space-group symmetry tutorial</a></p>
+    </section>
 </main>
 
-<noscript><p class="prose" style="padding:24px">This page needs JavaScript for the 3D view.</p></noscript>
-<script id="sg-data" type="application/json">{"number":131,"short":"P4_2/mmc","full":"P 4_2/m 2/m 2/c","system":"tetragonal","pointGroup":"4/mmm","choice":"","centrosymmetric":true,"sohncke":false,"polar":false,"example":"","ops":["x,y,z","-x,-y,z","-y,x,z+1/2","y,-x,z+1/2","-x,y,-z","x,-y,-z","y,x,-z+1/2","-y,-x,-z+1/2","-x,-y,-z","x,y,-z","y,-x,-z+1/2","-y,x,-z+1/2","x,-y,z","-x,y,z","-y,-x,z+1/2","y,x,z+1/2"],"wyckoff":[{"m":16,"l":"r","site":"1","coords":["x,y,z","-x,-y,z","-y,x,z+1/2","y,-x,z+1/2","-x,y,-z","x,-y,-z","y,x,-z+1/2","-y,-x,-z+1/2","-x,-y,-z","x,y,-z","y,-x,-z+1/2","-y,x,-z+1/2","x,-y,z","-x,y,z","-y,-x,z+1/2","y,x,z+1/2"]},{"m":8,"l":"q","site":"m..","coords":["x,y,0","-x,-y,0","-y,x,1/2","y,-x,1/2","-x,y,0","x,-y,0","y,x,1/2","-y,-x,1/2"]},{"m":8,"l":"p","site":".m.","coords":["1/2,y,z","1/2,-y,z","-y,1/2,z+1/2","y,1/2,z+1/2","1/2,y,-z","1/2,-y,-z","y,1/2,-z+1/2","-y,1/2,-z+1/2"]},{"m":8,"l":"o","site":".m.","coords":["0,y,z","0,-y,z","-y,0,z+1/2","y,0,z+1/2","0,y,-z","0,-y,-z","y,0,-z+1/2","-y,0,-z+1/2"]},{"m":8,"l":"n","site":"..2","coords":["x,x,1/4","-x,-x,1/4","-x,x,3/4","x,-x,3/4","-x,-x,3/4","x,x,3/4","x,-x,1/4","-x,x,1/4"]},{"m":4,"l":"m","site":"m2m.","coords":["x,1/2,0","-x,1/2,0","1/2,x,1/2","1/2,-x,1/2"]},{"m":4,"l":"l","site":"m2m.","coords":["x,0,1/2","-x,0,1/2","0,x,0","0,-x,0"]},{"m":4,"l":"k","site":"m2m.","coords":["x,1/2,1/2","-x,1/2,1/2","1/2,x,0","1/2,-x,0"]},{"m":4,"l":"j","site":"m2m.","coords":["x,0,0","-x,0,0","0,x,1/2","0,-x,1/2"]},{"m":4,"l":"i","site":"2mm.","coords":["0,1/2,z","1/2,0,z+1/2","0,1/2,-z","1/2,0,-z+1/2"]},{"m":4,"l":"h","site":"2mm.","coords":["1/2,1/2,z","1/2,1/2,z+1/2","1/2,1/2,-z","1/2,1/2,-z+1/2"]},{"m":4,"l":"g","site":"2mm.","coords":["0,0,z","0,0,z+1/2","0,0,-z","0,0,-z+1/2"]},{"m":2,"l":"f","site":"-4m2","coords":["1/2,1/2,1/4","1/2,1/2,3/4"]},{"m":2,"l":"e","site":"-4m2","coords":["0,0,1/4","0,0,3/4"]},{"m":2,"l":"d","site":"mmm.","coords":["0,1/2,1/2","1/2,0,0"]},{"m":2,"l":"c","site":"mmm.","coords":["0,1/2,0","1/2,0,1/2"]},{"m":2,"l":"b","site":"mmm.","coords":["1/2,1/2,0","1/2,1/2,1/2"]},{"m":2,"l":"a","site":"mmm.","coords":["0,0,0","0,0,1/2"]}]}</script>
+<script id="sg-data" type="application/json">{"number":131,"short":"P4_2/mmc","full":"P 4_2/m 2/m 2/c","schoenflies":"D4h^9","system":"tetragonal","pointGroup":"4/mmm","choice":"","centrosymmetric":true,"sohncke":false,"polar":false,"example":"","ops":["x,y,z","-x,-y,z","-y,x,z+1/2","y,-x,z+1/2","-x,y,-z","x,-y,-z","y,x,-z+1/2","-y,-x,-z+1/2","-x,-y,-z","x,y,-z","y,-x,-z+1/2","-y,x,-z+1/2","x,-y,z","-x,y,z","-y,-x,z+1/2","y,x,z+1/2"],"wyckoff":[{"m":16,"l":"r","site":"1","coords":["x,y,z","-x,-y,z","-y,x,z+1/2","y,-x,z+1/2","-x,y,-z","x,-y,-z","y,x,-z+1/2","-y,-x,-z+1/2","-x,-y,-z","x,y,-z","y,-x,-z+1/2","-y,x,-z+1/2","x,-y,z","-x,y,z","-y,-x,z+1/2","y,x,z+1/2"]},{"m":8,"l":"q","site":"m..","coords":["x,y,0","-x,-y,0","-y,x,1/2","y,-x,1/2","-x,y,0","x,-y,0","y,x,1/2","-y,-x,1/2"]},{"m":8,"l":"p","site":".m.","coords":["1/2,y,z","1/2,-y,z","-y,1/2,z+1/2","y,1/2,z+1/2","1/2,y,-z","1/2,-y,-z","y,1/2,-z+1/2","-y,1/2,-z+1/2"]},{"m":8,"l":"o","site":".m.","coords":["0,y,z","0,-y,z","-y,0,z+1/2","y,0,z+1/2","0,y,-z","0,-y,-z","y,0,-z+1/2","-y,0,-z+1/2"]},{"m":8,"l":"n","site":"..2","coords":["x,x,1/4","-x,-x,1/4","-x,x,3/4","x,-x,3/4","-x,-x,3/4","x,x,3/4","x,-x,1/4","-x,x,1/4"]},{"m":4,"l":"m","site":"m2m.","coords":["x,1/2,0","-x,1/2,0","1/2,x,1/2","1/2,-x,1/2"]},{"m":4,"l":"l","site":"m2m.","coords":["x,0,1/2","-x,0,1/2","0,x,0","0,-x,0"]},{"m":4,"l":"k","site":"m2m.","coords":["x,1/2,1/2","-x,1/2,1/2","1/2,x,0","1/2,-x,0"]},{"m":4,"l":"j","site":"m2m.","coords":["x,0,0","-x,0,0","0,x,1/2","0,-x,1/2"]},{"m":4,"l":"i","site":"2mm.","coords":["0,1/2,z","1/2,0,z+1/2","0,1/2,-z","1/2,0,-z+1/2"]},{"m":4,"l":"h","site":"2mm.","coords":["1/2,1/2,z","1/2,1/2,z+1/2","1/2,1/2,-z","1/2,1/2,-z+1/2"]},{"m":4,"l":"g","site":"2mm.","coords":["0,0,z","0,0,z+1/2","0,0,-z","0,0,-z+1/2"]},{"m":2,"l":"f","site":"-4m2","coords":["1/2,1/2,1/4","1/2,1/2,3/4"]},{"m":2,"l":"e","site":"-4m2","coords":["0,0,1/4","0,0,3/4"]},{"m":2,"l":"d","site":"mmm.","coords":["0,1/2,1/2","1/2,0,0"]},{"m":2,"l":"c","site":"mmm.","coords":["0,1/2,0","1/2,0,1/2"]},{"m":2,"l":"b","site":"mmm.","coords":["1/2,1/2,0","1/2,1/2,1/2"]},{"m":2,"l":"a","site":"mmm.","coords":["0,0,0","0,0,1/2"]}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="../sg-core.js"></script>

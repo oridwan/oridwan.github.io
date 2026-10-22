@@ -4,8 +4,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>I4₁cd (No. 110) · Space groups · Osman Goni Ridwan</title>
-  <meta name="description" content="Space group I4₁cd (No. 110), tetragonal: symmetry operations, symmetry elements and Wyckoff positions, shown step by step in 3D.">
+  <title>Space group 110 (I41cd): Wyckoff positions and symmetry operations</title>
+  <meta name="description" content="Space group 110, I41cd (full symbol I 41 c d): tetragonal, point group 4mm. Interactive 3D view of its 16 symmetry operations and 2 Wyckoff positions.">
+  <meta name="author" content="Osman Goni Ridwan">
+  <link rel="canonical" href="https://oridwan.github.io/symmetry/110/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Space group 110 (I41cd): Wyckoff positions and symmetry operations">
+  <meta property="og:description" content="Space group 110, I41cd (full symbol I 41 c d): tetragonal, point group 4mm. Interactive 3D view of its 16 symmetry operations and 2 Wyckoff positions.">
+  <meta property="og:url" content="https://oridwan.github.io/symmetry/110/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Space group 110 (I41cd): Wyckoff positions and symmetry operations">
+  <meta name="twitter:description" content="Space group 110, I41cd (full symbol I 41 c d): tetragonal, point group 4mm. Interactive 3D view of its 16 symmetry operations and 2 Wyckoff positions.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <script type="application/ld+json">[
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Space groups",
+    "item": "https://oridwan.github.io/symmetry/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "No. 110 I41cd",
+    "item": "https://oridwan.github.io/symmetry/110/"
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Space group 110 (I41cd): Wyckoff positions and symmetry operations",
+  "description": "Space group 110, I41cd (full symbol I 41 c d): tetragonal, point group 4mm. Interactive 3D view of its 16 symmetry operations and 2 Wyckoff positions.",
+  "url": "https://oridwan.github.io/symmetry/110/",
+  "learningResourceType": "interactive resource",
+  "educationalLevel": "university",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": {
+   "@type": "Person",
+   "name": "Osman Goni Ridwan",
+   "url": "https://oridwan.github.io/"
+  },
+  "about": {
+   "@type": "Thing",
+   "name": "Space group I41cd"
+  },
+  "isPartOf": {
+   "@type": "LearningResource",
+   "name": "Space-group symmetry",
+   "url": "https://oridwan.github.io/symmetry/"
+  }
+ }
+]</script>
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,40 +76,83 @@
   <div class="sym-top-in">
     <a class="brand" href="../../">Osman Goni Ridwan</a>
     <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><span>No. 110</span></nav>
-    <nav class="group-nav" id="groupNav" aria-label="Neighbouring groups"></nav>
+    <nav class="group-nav" aria-label="Neighbouring groups"><a href="../109/" rel="prev">← 109 I4<sub>1</sub>md</a><a href="../111/" rel="next">111 P<span class="ob">4</span>2m →</a></nav>
   </div>
 </header>
 
 <main class="group" id="main">
-  <section class="group-head" id="groupHead"></section>
+  <section class="group-head">
+      <h1><span class="no">Space group 110</span>I4<sub>1</sub>cd</h1>
+      <dl class="head-facts">
+        <div><dt>Full symbol</dt><dd>I 4<sub>1</sub> c d</dd></div>
+        <div><dt>Crystal system</dt><dd>tetragonal</dd></div>
+        <div><dt>Point group</dt><dd>4mm</dd></div>
+        <div><dt>Schoenflies</dt><dd>C<sub>4v</sub><sup>12</sup></dd></div>
+        <div><dt>Operations</dt><dd>16</dd></div>
+        <div><dt>Wyckoff positions</dt><dd>2</dd></div>
+      </dl>
+  </section>
 
   <div class="group-body">
     <section class="stage" aria-label="3D view">
       <div id="viewer"></div>
       <div class="atom-panel" id="atomPanel" hidden>
         <div class="sliders">
-          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0"><output></output></label>
-          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1"><output></output></label>
-          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2"><output></output></label>
+          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0" aria-label="x coordinate"><output></output></label>
+          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1" aria-label="y coordinate"><output></output></label>
+          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2" aria-label="z coordinate"><output></output></label>
         </div>
         <p class="status" id="status"></p>
       </div>
       <p class="legend" id="legend"></p>
     </section>
 
-    <section class="lesson" aria-label="Lesson">
+    <section class="lesson" aria-label="Step-by-step walk-through">
       <ol class="toc-steps" id="steps"></ol>
-      <article class="step prose" id="step" tabindex="-1"></article>
+      <article class="step prose" id="step" tabindex="-1">
+        <noscript><p>The interactive walk-through needs JavaScript. The reference tables below work without it.</p></noscript>
+      </article>
       <nav class="step-nav">
-        <button type="button" id="prev"></button>
-        <button type="button" id="next"></button>
+        <button type="button" id="prev" hidden></button>
+        <button type="button" id="next" hidden></button>
       </nav>
     </section>
   </div>
+
+  <section class="group-ref prose" id="reference">
+      <h2>I4<sub>1</sub>cd at a glance</h2>
+      <p class="summary">I4<sub>1</sub>cd (No. 110; full symbol I 4<sub>1</sub> c d; Schoenflies symbol C<sub>4v</sub><sup>12</sup>) is a tetragonal space group in the crystal class 4mm. Its lattice is body-centred (I). It is non-centrosymmetric, and it is polar. A general point has 16 equivalent positions per conventional cell (8 for each of the 2 lattice points). There are 2 Wyckoff positions, from 8<i>a</i> (site symmetry 2..) to the general position 16<i>b</i>. The symbol is also written I41cd.</p>
+      <h3>Symmetry operations</h3>
+      <p>Coordinate triplets of the general position in the standard setting (listed once; add each centring vector).</p>
+      <p class="m">(0, 0, 0)+&ensp;(½, ½, ½)+</p>
+      <div class="scroll-x"><table class="tbl ops"><thead><tr><th></th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td>(1)</td><td class="m">x, y, z</td></tr>
+<tr><td>(2)</td><td class="m">−x+½, −y+½, z+½</td></tr>
+<tr><td>(3)</td><td class="m">−y, x+½, z+¼</td></tr>
+<tr><td>(4)</td><td class="m">y+½, −x, z+¾</td></tr>
+<tr><td>(5)</td><td class="m">x, −y, z+½</td></tr>
+<tr><td>(6)</td><td class="m">−x+½, y+½, z</td></tr>
+<tr><td>(7)</td><td class="m">−y, −x+½, z+¾</td></tr>
+<tr><td>(8)</td><td class="m">y+½, x, z+¼</td></tr>
+      </tbody></table></div>
+      <h3>Wyckoff positions</h3>
+      <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td class="m">16</td><td class="m"><i>b</i></td><td class="m">1</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(½, ½, ½)+</span> (x, y, z) (−x+½, −y+½, z+½) (−y, x+½, z+¼) (y+½, −x, z+¾) (x, −y, z+½) (−x+½, y+½, z) (−y, −x+½, z+¾) (y+½, x, z+¼)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>a</i></td><td class="m">2..</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(½, ½, ½)+</span> (0, 0, z) (0, ½, z+¼) (0, 0, z+½) (0, ½, z+¾)</td></tr>
+      </tbody></table></div>
+      <form class="ext" method="post" action="https://cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list" target="_blank">
+        <input type="hidden" name="gnum" value="110">
+        <button type="submit" name="standard" value="Standard/Default Setting">Compare with the Bilbao Crystallographic Server (WYCKPOS) ↗</button>
+      </form>
+      <h3>Related space groups</h3>
+      <p><b>Same crystal class (4mm):</b> <a href="../99/">99 P4mm</a>, <a href="../100/">100 P4bm</a>, <a href="../101/">101 P4<sub>2</sub>cm</a>, <a href="../102/">102 P4<sub>2</sub>nm</a>, <a href="../103/">103 P4cc</a>, <a href="../104/">104 P4nc</a>, <a href="../105/">105 P4<sub>2</sub>mc</a>, <a href="../106/">106 P4<sub>2</sub>bc</a>, <a href="../107/">107 I4mm</a>, <a href="../108/">108 I4cm</a>, <a href="../109/">109 I4<sub>1</sub>md</a>.</p>
+      <p><b>Neighbouring numbers:</b> <a href="../109/">109 I4<sub>1</sub>md</a>, <a href="../111/">111 P<span class="ob">4</span>2m</a>.
+        <a href="../#sys-tetragonal">All tetragonal space groups</a> ·
+        <a href="../">Space-group symmetry tutorial</a></p>
+    </section>
 </main>
 
-<noscript><p class="prose" style="padding:24px">This page needs JavaScript for the 3D view.</p></noscript>
-<script id="sg-data" type="application/json">{"number":110,"short":"I4_1cd","full":"I 4_1 c d","system":"tetragonal","pointGroup":"4mm","choice":"","centrosymmetric":false,"sohncke":false,"polar":true,"example":"","ops":["x,y,z","-x+1/2,-y+1/2,z+1/2","-y,x+1/2,z+1/4","y+1/2,-x,z+3/4","x,-y,z+1/2","-x+1/2,y+1/2,z","-y,-x+1/2,z+3/4","y+1/2,x,z+1/4","x+1/2,y+1/2,z+1/2","-x+1,-y+1,z+1","-y+1/2,x+1,z+3/4","y+1,-x+1/2,z+5/4","x+1/2,-y+1/2,z+1","-x+1,y+1,z+1/2","-y+1/2,-x+1,z+5/4","y+1,x+1/2,z+3/4"],"wyckoff":[{"m":16,"l":"b","site":"1","coords":["x,y,z","-x+1/2,-y+1/2,z+1/2","-y,x+1/2,z+1/4","y+1/2,-x,z+3/4","x,-y,z+1/2","-x+1/2,y+1/2,z","-y,-x+1/2,z+3/4","y+1/2,x,z+1/4","x+1/2,y+1/2,z+1/2","-x+1,-y+1,z+1","-y+1/2,x+1,z+3/4","y+1,-x+1/2,z+5/4","x+1/2,-y+1/2,z+1","-x+1,y+1,z+1/2","-y+1/2,-x+1,z+5/4","y+1,x+1/2,z+3/4"]},{"m":8,"l":"a","site":"2..","coords":["0,0,z","0,1/2,z+1/4","0,0,z+1/2","0,1/2,z+3/4","1/2,1/2,z+1/2","1/2,1,z+3/4","1/2,1/2,z+1","1/2,1,z+5/4"]}]}</script>
+<script id="sg-data" type="application/json">{"number":110,"short":"I4_1cd","full":"I 4_1 c d","schoenflies":"C4v^12","system":"tetragonal","pointGroup":"4mm","choice":"","centrosymmetric":false,"sohncke":false,"polar":true,"example":"","ops":["x,y,z","-x+1/2,-y+1/2,z+1/2","-y,x+1/2,z+1/4","y+1/2,-x,z+3/4","x,-y,z+1/2","-x+1/2,y+1/2,z","-y,-x+1/2,z+3/4","y+1/2,x,z+1/4","x+1/2,y+1/2,z+1/2","-x+1,-y+1,z+1","-y+1/2,x+1,z+3/4","y+1,-x+1/2,z+5/4","x+1/2,-y+1/2,z+1","-x+1,y+1,z+1/2","-y+1/2,-x+1,z+5/4","y+1,x+1/2,z+3/4"],"wyckoff":[{"m":16,"l":"b","site":"1","coords":["x,y,z","-x+1/2,-y+1/2,z+1/2","-y,x+1/2,z+1/4","y+1/2,-x,z+3/4","x,-y,z+1/2","-x+1/2,y+1/2,z","-y,-x+1/2,z+3/4","y+1/2,x,z+1/4","x+1/2,y+1/2,z+1/2","-x+1,-y+1,z+1","-y+1/2,x+1,z+3/4","y+1,-x+1/2,z+5/4","x+1/2,-y+1/2,z+1","-x+1,y+1,z+1/2","-y+1/2,-x+1,z+5/4","y+1,x+1/2,z+3/4"]},{"m":8,"l":"a","site":"2..","coords":["0,0,z","0,1/2,z+1/4","0,0,z+1/2","0,1/2,z+3/4","1/2,1/2,z+1/2","1/2,1,z+3/4","1/2,1/2,z+1","1/2,1,z+5/4"]}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="../sg-core.js"></script>

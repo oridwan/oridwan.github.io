@@ -4,8 +4,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>F4₁32 (No. 210) · Space groups · Osman Goni Ridwan</title>
-  <meta name="description" content="Space group F4₁32 (No. 210), cubic: symmetry operations, symmetry elements and Wyckoff positions, shown step by step in 3D.">
+  <title>Space group 210 (F4132): Wyckoff positions and symmetry operations</title>
+  <meta name="description" content="Space group 210, F4132 (full symbol F 41 3 2): cubic, point group 432. Interactive 3D view of its 96 symmetry operations and 8 Wyckoff positions.">
+  <meta name="author" content="Osman Goni Ridwan">
+  <link rel="canonical" href="https://oridwan.github.io/symmetry/210/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Space group 210 (F4132): Wyckoff positions and symmetry operations">
+  <meta property="og:description" content="Space group 210, F4132 (full symbol F 41 3 2): cubic, point group 432. Interactive 3D view of its 96 symmetry operations and 8 Wyckoff positions.">
+  <meta property="og:url" content="https://oridwan.github.io/symmetry/210/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Space group 210 (F4132): Wyckoff positions and symmetry operations">
+  <meta name="twitter:description" content="Space group 210, F4132 (full symbol F 41 3 2): cubic, point group 432. Interactive 3D view of its 96 symmetry operations and 8 Wyckoff positions.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <script type="application/ld+json">[
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Space groups",
+    "item": "https://oridwan.github.io/symmetry/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "No. 210 F4132",
+    "item": "https://oridwan.github.io/symmetry/210/"
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Space group 210 (F4132): Wyckoff positions and symmetry operations",
+  "description": "Space group 210, F4132 (full symbol F 41 3 2): cubic, point group 432. Interactive 3D view of its 96 symmetry operations and 8 Wyckoff positions.",
+  "url": "https://oridwan.github.io/symmetry/210/",
+  "learningResourceType": "interactive resource",
+  "educationalLevel": "university",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": {
+   "@type": "Person",
+   "name": "Osman Goni Ridwan",
+   "url": "https://oridwan.github.io/"
+  },
+  "about": {
+   "@type": "Thing",
+   "name": "Space group F4132"
+  },
+  "isPartOf": {
+   "@type": "LearningResource",
+   "name": "Space-group symmetry",
+   "url": "https://oridwan.github.io/symmetry/"
+  }
+ }
+]</script>
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,40 +76,105 @@
   <div class="sym-top-in">
     <a class="brand" href="../../">Osman Goni Ridwan</a>
     <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><span>No. 210</span></nav>
-    <nav class="group-nav" id="groupNav" aria-label="Neighbouring groups"></nav>
+    <nav class="group-nav" aria-label="Neighbouring groups"><a href="../209/" rel="prev">← 209 F432</a><a href="../211/" rel="next">211 I432 →</a></nav>
   </div>
 </header>
 
 <main class="group" id="main">
-  <section class="group-head" id="groupHead"></section>
+  <section class="group-head">
+      <h1><span class="no">Space group 210</span>F4<sub>1</sub>32</h1>
+      <dl class="head-facts">
+        <div><dt>Full symbol</dt><dd>F 4<sub>1</sub> 3 2</dd></div>
+        <div><dt>Crystal system</dt><dd>cubic</dd></div>
+        <div><dt>Point group</dt><dd>432</dd></div>
+        <div><dt>Schoenflies</dt><dd>O<sub></sub><sup>4</sup></dd></div>
+        <div><dt>Operations</dt><dd>96</dd></div>
+        <div><dt>Wyckoff positions</dt><dd>8</dd></div>
+      </dl>
+  </section>
 
   <div class="group-body">
     <section class="stage" aria-label="3D view">
       <div id="viewer"></div>
       <div class="atom-panel" id="atomPanel" hidden>
         <div class="sliders">
-          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0"><output></output></label>
-          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1"><output></output></label>
-          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2"><output></output></label>
+          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0" aria-label="x coordinate"><output></output></label>
+          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1" aria-label="y coordinate"><output></output></label>
+          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2" aria-label="z coordinate"><output></output></label>
         </div>
         <p class="status" id="status"></p>
       </div>
       <p class="legend" id="legend"></p>
     </section>
 
-    <section class="lesson" aria-label="Lesson">
+    <section class="lesson" aria-label="Step-by-step walk-through">
       <ol class="toc-steps" id="steps"></ol>
-      <article class="step prose" id="step" tabindex="-1"></article>
+      <article class="step prose" id="step" tabindex="-1">
+        <noscript><p>The interactive walk-through needs JavaScript. The reference tables below work without it.</p></noscript>
+      </article>
       <nav class="step-nav">
-        <button type="button" id="prev"></button>
-        <button type="button" id="next"></button>
+        <button type="button" id="prev" hidden></button>
+        <button type="button" id="next" hidden></button>
       </nav>
     </section>
   </div>
+
+  <section class="group-ref prose" id="reference">
+      <h2>F4<sub>1</sub>32 at a glance</h2>
+      <p class="summary">F4<sub>1</sub>32 (No. 210; full symbol F 4<sub>1</sub> 3 2; Schoenflies symbol O<sub></sub><sup>4</sup>) is a cubic space group in the crystal class 432. Its lattice is face-centred (F). It is non-centrosymmetric and a Sohncke group: it contains no inversion, mirror or glide operations, so it can hold a single enantiomer of a chiral molecule. A general point has 96 equivalent positions per conventional cell (24 for each of the 4 lattice points). There are 8 Wyckoff positions, from 8<i>a</i> (site symmetry 23.) to the general position 96<i>h</i>. The symbol is also written F4132.</p>
+      <h3>Symmetry operations</h3>
+      <p>Coordinate triplets of the general position in the standard setting (listed once; add each centring vector).</p>
+      <p class="m">(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</p>
+      <div class="scroll-x"><table class="tbl ops"><thead><tr><th></th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td>(1)</td><td class="m">x, y, z</td></tr>
+<tr><td>(2)</td><td class="m">−x, −y+½, z+½</td></tr>
+<tr><td>(3)</td><td class="m">−x+½, y+½, −z</td></tr>
+<tr><td>(4)</td><td class="m">x+½, −y, −z+½</td></tr>
+<tr><td>(5)</td><td class="m">z, x, y</td></tr>
+<tr><td>(6)</td><td class="m">z+½, −x, −y+½</td></tr>
+<tr><td>(7)</td><td class="m">−z, −x+½, y+½</td></tr>
+<tr><td>(8)</td><td class="m">−z+½, x+½, −y</td></tr>
+<tr><td>(9)</td><td class="m">y, z, x</td></tr>
+<tr><td>(10)</td><td class="m">−y+½, z+½, −x</td></tr>
+<tr><td>(11)</td><td class="m">y+½, −z, −x+½</td></tr>
+<tr><td>(12)</td><td class="m">−y, −z+½, x+½</td></tr>
+<tr><td>(13)</td><td class="m">y+¾, x+¼, −z+¾</td></tr>
+<tr><td>(14)</td><td class="m">−y+¼, −x+¼, −z+¼</td></tr>
+<tr><td>(15)</td><td class="m">y+¼, −x+¾, z+¾</td></tr>
+<tr><td>(16)</td><td class="m">−y+¾, x+¾, z+¼</td></tr>
+<tr><td>(17)</td><td class="m">x+¾, z+¼, −y+¾</td></tr>
+<tr><td>(18)</td><td class="m">−x+¾, z+¾, y+¼</td></tr>
+<tr><td>(19)</td><td class="m">−x+¼, −z+¼, −y+¼</td></tr>
+<tr><td>(20)</td><td class="m">x+¼, −z+¾, y+¾</td></tr>
+<tr><td>(21)</td><td class="m">z+¾, y+¼, −x+¾</td></tr>
+<tr><td>(22)</td><td class="m">z+¼, −y+¾, x+¾</td></tr>
+<tr><td>(23)</td><td class="m">−z+¾, y+¾, x+¼</td></tr>
+<tr><td>(24)</td><td class="m">−z+¼, −y+¼, −x+¼</td></tr>
+      </tbody></table></div>
+      <h3>Wyckoff positions</h3>
+      <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td class="m">96</td><td class="m"><i>h</i></td><td class="m">1</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (x, y, z) (−x, −y+½, z+½) (−x+½, y+½, −z) (x+½, −y, −z+½) (z, x, y) (z+½, −x, −y+½) (−z, −x+½, y+½) (−z+½, x+½, −y) (y, z, x) (−y+½, z+½, −x) (y+½, −z, −x+½) (−y, −z+½, x+½) (y+¾, x+¼, −z+¾) (−y+¼, −x+¼, −z+¼) (y+¼, −x+¾, z+¾) (−y+¾, x+¾, z+¼) (x+¾, z+¼, −y+¾) (−x+¾, z+¾, y+¼) (−x+¼, −z+¼, −y+¼) (x+¼, −z+¾, y+¾) (z+¾, y+¼, −x+¾) (z+¼, −y+¾, x+¾) (−z+¾, y+¾, x+¼) (−z+¼, −y+¼, −x+¼)</td></tr>
+<tr><td class="m">48</td><td class="m"><i>g</i></td><td class="m">..2</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (⅛, y, −y+¼) (⅞, −y+½, −y+¾) (⅜, y+½, y+¾) (⅝, −y, y+¼) (−y+¼, ⅛, y) (−y+¾, ⅞, −y+½) (y+¾, ⅜, y+½) (y+¼, ⅝, −y) (y, −y+¼, ⅛) (−y+½, −y+¾, ⅞) (y+½, y+¾, ⅜) (−y, y+¼, ⅝)</td></tr>
+<tr><td class="m">48</td><td class="m"><i>f</i></td><td class="m">2..</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (x, 0, 0) (−x, ½, ½) (0, x, 0) (½, −x, ½) (0, 0, x) (½, ½, −x) (¾, x+¼, ¾) (¼, −x+¼, ¼) (x+¾, ¼, ¾) (−x+¾, ¾, ¼) (¾, ¼, −x+¾) (¼, ¾, x+¾)</td></tr>
+<tr><td class="m">32</td><td class="m"><i>e</i></td><td class="m">.3.</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (x, x, x) (−x, −x+½, x+½) (−x+½, x+½, −x) (x+½, −x, −x+½) (x+¾, x+¼, −x+¾) (−x+¼, −x+¼, −x+¼) (x+¼, −x+¾, x+¾) (−x+¾, x+¾, x+¼)</td></tr>
+<tr><td class="m">16</td><td class="m"><i>d</i></td><td class="m">.32</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (⅝, ⅝, ⅝) (⅜, ⅞, ⅛) (⅞, ⅛, ⅜) (⅛, ⅜, ⅞)</td></tr>
+<tr><td class="m">16</td><td class="m"><i>c</i></td><td class="m">.32</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (⅛, ⅛, ⅛) (⅞, ⅜, ⅝) (⅜, ⅝, ⅞) (⅝, ⅞, ⅜)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>b</i></td><td class="m">23.</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (½, ½, ½) (¼, ¾, ¼)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>a</i></td><td class="m">23.</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(0, ½, ½)+&ensp;(½, 0, ½)+&ensp;(½, ½, 0)+</span> (0, 0, 0) (¾, ¼, ¾)</td></tr>
+      </tbody></table></div>
+      <form class="ext" method="post" action="https://cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list" target="_blank">
+        <input type="hidden" name="gnum" value="210">
+        <button type="submit" name="standard" value="Standard/Default Setting">Compare with the Bilbao Crystallographic Server (WYCKPOS) ↗</button>
+      </form>
+      <h3>Related space groups</h3>
+      <p><b>Same crystal class (432):</b> <a href="../207/">207 P432</a>, <a href="../208/">208 P4<sub>2</sub>32</a>, <a href="../209/">209 F432</a>, <a href="../211/">211 I432</a>, <a href="../212/">212 P4<sub>3</sub>32</a>, <a href="../213/">213 P4<sub>1</sub>32</a>, <a href="../214/">214 I4<sub>1</sub>32</a>.</p>
+      <p><b>Neighbouring numbers:</b> <a href="../209/">209 F432</a>, <a href="../211/">211 I432</a>.
+        <a href="../#sys-cubic">All cubic space groups</a> ·
+        <a href="../">Space-group symmetry tutorial</a></p>
+    </section>
 </main>
 
-<noscript><p class="prose" style="padding:24px">This page needs JavaScript for the 3D view.</p></noscript>
-<script id="sg-data" type="application/json">{"number":210,"short":"F4_132","full":"F 4_1 3 2","system":"cubic","pointGroup":"432","choice":"","centrosymmetric":false,"sohncke":true,"polar":false,"example":"","ops":["x,y,z","-x,-y+1/2,z+1/2","-x+1/2,y+1/2,-z","x+1/2,-y,-z+1/2","z,x,y","z+1/2,-x,-y+1/2","-z,-x+1/2,y+1/2","-z+1/2,x+1/2,-y","y,z,x","-y+1/2,z+1/2,-x","y+1/2,-z,-x+1/2","-y,-z+1/2,x+1/2","y+3/4,x+1/4,-z+3/4","-y+1/4,-x+1/4,-z+1/4","y+1/4,-x+3/4,z+3/4","-y+3/4,x+3/4,z+1/4","x+3/4,z+1/4,-y+3/4","-x+3/4,z+3/4,y+1/4","-x+1/4,-z+1/4,-y+1/4","x+1/4,-z+3/4,y+3/4","z+3/4,y+1/4,-x+3/4","z+1/4,-y+3/4,x+3/4","-z+3/4,y+3/4,x+1/4","-z+1/4,-y+1/4,-x+1/4","x,y+1/2,z+1/2","-x,-y+1,z+1","-x+1/2,y+1,-z+1/2","x+1/2,-y+1/2,-z+1","z,x+1/2,y+1/2","z+1/2,-x+1/2,-y+1","-z,-x+1,y+1","-z+1/2,x+1,-y+1/2","y,z+1/2,x+1/2","-y+1/2,z+1,-x+1/2","y+1/2,-z+1/2,-x+1","-y,-z+1,x+1","y+3/4,x+3/4,-z+5/4","-y+1/4,-x+3/4,-z+3/4","y+1/4,-x+5/4,z+5/4","-y+3/4,x+5/4,z+3/4","x+3/4,z+3/4,-y+5/4","-x+3/4,z+5/4,y+3/4","-x+1/4,-z+3/4,-y+3/4","x+1/4,-z+5/4,y+5/4","z+3/4,y+3/4,-x+5/4","z+1/4,-y+5/4,x+5/4","-z+3/4,y+5/4,x+3/4","-z+1/4,-y+3/4,-x+3/4","x+1/2,y,z+1/2","-x+1/2,-y+1/2,z+1","-x+1,y+1/2,-z+1/2","x+1,-y,-z+1","z+1/2,x,y+1/2","z+1,-x,-y+1","-z+1/2,-x+1/2,y+1","-z+1,x+1/2,-y+1/2","y+1/2,z,x+1/2","-y+1,z+1/2,-x+1/2","y+1,-z,-x+1","-y+1/2,-z+1/2,x+1","y+5/4,x+1/4,-z+5/4","-y+3/4,-x+1/4,-z+3/4","y+3/4,-x+3/4,z+5/4","-y+5/4,x+3/4,z+3/4","x+5/4,z+1/4,-y+5/4","-x+5/4,z+3/4,y+3/4","-x+3/4,-z+1/4,-y+3/4","x+3/4,-z+3/4,y+5/4","z+5/4,y+1/4,-x+5/4","z+3/4,-y+3/4,x+5/4","-z+5/4,y+3/4,x+3/4","-z+3/4,-y+1/4,-x+3/4","x+1/2,y+1/2,z","-x+1/2,-y+1,z+1/2","-x+1,y+1,-z","x+1,-y+1/2,-z+1/2","z+1/2,x+1/2,y","z+1,-x+1/2,-y+1/2","-z+1/2,-x+1,y+1/2","-z+1,x+1,-y","y+1/2,z+1/2,x","-y+1,z+1,-x","y+1,-z+1/2,-x+1/2","-y+1/2,-z+1,x+1/2","y+5/4,x+3/4,-z+3/4","-y+3/4,-x+3/4,-z+1/4","y+3/4,-x+5/4,z+3/4","-y+5/4,x+5/4,z+1/4","x+5/4,z+3/4,-y+3/4","-x+5/4,z+5/4,y+1/4","-x+3/4,-z+3/4,-y+1/4","x+3/4,-z+5/4,y+3/4","z+5/4,y+3/4,-x+3/4","z+3/4,-y+5/4,x+3/4","-z+5/4,y+5/4,x+1/4","-z+3/4,-y+3/4,-x+1/4"],"wyckoff":[{"m":96,"l":"h","site":"1","coords":["x,y,z","-x,-y+1/2,z+1/2","-x+1/2,y+1/2,-z","x+1/2,-y,-z+1/2","z,x,y","z+1/2,-x,-y+1/2","-z,-x+1/2,y+1/2","-z+1/2,x+1/2,-y","y,z,x","-y+1/2,z+1/2,-x","y+1/2,-z,-x+1/2","-y,-z+1/2,x+1/2","y+3/4,x+1/4,-z+3/4","-y+1/4,-x+1/4,-z+1/4","y+1/4,-x+3/4,z+3/4","-y+3/4,x+3/4,z+1/4","x+3/4,z+1/4,-y+3/4","-x+3/4,z+3/4,y+1/4","-x+1/4,-z+1/4,-y+1/4","x+1/4,-z+3/4,y+3/4","z+3/4,y+1/4,-x+3/4","z+1/4,-y+3/4,x+3/4","-z+3/4,y+3/4,x+1/4","-z+1/4,-y+1/4,-x+1/4","x,y+1/2,z+1/2","-x,-y+1,z+1","-x+1/2,y+1,-z+1/2","x+1/2,-y+1/2,-z+1","z,x+1/2,y+1/2","z+1/2,-x+1/2,-y+1","-z,-x+1,y+1","-z+1/2,x+1,-y+1/2","y,z+1/2,x+1/2","-y+1/2,z+1,-x+1/2","y+1/2,-z+1/2,-x+1","-y,-z+1,x+1","y+3/4,x+3/4,-z+5/4","-y+1/4,-x+3/4,-z+3/4","y+1/4,-x+5/4,z+5/4","-y+3/4,x+5/4,z+3/4","x+3/4,z+3/4,-y+5/4","-x+3/4,z+5/4,y+3/4","-x+1/4,-z+3/4,-y+3/4","x+1/4,-z+5/4,y+5/4","z+3/4,y+3/4,-x+5/4","z+1/4,-y+5/4,x+5/4","-z+3/4,y+5/4,x+3/4","-z+1/4,-y+3/4,-x+3/4","x+1/2,y,z+1/2","-x+1/2,-y+1/2,z+1","-x+1,y+1/2,-z+1/2","x+1,-y,-z+1","z+1/2,x,y+1/2","z+1,-x,-y+1","-z+1/2,-x+1/2,y+1","-z+1,x+1/2,-y+1/2","y+1/2,z,x+1/2","-y+1,z+1/2,-x+1/2","y+1,-z,-x+1","-y+1/2,-z+1/2,x+1","y+5/4,x+1/4,-z+5/4","-y+3/4,-x+1/4,-z+3/4","y+3/4,-x+3/4,z+5/4","-y+5/4,x+3/4,z+3/4","x+5/4,z+1/4,-y+5/4","-x+5/4,z+3/4,y+3/4","-x+3/4,-z+1/4,-y+3/4","x+3/4,-z+3/4,y+5/4","z+5/4,y+1/4,-x+5/4","z+3/4,-y+3/4,x+5/4","-z+5/4,y+3/4,x+3/4","-z+3/4,-y+1/4,-x+3/4","x+1/2,y+1/2,z","-x+1/2,-y+1,z+1/2","-x+1,y+1,-z","x+1,-y+1/2,-z+1/2","z+1/2,x+1/2,y","z+1,-x+1/2,-y+1/2","-z+1/2,-x+1,y+1/2","-z+1,x+1,-y","y+1/2,z+1/2,x","-y+1,z+1,-x","y+1,-z+1/2,-x+1/2","-y+1/2,-z+1,x+1/2","y+5/4,x+3/4,-z+3/4","-y+3/4,-x+3/4,-z+1/4","y+3/4,-x+5/4,z+3/4","-y+5/4,x+5/4,z+1/4","x+5/4,z+3/4,-y+3/4","-x+5/4,z+5/4,y+1/4","-x+3/4,-z+3/4,-y+1/4","x+3/4,-z+5/4,y+3/4","z+5/4,y+3/4,-x+3/4","z+3/4,-y+5/4,x+3/4","-z+5/4,y+5/4,x+1/4","-z+3/4,-y+3/4,-x+1/4"]},{"m":48,"l":"g","site":"..2","coords":["1/8,y,-y+1/4","7/8,-y+1/2,-y+3/4","3/8,y+1/2,y+3/4","5/8,-y,y+1/4","-y+1/4,1/8,y","-y+3/4,7/8,-y+1/2","y+3/4,3/8,y+1/2","y+1/4,5/8,-y","y,-y+1/4,1/8","-y+1/2,-y+3/4,7/8","y+1/2,y+3/4,3/8","-y,y+1/4,5/8","1/8,y+1/2,-y+3/4","7/8,-y+1,-y+5/4","3/8,y+1,y+5/4","5/8,-y+1/2,y+3/4","-y+1/4,5/8,y+1/2","-y+3/4,11/8,-y+1","y+3/4,7/8,y+1","y+1/4,9/8,-y+1/2","y,-y+3/4,5/8","-y+1/2,-y+5/4,11/8","y+1/2,y+5/4,7/8","-y,y+3/4,9/8","5/8,y,-y+3/4","11/8,-y+1/2,-y+5/4","7/8,y+1/2,y+5/4","9/8,-y,y+3/4","-y+3/4,1/8,y+1/2","-y+5/4,7/8,-y+1","y+5/4,3/8,y+1","y+3/4,5/8,-y+1/2","y+1/2,-y+1/4,5/8","-y+1,-y+3/4,11/8","y+1,y+3/4,7/8","-y+1/2,y+1/4,9/8","5/8,y+1/2,-y+1/4","11/8,-y+1,-y+3/4","7/8,y+1,y+3/4","9/8,-y+1/2,y+1/4","-y+3/4,5/8,y","-y+5/4,11/8,-y+1/2","y+5/4,7/8,y+1/2","y+3/4,9/8,-y","y+1/2,-y+3/4,1/8","-y+1,-y+5/4,7/8","y+1,y+5/4,3/8","-y+1/2,y+3/4,5/8"]},{"m":48,"l":"f","site":"2..","coords":["x,0,0","-x,1/2,1/2","0,x,0","1/2,-x,1/2","0,0,x","1/2,1/2,-x","3/4,x+1/4,3/4","1/4,-x+1/4,1/4","x+3/4,1/4,3/4","-x+3/4,3/4,1/4","3/4,1/4,-x+3/4","1/4,3/4,x+3/4","x,1/2,1/2","-x,1,1","0,x+1/2,1/2","1/2,-x+1/2,1","0,1/2,x+1/2","1/2,1,-x+1/2","3/4,x+3/4,5/4","1/4,-x+3/4,3/4","x+3/4,3/4,5/4","-x+3/4,5/4,3/4","3/4,3/4,-x+5/4","1/4,5/4,x+5/4","x+1/2,0,1/2","-x+1/2,1/2,1","1/2,x,1/2","1,-x,1","1/2,0,x+1/2","1,1/2,-x+1/2","5/4,x+1/4,5/4","3/4,-x+1/4,3/4","x+5/4,1/4,5/4","-x+5/4,3/4,3/4","5/4,1/4,-x+5/4","3/4,3/4,x+5/4","x+1/2,1/2,0","-x+1/2,1,1/2","1/2,x+1/2,0","1,-x+1/2,1/2","1/2,1/2,x","1,1,-x","5/4,x+3/4,3/4","3/4,-x+3/4,1/4","x+5/4,3/4,3/4","-x+5/4,5/4,1/4","5/4,3/4,-x+3/4","3/4,5/4,x+3/4"]},{"m":32,"l":"e","site":".3.","coords":["x,x,x","-x,-x+1/2,x+1/2","-x+1/2,x+1/2,-x","x+1/2,-x,-x+1/2","x+3/4,x+1/4,-x+3/4","-x+1/4,-x+1/4,-x+1/4","x+1/4,-x+3/4,x+3/4","-x+3/4,x+3/4,x+1/4","x,x+1/2,x+1/2","-x,-x+1,x+1","-x+1/2,x+1,-x+1/2","x+1/2,-x+1/2,-x+1","x+3/4,x+3/4,-x+5/4","-x+1/4,-x+3/4,-x+3/4","x+1/4,-x+5/4,x+5/4","-x+3/4,x+5/4,x+3/4","x+1/2,x,x+1/2","-x+1/2,-x+1/2,x+1","-x+1,x+1/2,-x+1/2","x+1,-x,-x+1","x+5/4,x+1/4,-x+5/4","-x+3/4,-x+1/4,-x+3/4","x+3/4,-x+3/4,x+5/4","-x+5/4,x+3/4,x+3/4","x+1/2,x+1/2,x","-x+1/2,-x+1,x+1/2","-x+1,x+1,-x","x+1,-x+1/2,-x+1/2","x+5/4,x+3/4,-x+3/4","-x+3/4,-x+3/4,-x+1/4","x+3/4,-x+5/4,x+3/4","-x+5/4,x+5/4,x+1/4"]},{"m":16,"l":"d","site":".32","coords":["5/8,5/8,5/8","3/8,7/8,1/8","7/8,1/8,3/8","1/8,3/8,7/8","5/8,9/8,9/8","3/8,11/8,5/8","7/8,5/8,7/8","1/8,7/8,11/8","9/8,5/8,9/8","7/8,7/8,5/8","11/8,1/8,7/8","5/8,3/8,11/8","9/8,9/8,5/8","7/8,11/8,1/8","11/8,5/8,3/8","5/8,7/8,7/8"]},{"m":16,"l":"c","site":".32","coords":["1/8,1/8,1/8","7/8,3/8,5/8","3/8,5/8,7/8","5/8,7/8,3/8","1/8,5/8,5/8","7/8,7/8,9/8","3/8,9/8,11/8","5/8,11/8,7/8","5/8,1/8,5/8","11/8,3/8,9/8","7/8,5/8,11/8","9/8,7/8,7/8","5/8,5/8,1/8","11/8,7/8,5/8","7/8,9/8,7/8","9/8,11/8,3/8"]},{"m":8,"l":"b","site":"23.","coords":["1/2,1/2,1/2","1/4,3/4,1/4","1/2,1,1","1/4,5/4,3/4","1,1/2,1","3/4,3/4,3/4","1,1,1/2","3/4,5/4,1/4"]},{"m":8,"l":"a","site":"23.","coords":["0,0,0","3/4,1/4,3/4","0,1/2,1/2","3/4,3/4,5/4","1/2,0,1/2","5/4,1/4,5/4","1/2,1/2,0","5/4,3/4,3/4"]}]}</script>
+<script id="sg-data" type="application/json">{"number":210,"short":"F4_132","full":"F 4_1 3 2","schoenflies":"O^4","system":"cubic","pointGroup":"432","choice":"","centrosymmetric":false,"sohncke":true,"polar":false,"example":"","ops":["x,y,z","-x,-y+1/2,z+1/2","-x+1/2,y+1/2,-z","x+1/2,-y,-z+1/2","z,x,y","z+1/2,-x,-y+1/2","-z,-x+1/2,y+1/2","-z+1/2,x+1/2,-y","y,z,x","-y+1/2,z+1/2,-x","y+1/2,-z,-x+1/2","-y,-z+1/2,x+1/2","y+3/4,x+1/4,-z+3/4","-y+1/4,-x+1/4,-z+1/4","y+1/4,-x+3/4,z+3/4","-y+3/4,x+3/4,z+1/4","x+3/4,z+1/4,-y+3/4","-x+3/4,z+3/4,y+1/4","-x+1/4,-z+1/4,-y+1/4","x+1/4,-z+3/4,y+3/4","z+3/4,y+1/4,-x+3/4","z+1/4,-y+3/4,x+3/4","-z+3/4,y+3/4,x+1/4","-z+1/4,-y+1/4,-x+1/4","x,y+1/2,z+1/2","-x,-y+1,z+1","-x+1/2,y+1,-z+1/2","x+1/2,-y+1/2,-z+1","z,x+1/2,y+1/2","z+1/2,-x+1/2,-y+1","-z,-x+1,y+1","-z+1/2,x+1,-y+1/2","y,z+1/2,x+1/2","-y+1/2,z+1,-x+1/2","y+1/2,-z+1/2,-x+1","-y,-z+1,x+1","y+3/4,x+3/4,-z+5/4","-y+1/4,-x+3/4,-z+3/4","y+1/4,-x+5/4,z+5/4","-y+3/4,x+5/4,z+3/4","x+3/4,z+3/4,-y+5/4","-x+3/4,z+5/4,y+3/4","-x+1/4,-z+3/4,-y+3/4","x+1/4,-z+5/4,y+5/4","z+3/4,y+3/4,-x+5/4","z+1/4,-y+5/4,x+5/4","-z+3/4,y+5/4,x+3/4","-z+1/4,-y+3/4,-x+3/4","x+1/2,y,z+1/2","-x+1/2,-y+1/2,z+1","-x+1,y+1/2,-z+1/2","x+1,-y,-z+1","z+1/2,x,y+1/2","z+1,-x,-y+1","-z+1/2,-x+1/2,y+1","-z+1,x+1/2,-y+1/2","y+1/2,z,x+1/2","-y+1,z+1/2,-x+1/2","y+1,-z,-x+1","-y+1/2,-z+1/2,x+1","y+5/4,x+1/4,-z+5/4","-y+3/4,-x+1/4,-z+3/4","y+3/4,-x+3/4,z+5/4","-y+5/4,x+3/4,z+3/4","x+5/4,z+1/4,-y+5/4","-x+5/4,z+3/4,y+3/4","-x+3/4,-z+1/4,-y+3/4","x+3/4,-z+3/4,y+5/4","z+5/4,y+1/4,-x+5/4","z+3/4,-y+3/4,x+5/4","-z+5/4,y+3/4,x+3/4","-z+3/4,-y+1/4,-x+3/4","x+1/2,y+1/2,z","-x+1/2,-y+1,z+1/2","-x+1,y+1,-z","x+1,-y+1/2,-z+1/2","z+1/2,x+1/2,y","z+1,-x+1/2,-y+1/2","-z+1/2,-x+1,y+1/2","-z+1,x+1,-y","y+1/2,z+1/2,x","-y+1,z+1,-x","y+1,-z+1/2,-x+1/2","-y+1/2,-z+1,x+1/2","y+5/4,x+3/4,-z+3/4","-y+3/4,-x+3/4,-z+1/4","y+3/4,-x+5/4,z+3/4","-y+5/4,x+5/4,z+1/4","x+5/4,z+3/4,-y+3/4","-x+5/4,z+5/4,y+1/4","-x+3/4,-z+3/4,-y+1/4","x+3/4,-z+5/4,y+3/4","z+5/4,y+3/4,-x+3/4","z+3/4,-y+5/4,x+3/4","-z+5/4,y+5/4,x+1/4","-z+3/4,-y+3/4,-x+1/4"],"wyckoff":[{"m":96,"l":"h","site":"1","coords":["x,y,z","-x,-y+1/2,z+1/2","-x+1/2,y+1/2,-z","x+1/2,-y,-z+1/2","z,x,y","z+1/2,-x,-y+1/2","-z,-x+1/2,y+1/2","-z+1/2,x+1/2,-y","y,z,x","-y+1/2,z+1/2,-x","y+1/2,-z,-x+1/2","-y,-z+1/2,x+1/2","y+3/4,x+1/4,-z+3/4","-y+1/4,-x+1/4,-z+1/4","y+1/4,-x+3/4,z+3/4","-y+3/4,x+3/4,z+1/4","x+3/4,z+1/4,-y+3/4","-x+3/4,z+3/4,y+1/4","-x+1/4,-z+1/4,-y+1/4","x+1/4,-z+3/4,y+3/4","z+3/4,y+1/4,-x+3/4","z+1/4,-y+3/4,x+3/4","-z+3/4,y+3/4,x+1/4","-z+1/4,-y+1/4,-x+1/4","x,y+1/2,z+1/2","-x,-y+1,z+1","-x+1/2,y+1,-z+1/2","x+1/2,-y+1/2,-z+1","z,x+1/2,y+1/2","z+1/2,-x+1/2,-y+1","-z,-x+1,y+1","-z+1/2,x+1,-y+1/2","y,z+1/2,x+1/2","-y+1/2,z+1,-x+1/2","y+1/2,-z+1/2,-x+1","-y,-z+1,x+1","y+3/4,x+3/4,-z+5/4","-y+1/4,-x+3/4,-z+3/4","y+1/4,-x+5/4,z+5/4","-y+3/4,x+5/4,z+3/4","x+3/4,z+3/4,-y+5/4","-x+3/4,z+5/4,y+3/4","-x+1/4,-z+3/4,-y+3/4","x+1/4,-z+5/4,y+5/4","z+3/4,y+3/4,-x+5/4","z+1/4,-y+5/4,x+5/4","-z+3/4,y+5/4,x+3/4","-z+1/4,-y+3/4,-x+3/4","x+1/2,y,z+1/2","-x+1/2,-y+1/2,z+1","-x+1,y+1/2,-z+1/2","x+1,-y,-z+1","z+1/2,x,y+1/2","z+1,-x,-y+1","-z+1/2,-x+1/2,y+1","-z+1,x+1/2,-y+1/2","y+1/2,z,x+1/2","-y+1,z+1/2,-x+1/2","y+1,-z,-x+1","-y+1/2,-z+1/2,x+1","y+5/4,x+1/4,-z+5/4","-y+3/4,-x+1/4,-z+3/4","y+3/4,-x+3/4,z+5/4","-y+5/4,x+3/4,z+3/4","x+5/4,z+1/4,-y+5/4","-x+5/4,z+3/4,y+3/4","-x+3/4,-z+1/4,-y+3/4","x+3/4,-z+3/4,y+5/4","z+5/4,y+1/4,-x+5/4","z+3/4,-y+3/4,x+5/4","-z+5/4,y+3/4,x+3/4","-z+3/4,-y+1/4,-x+3/4","x+1/2,y+1/2,z","-x+1/2,-y+1,z+1/2","-x+1,y+1,-z","x+1,-y+1/2,-z+1/2","z+1/2,x+1/2,y","z+1,-x+1/2,-y+1/2","-z+1/2,-x+1,y+1/2","-z+1,x+1,-y","y+1/2,z+1/2,x","-y+1,z+1,-x","y+1,-z+1/2,-x+1/2","-y+1/2,-z+1,x+1/2","y+5/4,x+3/4,-z+3/4","-y+3/4,-x+3/4,-z+1/4","y+3/4,-x+5/4,z+3/4","-y+5/4,x+5/4,z+1/4","x+5/4,z+3/4,-y+3/4","-x+5/4,z+5/4,y+1/4","-x+3/4,-z+3/4,-y+1/4","x+3/4,-z+5/4,y+3/4","z+5/4,y+3/4,-x+3/4","z+3/4,-y+5/4,x+3/4","-z+5/4,y+5/4,x+1/4","-z+3/4,-y+3/4,-x+1/4"]},{"m":48,"l":"g","site":"..2","coords":["1/8,y,-y+1/4","7/8,-y+1/2,-y+3/4","3/8,y+1/2,y+3/4","5/8,-y,y+1/4","-y+1/4,1/8,y","-y+3/4,7/8,-y+1/2","y+3/4,3/8,y+1/2","y+1/4,5/8,-y","y,-y+1/4,1/8","-y+1/2,-y+3/4,7/8","y+1/2,y+3/4,3/8","-y,y+1/4,5/8","1/8,y+1/2,-y+3/4","7/8,-y+1,-y+5/4","3/8,y+1,y+5/4","5/8,-y+1/2,y+3/4","-y+1/4,5/8,y+1/2","-y+3/4,11/8,-y+1","y+3/4,7/8,y+1","y+1/4,9/8,-y+1/2","y,-y+3/4,5/8","-y+1/2,-y+5/4,11/8","y+1/2,y+5/4,7/8","-y,y+3/4,9/8","5/8,y,-y+3/4","11/8,-y+1/2,-y+5/4","7/8,y+1/2,y+5/4","9/8,-y,y+3/4","-y+3/4,1/8,y+1/2","-y+5/4,7/8,-y+1","y+5/4,3/8,y+1","y+3/4,5/8,-y+1/2","y+1/2,-y+1/4,5/8","-y+1,-y+3/4,11/8","y+1,y+3/4,7/8","-y+1/2,y+1/4,9/8","5/8,y+1/2,-y+1/4","11/8,-y+1,-y+3/4","7/8,y+1,y+3/4","9/8,-y+1/2,y+1/4","-y+3/4,5/8,y","-y+5/4,11/8,-y+1/2","y+5/4,7/8,y+1/2","y+3/4,9/8,-y","y+1/2,-y+3/4,1/8","-y+1,-y+5/4,7/8","y+1,y+5/4,3/8","-y+1/2,y+3/4,5/8"]},{"m":48,"l":"f","site":"2..","coords":["x,0,0","-x,1/2,1/2","0,x,0","1/2,-x,1/2","0,0,x","1/2,1/2,-x","3/4,x+1/4,3/4","1/4,-x+1/4,1/4","x+3/4,1/4,3/4","-x+3/4,3/4,1/4","3/4,1/4,-x+3/4","1/4,3/4,x+3/4","x,1/2,1/2","-x,1,1","0,x+1/2,1/2","1/2,-x+1/2,1","0,1/2,x+1/2","1/2,1,-x+1/2","3/4,x+3/4,5/4","1/4,-x+3/4,3/4","x+3/4,3/4,5/4","-x+3/4,5/4,3/4","3/4,3/4,-x+5/4","1/4,5/4,x+5/4","x+1/2,0,1/2","-x+1/2,1/2,1","1/2,x,1/2","1,-x,1","1/2,0,x+1/2","1,1/2,-x+1/2","5/4,x+1/4,5/4","3/4,-x+1/4,3/4","x+5/4,1/4,5/4","-x+5/4,3/4,3/4","5/4,1/4,-x+5/4","3/4,3/4,x+5/4","x+1/2,1/2,0","-x+1/2,1,1/2","1/2,x+1/2,0","1,-x+1/2,1/2","1/2,1/2,x","1,1,-x","5/4,x+3/4,3/4","3/4,-x+3/4,1/4","x+5/4,3/4,3/4","-x+5/4,5/4,1/4","5/4,3/4,-x+3/4","3/4,5/4,x+3/4"]},{"m":32,"l":"e","site":".3.","coords":["x,x,x","-x,-x+1/2,x+1/2","-x+1/2,x+1/2,-x","x+1/2,-x,-x+1/2","x+3/4,x+1/4,-x+3/4","-x+1/4,-x+1/4,-x+1/4","x+1/4,-x+3/4,x+3/4","-x+3/4,x+3/4,x+1/4","x,x+1/2,x+1/2","-x,-x+1,x+1","-x+1/2,x+1,-x+1/2","x+1/2,-x+1/2,-x+1","x+3/4,x+3/4,-x+5/4","-x+1/4,-x+3/4,-x+3/4","x+1/4,-x+5/4,x+5/4","-x+3/4,x+5/4,x+3/4","x+1/2,x,x+1/2","-x+1/2,-x+1/2,x+1","-x+1,x+1/2,-x+1/2","x+1,-x,-x+1","x+5/4,x+1/4,-x+5/4","-x+3/4,-x+1/4,-x+3/4","x+3/4,-x+3/4,x+5/4","-x+5/4,x+3/4,x+3/4","x+1/2,x+1/2,x","-x+1/2,-x+1,x+1/2","-x+1,x+1,-x","x+1,-x+1/2,-x+1/2","x+5/4,x+3/4,-x+3/4","-x+3/4,-x+3/4,-x+1/4","x+3/4,-x+5/4,x+3/4","-x+5/4,x+5/4,x+1/4"]},{"m":16,"l":"d","site":".32","coords":["5/8,5/8,5/8","3/8,7/8,1/8","7/8,1/8,3/8","1/8,3/8,7/8","5/8,9/8,9/8","3/8,11/8,5/8","7/8,5/8,7/8","1/8,7/8,11/8","9/8,5/8,9/8","7/8,7/8,5/8","11/8,1/8,7/8","5/8,3/8,11/8","9/8,9/8,5/8","7/8,11/8,1/8","11/8,5/8,3/8","5/8,7/8,7/8"]},{"m":16,"l":"c","site":".32","coords":["1/8,1/8,1/8","7/8,3/8,5/8","3/8,5/8,7/8","5/8,7/8,3/8","1/8,5/8,5/8","7/8,7/8,9/8","3/8,9/8,11/8","5/8,11/8,7/8","5/8,1/8,5/8","11/8,3/8,9/8","7/8,5/8,11/8","9/8,7/8,7/8","5/8,5/8,1/8","11/8,7/8,5/8","7/8,9/8,7/8","9/8,11/8,3/8"]},{"m":8,"l":"b","site":"23.","coords":["1/2,1/2,1/2","1/4,3/4,1/4","1/2,1,1","1/4,5/4,3/4","1,1/2,1","3/4,3/4,3/4","1,1,1/2","3/4,5/4,1/4"]},{"m":8,"l":"a","site":"23.","coords":["0,0,0","3/4,1/4,3/4","0,1/2,1/2","3/4,3/4,5/4","1/2,0,1/2","5/4,1/4,5/4","1/2,1/2,0","5/4,3/4,3/4"]}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="../sg-core.js"></script>

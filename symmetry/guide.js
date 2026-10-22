@@ -436,21 +436,8 @@
   // Browser of the 230 groups
   // ======================================================================
   (function browse() {
-    const idx = window.SG_INDEX || [];
-    const SYSTEMS = ['triclinic', 'monoclinic', 'orthorhombic', 'tetragonal', 'trigonal', 'hexagonal', 'cubic'];
+    // The list itself is static HTML written by scripts/build_symmetry.py; this only filters it.
     const host = $('#browse');
-    host.innerHTML = SYSTEMS.map(sys => {
-      const gs = idx.filter(g => g.sys === sys);
-      const pgs = [...new Set(gs.map(g => g.pg))];
-      return `<section class="sys-block" data-sys="${sys}">
-        <h3>${sys[0].toUpperCase() + sys.slice(1)} <span class="muted">${gs[0].n}–${gs[gs.length - 1].n}</span></h3>
-        ${pgs.map(pg => `<div class="pg-row"><span class="pg m" title="Point group">${C.hmHTML(pg)}</span><div class="items">${
-          gs.filter(g => g.pg === pg).map(g => `<a href="${g.n}/" data-q="${g.n} ${g.s.replace(/_/g, '')} ${g.f} ${g.ex}" data-c="${g.c}" data-k="${g.k}" title="${g.ex || ''}"><span class="no">${g.n}</span><span>${C.hmHTML(g.s)}</span></a>`).join('')
-        }</div></div>`).join('')}
-      </section>`;
-    }).join('');
-    host.querySelectorAll('a').forEach(a => { a.dataset.q = a.dataset.q.toLowerCase(); });
-
     function filter() {
       const q = $('#q').value.trim().toLowerCase().replace(/_/g, ''), fc = $('#fC').checked, fk = $('#fK').checked;
       let n = 0;

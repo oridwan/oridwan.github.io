@@ -4,8 +4,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pc (No. 7) · Space groups · Osman Goni Ridwan</title>
-  <meta name="description" content="Space group Pc (No. 7), monoclinic: symmetry operations, symmetry elements and Wyckoff positions, shown step by step in 3D.">
+  <title>Space group 7 (Pc): Wyckoff positions and symmetry operations</title>
+  <meta name="description" content="Space group 7, Pc (full symbol P 1 c 1): monoclinic, point group m. Interactive 3D view of its 2 symmetry operations and 1 Wyckoff positions.">
+  <meta name="author" content="Osman Goni Ridwan">
+  <link rel="canonical" href="https://oridwan.github.io/symmetry/7/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Space group 7 (Pc): Wyckoff positions and symmetry operations">
+  <meta property="og:description" content="Space group 7, Pc (full symbol P 1 c 1): monoclinic, point group m. Interactive 3D view of its 2 symmetry operations and 1 Wyckoff positions.">
+  <meta property="og:url" content="https://oridwan.github.io/symmetry/7/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Space group 7 (Pc): Wyckoff positions and symmetry operations">
+  <meta name="twitter:description" content="Space group 7, Pc (full symbol P 1 c 1): monoclinic, point group m. Interactive 3D view of its 2 symmetry operations and 1 Wyckoff positions.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <script type="application/ld+json">[
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Space groups",
+    "item": "https://oridwan.github.io/symmetry/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "No. 7 Pc",
+    "item": "https://oridwan.github.io/symmetry/7/"
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Space group 7 (Pc): Wyckoff positions and symmetry operations",
+  "description": "Space group 7, Pc (full symbol P 1 c 1): monoclinic, point group m. Interactive 3D view of its 2 symmetry operations and 1 Wyckoff positions.",
+  "url": "https://oridwan.github.io/symmetry/7/",
+  "learningResourceType": "interactive resource",
+  "educationalLevel": "university",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": {
+   "@type": "Person",
+   "name": "Osman Goni Ridwan",
+   "url": "https://oridwan.github.io/"
+  },
+  "about": {
+   "@type": "Thing",
+   "name": "Space group Pc"
+  },
+  "isPartOf": {
+   "@type": "LearningResource",
+   "name": "Space-group symmetry",
+   "url": "https://oridwan.github.io/symmetry/"
+  }
+ }
+]</script>
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,40 +76,76 @@
   <div class="sym-top-in">
     <a class="brand" href="../../">Osman Goni Ridwan</a>
     <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><span>No. 7</span></nav>
-    <nav class="group-nav" id="groupNav" aria-label="Neighbouring groups"></nav>
+    <nav class="group-nav" aria-label="Neighbouring groups"><a href="../6/" rel="prev">← 6 Pm</a><a href="../8/" rel="next">8 Cm →</a></nav>
   </div>
 </header>
 
 <main class="group" id="main">
-  <section class="group-head" id="groupHead"></section>
+  <section class="group-head">
+      <h1><span class="no">Space group 7</span>Pc</h1>
+      <dl class="head-facts">
+        <div><dt>Full symbol</dt><dd>P 1 c 1</dd></div>
+        <div><dt>Crystal system</dt><dd>monoclinic</dd></div>
+        <div><dt>Point group</dt><dd>m</dd></div>
+        <div><dt>Schoenflies</dt><dd>C<sub>s</sub><sup>2</sup></dd></div>
+        <div><dt>Operations</dt><dd>2</dd></div>
+        <div><dt>Wyckoff positions</dt><dd>1</dd></div>
+      </dl>
+  </section>
 
   <div class="group-body">
     <section class="stage" aria-label="3D view">
       <div id="viewer"></div>
       <div class="atom-panel" id="atomPanel" hidden>
         <div class="sliders">
-          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0"><output></output></label>
-          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1"><output></output></label>
-          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2"><output></output></label>
+          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0" aria-label="x coordinate"><output></output></label>
+          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1" aria-label="y coordinate"><output></output></label>
+          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2" aria-label="z coordinate"><output></output></label>
         </div>
         <p class="status" id="status"></p>
       </div>
       <p class="legend" id="legend"></p>
     </section>
 
-    <section class="lesson" aria-label="Lesson">
+    <section class="lesson" aria-label="Step-by-step walk-through">
       <ol class="toc-steps" id="steps"></ol>
-      <article class="step prose" id="step" tabindex="-1"></article>
+      <article class="step prose" id="step" tabindex="-1">
+        <noscript><p>The interactive walk-through needs JavaScript. The reference tables below work without it.</p></noscript>
+      </article>
       <nav class="step-nav">
-        <button type="button" id="prev"></button>
-        <button type="button" id="next"></button>
+        <button type="button" id="prev" hidden></button>
+        <button type="button" id="next" hidden></button>
       </nav>
     </section>
   </div>
+
+  <section class="group-ref prose" id="reference">
+      <h2>Pc at a glance</h2>
+      <p class="summary">Pc (No. 7; full symbol P 1 c 1; Schoenflies symbol C<sub>s</sub><sup>2</sup>) is a monoclinic space group in the crystal class m. Its lattice is primitive. It is non-centrosymmetric, and it is polar. A general point has 2 equivalent positions per conventional cell. It has a single Wyckoff position, the general position 2<i>a</i>. The symbol is also written Pc, P1c1.</p>
+      <h3>Symmetry operations</h3>
+      <p>Coordinate triplets of the general position in the standard setting.</p>
+      
+      <div class="scroll-x"><table class="tbl ops"><thead><tr><th></th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td>(1)</td><td class="m">x, y, z</td></tr>
+<tr><td>(2)</td><td class="m">x, −y, z+½</td></tr>
+      </tbody></table></div>
+      <h3>Wyckoff positions</h3>
+      <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td class="m">2</td><td class="m"><i>a</i></td><td class="m">1</td><td class="m coords">(x, y, z) (x, −y, z+½)</td></tr>
+      </tbody></table></div>
+      <form class="ext" method="post" action="https://cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list" target="_blank">
+        <input type="hidden" name="gnum" value="7">
+        <button type="submit" name="standard" value="Standard/Default Setting">Compare with the Bilbao Crystallographic Server (WYCKPOS) ↗</button>
+      </form>
+      <h3>Related space groups</h3>
+      <p><b>Same crystal class (m):</b> <a href="../6/">6 Pm</a>, <a href="../8/">8 Cm</a>, <a href="../9/">9 Cc</a>.</p>
+      <p><b>Neighbouring numbers:</b> <a href="../6/">6 Pm</a>, <a href="../8/">8 Cm</a>.
+        <a href="../#sys-monoclinic">All monoclinic space groups</a> ·
+        <a href="../">Space-group symmetry tutorial</a></p>
+    </section>
 </main>
 
-<noscript><p class="prose" style="padding:24px">This page needs JavaScript for the 3D view.</p></noscript>
-<script id="sg-data" type="application/json">{"number":7,"short":"Pc","full":"P 1 c 1","system":"monoclinic","pointGroup":"m","choice":"b1","centrosymmetric":false,"sohncke":false,"polar":true,"example":"","ops":["x,y,z","x,-y,z+1/2"],"wyckoff":[{"m":2,"l":"a","site":"1","coords":["x,y,z","x,-y,z+1/2"]}]}</script>
+<script id="sg-data" type="application/json">{"number":7,"short":"Pc","full":"P 1 c 1","schoenflies":"Cs^2","system":"monoclinic","pointGroup":"m","choice":"b1","centrosymmetric":false,"sohncke":false,"polar":true,"example":"","ops":["x,y,z","x,-y,z+1/2"],"wyckoff":[{"m":2,"l":"a","site":"1","coords":["x,y,z","x,-y,z+1/2"]}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="../sg-core.js"></script>

@@ -4,8 +4,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>R-3m (No. 166) · Space groups · Osman Goni Ridwan</title>
-  <meta name="description" content="Space group R-3m (No. 166), trigonal: symmetry operations, symmetry elements and Wyckoff positions, shown step by step in 3D.">
+  <title>Space group 166 (R-3m): Wyckoff positions and symmetry operations</title>
+  <meta name="description" content="Space group 166, R-3m, R3m (full symbol R -3 2/m): trigonal, point group -3m. Examples: Bi₂Te₃, Bi₂Se₃; LiCoO₂; bismuth and antimony. Interactive 3D view of its 36 symmetry operations and 9 Wyckoff positions.">
+  <meta name="author" content="Osman Goni Ridwan">
+  <link rel="canonical" href="https://oridwan.github.io/symmetry/166/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Space group 166 (R-3m): Wyckoff positions and symmetry operations">
+  <meta property="og:description" content="Space group 166, R-3m, R3m (full symbol R -3 2/m): trigonal, point group -3m. Examples: Bi₂Te₃, Bi₂Se₃; LiCoO₂; bismuth and antimony. Interactive 3D view of its 36 symmetry operations and 9 Wyckoff positions.">
+  <meta property="og:url" content="https://oridwan.github.io/symmetry/166/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Space group 166 (R-3m): Wyckoff positions and symmetry operations">
+  <meta name="twitter:description" content="Space group 166, R-3m, R3m (full symbol R -3 2/m): trigonal, point group -3m. Examples: Bi₂Te₃, Bi₂Se₃; LiCoO₂; bismuth and antimony. Interactive 3D view of its 36 symmetry operations and 9 Wyckoff positions.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <script type="application/ld+json">[
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Space groups",
+    "item": "https://oridwan.github.io/symmetry/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "No. 166 R-3m",
+    "item": "https://oridwan.github.io/symmetry/166/"
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Space group 166 (R-3m): Wyckoff positions and symmetry operations",
+  "description": "Space group 166, R-3m, R3m (full symbol R -3 2/m): trigonal, point group -3m. Examples: Bi₂Te₃, Bi₂Se₃; LiCoO₂; bismuth and antimony. Interactive 3D view of its 36 symmetry operations and 9 Wyckoff positions.",
+  "url": "https://oridwan.github.io/symmetry/166/",
+  "learningResourceType": "interactive resource",
+  "educationalLevel": "university",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": {
+   "@type": "Person",
+   "name": "Osman Goni Ridwan",
+   "url": "https://oridwan.github.io/"
+  },
+  "about": {
+   "@type": "Thing",
+   "name": "Space group R-3m"
+  },
+  "isPartOf": {
+   "@type": "LearningResource",
+   "name": "Space-group symmetry",
+   "url": "https://oridwan.github.io/symmetry/"
+  }
+ }
+]</script>
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,40 +76,94 @@
   <div class="sym-top-in">
     <a class="brand" href="../../">Osman Goni Ridwan</a>
     <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><span>No. 166</span></nav>
-    <nav class="group-nav" id="groupNav" aria-label="Neighbouring groups"></nav>
+    <nav class="group-nav" aria-label="Neighbouring groups"><a href="../165/" rel="prev">← 165 P<span class="ob">3</span>c1</a><a href="../167/" rel="next">167 R<span class="ob">3</span>c →</a></nav>
   </div>
 </header>
 
 <main class="group" id="main">
-  <section class="group-head" id="groupHead"></section>
+  <section class="group-head">
+      <h1><span class="no">Space group 166</span>R<span class="ob">3</span>m</h1>
+      <dl class="head-facts">
+        <div><dt>Full symbol</dt><dd>R <span class="ob">3</span> 2/m</dd></div>
+        <div><dt>Crystal system</dt><dd>trigonal</dd></div>
+        <div><dt>Point group</dt><dd><span class="ob">3</span>m</dd></div>
+        <div><dt>Schoenflies</dt><dd>D<sub>3d</sub><sup>5</sup></dd></div>
+        <div><dt>Operations</dt><dd>36</dd></div>
+        <div><dt>Wyckoff positions</dt><dd>9</dd></div>
+      </dl>
+  </section>
 
   <div class="group-body">
     <section class="stage" aria-label="3D view">
       <div id="viewer"></div>
       <div class="atom-panel" id="atomPanel" hidden>
         <div class="sliders">
-          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0"><output></output></label>
-          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1"><output></output></label>
-          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2"><output></output></label>
+          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0" aria-label="x coordinate"><output></output></label>
+          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1" aria-label="y coordinate"><output></output></label>
+          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2" aria-label="z coordinate"><output></output></label>
         </div>
         <p class="status" id="status"></p>
       </div>
       <p class="legend" id="legend"></p>
     </section>
 
-    <section class="lesson" aria-label="Lesson">
+    <section class="lesson" aria-label="Step-by-step walk-through">
       <ol class="toc-steps" id="steps"></ol>
-      <article class="step prose" id="step" tabindex="-1"></article>
+      <article class="step prose" id="step" tabindex="-1">
+        <noscript><p>The interactive walk-through needs JavaScript. The reference tables below work without it.</p></noscript>
+      </article>
       <nav class="step-nav">
-        <button type="button" id="prev"></button>
-        <button type="button" id="next"></button>
+        <button type="button" id="prev" hidden></button>
+        <button type="button" id="next" hidden></button>
       </nav>
     </section>
   </div>
+
+  <section class="group-ref prose" id="reference">
+      <h2>R<span class="ob">3</span>m at a glance</h2>
+      <p class="summary">R<span class="ob">3</span>m (No. 166; full symbol R <span class="ob">3</span> 2/m; Schoenflies symbol D<sub>3d</sub><sup>5</sup>) is a trigonal space group in the crystal class <span class="ob">3</span>m. Its lattice is rhombohedral (R), described here in hexagonal axes. It is centrosymmetric. A general point has 36 equivalent positions per conventional cell (12 for each of the 3 lattice points). There are 9 Wyckoff positions, from 3<i>a</i> (site symmetry <span class="ob">3</span>m) to the general position 36<i>i</i>. The symbol is also written R-3m, R3m, R-32/m. Examples: Bi₂Te₃, Bi₂Se₃; LiCoO₂; bismuth and antimony.</p>
+      <h3>Symmetry operations</h3>
+      <p>Coordinate triplets of the general position in the standard setting (listed once; add each centring vector).</p>
+      <p class="m">(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</p>
+      <div class="scroll-x"><table class="tbl ops"><thead><tr><th></th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td>(1)</td><td class="m">x, y, z</td></tr>
+<tr><td>(2)</td><td class="m">−y, x−y, z</td></tr>
+<tr><td>(3)</td><td class="m">−x+y, −x, z</td></tr>
+<tr><td>(4)</td><td class="m">y, x, −z</td></tr>
+<tr><td>(5)</td><td class="m">x−y, −y, −z</td></tr>
+<tr><td>(6)</td><td class="m">−x, −x+y, −z</td></tr>
+<tr><td>(7)</td><td class="m">−x, −y, −z</td></tr>
+<tr><td>(8)</td><td class="m">y, −x+y, −z</td></tr>
+<tr><td>(9)</td><td class="m">x−y, x, −z</td></tr>
+<tr><td>(10)</td><td class="m">−y, −x, z</td></tr>
+<tr><td>(11)</td><td class="m">−x+y, y, z</td></tr>
+<tr><td>(12)</td><td class="m">x, x−y, z</td></tr>
+      </tbody></table></div>
+      <h3>Wyckoff positions</h3>
+      <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td class="m">36</td><td class="m"><i>i</i></td><td class="m">1</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (x, y, z) (−y, x−y, z) (−x+y, −x, z) (y, x, −z) (x−y, −y, −z) (−x, −x+y, −z) (−x, −y, −z) (y, −x+y, −z) (x−y, x, −z) (−y, −x, z) (−x+y, y, z) (x, x−y, z)</td></tr>
+<tr><td class="m">18</td><td class="m"><i>h</i></td><td class="m">.m</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (x, −x, z) (x, 2x, z) (−2x, −x, z) (−x, x, −z) (2x, x, −z) (−x, −2x, −z)</td></tr>
+<tr><td class="m">18</td><td class="m"><i>g</i></td><td class="m">.2</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (x, 0, ½) (0, x, ½) (−x, −x, ½) (−x, 0, ½) (0, −x, ½) (x, x, ½)</td></tr>
+<tr><td class="m">18</td><td class="m"><i>f</i></td><td class="m">.2</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (x, 0, 0) (0, x, 0) (−x, −x, 0) (−x, 0, 0) (0, −x, 0) (x, x, 0)</td></tr>
+<tr><td class="m">9</td><td class="m"><i>e</i></td><td class="m">.2/m</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (½, 0, 0) (0, ½, 0) (½, ½, 0)</td></tr>
+<tr><td class="m">9</td><td class="m"><i>d</i></td><td class="m">.2/m</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (½, 0, ½) (0, ½, ½) (½, ½, ½)</td></tr>
+<tr><td class="m">6</td><td class="m"><i>c</i></td><td class="m">3m</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (0, 0, z) (0, 0, −z)</td></tr>
+<tr><td class="m">3</td><td class="m"><i>b</i></td><td class="m"><span class="ob">3</span>m</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (0, 0, ½)</td></tr>
+<tr><td class="m">3</td><td class="m"><i>a</i></td><td class="m"><span class="ob">3</span>m</td><td class="m coords"><span class=cent>(0, 0, 0)+&ensp;(⅔, ⅓, ⅓)+&ensp;(⅓, ⅔, ⅔)+</span> (0, 0, 0)</td></tr>
+      </tbody></table></div>
+      <form class="ext" method="post" action="https://cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list" target="_blank">
+        <input type="hidden" name="gnum" value="166">
+        <button type="submit" name="standard" value="Standard/Default Setting">Compare with the Bilbao Crystallographic Server (WYCKPOS) ↗</button>
+      </form>
+      <h3>Related space groups</h3>
+      <p><b>Same crystal class (<span class="ob">3</span>m):</b> <a href="../162/">162 P<span class="ob">3</span>1m</a>, <a href="../163/">163 P<span class="ob">3</span>1c</a>, <a href="../164/">164 P<span class="ob">3</span>m1</a>, <a href="../165/">165 P<span class="ob">3</span>c1</a>, <a href="../167/">167 R<span class="ob">3</span>c</a>.</p>
+      <p><b>Neighbouring numbers:</b> <a href="../165/">165 P<span class="ob">3</span>c1</a>, <a href="../167/">167 R<span class="ob">3</span>c</a>.
+        <a href="../#sys-trigonal">All trigonal space groups</a> ·
+        <a href="../">Space-group symmetry tutorial</a></p>
+    </section>
 </main>
 
-<noscript><p class="prose" style="padding:24px">This page needs JavaScript for the 3D view.</p></noscript>
-<script id="sg-data" type="application/json">{"number":166,"short":"R-3m","full":"R -3 2/m","system":"trigonal","pointGroup":"-3m","choice":"H","centrosymmetric":true,"sohncke":false,"polar":false,"example":"Bi₂Te₃, Bi₂Se₃","ops":["x,y,z","-y,x-y,z","-x+y,-x,z","y,x,-z","x-y,-y,-z","-x,-x+y,-z","-x,-y,-z","y,-x+y,-z","x-y,x,-z","-y,-x,z","-x+y,y,z","x,x-y,z","x+2/3,y+1/3,z+1/3","-y+2/3,x-y+1/3,z+1/3","-x+y+2/3,-x+1/3,z+1/3","y+2/3,x+1/3,-z+1/3","x-y+2/3,-y+1/3,-z+1/3","-x+2/3,-x+y+1/3,-z+1/3","-x+2/3,-y+1/3,-z+1/3","y+2/3,-x+y+1/3,-z+1/3","x-y+2/3,x+1/3,-z+1/3","-y+2/3,-x+1/3,z+1/3","-x+y+2/3,y+1/3,z+1/3","x+2/3,x-y+1/3,z+1/3","x+1/3,y+2/3,z+2/3","-y+1/3,x-y+2/3,z+2/3","-x+y+1/3,-x+2/3,z+2/3","y+1/3,x+2/3,-z+2/3","x-y+1/3,-y+2/3,-z+2/3","-x+1/3,-x+y+2/3,-z+2/3","-x+1/3,-y+2/3,-z+2/3","y+1/3,-x+y+2/3,-z+2/3","x-y+1/3,x+2/3,-z+2/3","-y+1/3,-x+2/3,z+2/3","-x+y+1/3,y+2/3,z+2/3","x+1/3,x-y+2/3,z+2/3"],"wyckoff":[{"m":36,"l":"i","site":"1","coords":["x,y,z","-y,x-y,z","-x+y,-x,z","y,x,-z","x-y,-y,-z","-x,-x+y,-z","-x,-y,-z","y,-x+y,-z","x-y,x,-z","-y,-x,z","-x+y,y,z","x,x-y,z","x+2/3,y+1/3,z+1/3","-y+2/3,x-y+1/3,z+1/3","-x+y+2/3,-x+1/3,z+1/3","y+2/3,x+1/3,-z+1/3","x-y+2/3,-y+1/3,-z+1/3","-x+2/3,-x+y+1/3,-z+1/3","-x+2/3,-y+1/3,-z+1/3","y+2/3,-x+y+1/3,-z+1/3","x-y+2/3,x+1/3,-z+1/3","-y+2/3,-x+1/3,z+1/3","-x+y+2/3,y+1/3,z+1/3","x+2/3,x-y+1/3,z+1/3","x+1/3,y+2/3,z+2/3","-y+1/3,x-y+2/3,z+2/3","-x+y+1/3,-x+2/3,z+2/3","y+1/3,x+2/3,-z+2/3","x-y+1/3,-y+2/3,-z+2/3","-x+1/3,-x+y+2/3,-z+2/3","-x+1/3,-y+2/3,-z+2/3","y+1/3,-x+y+2/3,-z+2/3","x-y+1/3,x+2/3,-z+2/3","-y+1/3,-x+2/3,z+2/3","-x+y+1/3,y+2/3,z+2/3","x+1/3,x-y+2/3,z+2/3"]},{"m":18,"l":"h","site":".m","coords":["x,-x,z","x,2x,z","-2x,-x,z","-x,x,-z","2x,x,-z","-x,-2x,-z","x+2/3,-x+1/3,z+1/3","x+2/3,2x+1/3,z+1/3","-2x+2/3,-x+1/3,z+1/3","-x+2/3,x+1/3,-z+1/3","2x+2/3,x+1/3,-z+1/3","-x+2/3,-2x+1/3,-z+1/3","x+1/3,-x+2/3,z+2/3","x+1/3,2x+2/3,z+2/3","-2x+1/3,-x+2/3,z+2/3","-x+1/3,x+2/3,-z+2/3","2x+1/3,x+2/3,-z+2/3","-x+1/3,-2x+2/3,-z+2/3"]},{"m":18,"l":"g","site":".2","coords":["x,0,1/2","0,x,1/2","-x,-x,1/2","-x,0,1/2","0,-x,1/2","x,x,1/2","x+2/3,1/3,5/6","2/3,x+1/3,5/6","-x+2/3,-x+1/3,5/6","-x+2/3,1/3,5/6","2/3,-x+1/3,5/6","x+2/3,x+1/3,5/6","x+1/3,2/3,7/6","1/3,x+2/3,7/6","-x+1/3,-x+2/3,7/6","-x+1/3,2/3,7/6","1/3,-x+2/3,7/6","x+1/3,x+2/3,7/6"]},{"m":18,"l":"f","site":".2","coords":["x,0,0","0,x,0","-x,-x,0","-x,0,0","0,-x,0","x,x,0","x+2/3,1/3,1/3","2/3,x+1/3,1/3","-x+2/3,-x+1/3,1/3","-x+2/3,1/3,1/3","2/3,-x+1/3,1/3","x+2/3,x+1/3,1/3","x+1/3,2/3,2/3","1/3,x+2/3,2/3","-x+1/3,-x+2/3,2/3","-x+1/3,2/3,2/3","1/3,-x+2/3,2/3","x+1/3,x+2/3,2/3"]},{"m":9,"l":"e","site":".2/m","coords":["1/2,0,0","0,1/2,0","1/2,1/2,0","7/6,1/3,1/3","2/3,5/6,1/3","7/6,5/6,1/3","5/6,2/3,2/3","1/3,7/6,2/3","5/6,7/6,2/3"]},{"m":9,"l":"d","site":".2/m","coords":["1/2,0,1/2","0,1/2,1/2","1/2,1/2,1/2","7/6,1/3,5/6","2/3,5/6,5/6","7/6,5/6,5/6","5/6,2/3,7/6","1/3,7/6,7/6","5/6,7/6,7/6"]},{"m":6,"l":"c","site":"3m","coords":["0,0,z","0,0,-z","2/3,1/3,z+1/3","2/3,1/3,-z+1/3","1/3,2/3,z+2/3","1/3,2/3,-z+2/3"]},{"m":3,"l":"b","site":"-3m","coords":["0,0,1/2","2/3,1/3,5/6","1/3,2/3,7/6"]},{"m":3,"l":"a","site":"-3m","coords":["0,0,0","2/3,1/3,1/3","1/3,2/3,2/3"]}]}</script>
+<script id="sg-data" type="application/json">{"number":166,"short":"R-3m","full":"R -3 2/m","schoenflies":"D3d^5","system":"trigonal","pointGroup":"-3m","choice":"H","centrosymmetric":true,"sohncke":false,"polar":false,"example":"Bi₂Te₃, Bi₂Se₃; LiCoO₂; bismuth and antimony","ops":["x,y,z","-y,x-y,z","-x+y,-x,z","y,x,-z","x-y,-y,-z","-x,-x+y,-z","-x,-y,-z","y,-x+y,-z","x-y,x,-z","-y,-x,z","-x+y,y,z","x,x-y,z","x+2/3,y+1/3,z+1/3","-y+2/3,x-y+1/3,z+1/3","-x+y+2/3,-x+1/3,z+1/3","y+2/3,x+1/3,-z+1/3","x-y+2/3,-y+1/3,-z+1/3","-x+2/3,-x+y+1/3,-z+1/3","-x+2/3,-y+1/3,-z+1/3","y+2/3,-x+y+1/3,-z+1/3","x-y+2/3,x+1/3,-z+1/3","-y+2/3,-x+1/3,z+1/3","-x+y+2/3,y+1/3,z+1/3","x+2/3,x-y+1/3,z+1/3","x+1/3,y+2/3,z+2/3","-y+1/3,x-y+2/3,z+2/3","-x+y+1/3,-x+2/3,z+2/3","y+1/3,x+2/3,-z+2/3","x-y+1/3,-y+2/3,-z+2/3","-x+1/3,-x+y+2/3,-z+2/3","-x+1/3,-y+2/3,-z+2/3","y+1/3,-x+y+2/3,-z+2/3","x-y+1/3,x+2/3,-z+2/3","-y+1/3,-x+2/3,z+2/3","-x+y+1/3,y+2/3,z+2/3","x+1/3,x-y+2/3,z+2/3"],"wyckoff":[{"m":36,"l":"i","site":"1","coords":["x,y,z","-y,x-y,z","-x+y,-x,z","y,x,-z","x-y,-y,-z","-x,-x+y,-z","-x,-y,-z","y,-x+y,-z","x-y,x,-z","-y,-x,z","-x+y,y,z","x,x-y,z","x+2/3,y+1/3,z+1/3","-y+2/3,x-y+1/3,z+1/3","-x+y+2/3,-x+1/3,z+1/3","y+2/3,x+1/3,-z+1/3","x-y+2/3,-y+1/3,-z+1/3","-x+2/3,-x+y+1/3,-z+1/3","-x+2/3,-y+1/3,-z+1/3","y+2/3,-x+y+1/3,-z+1/3","x-y+2/3,x+1/3,-z+1/3","-y+2/3,-x+1/3,z+1/3","-x+y+2/3,y+1/3,z+1/3","x+2/3,x-y+1/3,z+1/3","x+1/3,y+2/3,z+2/3","-y+1/3,x-y+2/3,z+2/3","-x+y+1/3,-x+2/3,z+2/3","y+1/3,x+2/3,-z+2/3","x-y+1/3,-y+2/3,-z+2/3","-x+1/3,-x+y+2/3,-z+2/3","-x+1/3,-y+2/3,-z+2/3","y+1/3,-x+y+2/3,-z+2/3","x-y+1/3,x+2/3,-z+2/3","-y+1/3,-x+2/3,z+2/3","-x+y+1/3,y+2/3,z+2/3","x+1/3,x-y+2/3,z+2/3"]},{"m":18,"l":"h","site":".m","coords":["x,-x,z","x,2x,z","-2x,-x,z","-x,x,-z","2x,x,-z","-x,-2x,-z","x+2/3,-x+1/3,z+1/3","x+2/3,2x+1/3,z+1/3","-2x+2/3,-x+1/3,z+1/3","-x+2/3,x+1/3,-z+1/3","2x+2/3,x+1/3,-z+1/3","-x+2/3,-2x+1/3,-z+1/3","x+1/3,-x+2/3,z+2/3","x+1/3,2x+2/3,z+2/3","-2x+1/3,-x+2/3,z+2/3","-x+1/3,x+2/3,-z+2/3","2x+1/3,x+2/3,-z+2/3","-x+1/3,-2x+2/3,-z+2/3"]},{"m":18,"l":"g","site":".2","coords":["x,0,1/2","0,x,1/2","-x,-x,1/2","-x,0,1/2","0,-x,1/2","x,x,1/2","x+2/3,1/3,5/6","2/3,x+1/3,5/6","-x+2/3,-x+1/3,5/6","-x+2/3,1/3,5/6","2/3,-x+1/3,5/6","x+2/3,x+1/3,5/6","x+1/3,2/3,7/6","1/3,x+2/3,7/6","-x+1/3,-x+2/3,7/6","-x+1/3,2/3,7/6","1/3,-x+2/3,7/6","x+1/3,x+2/3,7/6"]},{"m":18,"l":"f","site":".2","coords":["x,0,0","0,x,0","-x,-x,0","-x,0,0","0,-x,0","x,x,0","x+2/3,1/3,1/3","2/3,x+1/3,1/3","-x+2/3,-x+1/3,1/3","-x+2/3,1/3,1/3","2/3,-x+1/3,1/3","x+2/3,x+1/3,1/3","x+1/3,2/3,2/3","1/3,x+2/3,2/3","-x+1/3,-x+2/3,2/3","-x+1/3,2/3,2/3","1/3,-x+2/3,2/3","x+1/3,x+2/3,2/3"]},{"m":9,"l":"e","site":".2/m","coords":["1/2,0,0","0,1/2,0","1/2,1/2,0","7/6,1/3,1/3","2/3,5/6,1/3","7/6,5/6,1/3","5/6,2/3,2/3","1/3,7/6,2/3","5/6,7/6,2/3"]},{"m":9,"l":"d","site":".2/m","coords":["1/2,0,1/2","0,1/2,1/2","1/2,1/2,1/2","7/6,1/3,5/6","2/3,5/6,5/6","7/6,5/6,5/6","5/6,2/3,7/6","1/3,7/6,7/6","5/6,7/6,7/6"]},{"m":6,"l":"c","site":"3m","coords":["0,0,z","0,0,-z","2/3,1/3,z+1/3","2/3,1/3,-z+1/3","1/3,2/3,z+2/3","1/3,2/3,-z+2/3"]},{"m":3,"l":"b","site":"-3m","coords":["0,0,1/2","2/3,1/3,5/6","1/3,2/3,7/6"]},{"m":3,"l":"a","site":"-3m","coords":["0,0,0","2/3,1/3,1/3","1/3,2/3,2/3"]}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="../sg-core.js"></script>

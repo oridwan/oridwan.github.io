@@ -187,8 +187,8 @@ svg .drag { cursor: grab; }
 /* ---------- group page ---------- */
 .group { max-width: 1320px; margin: 0 auto; padding: 26px 24px 70px; }
 .group-head { display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 4px 36px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid var(--line); }
-.group-head .no { grid-column: 1 / -1; margin: 0; font-size: .9rem; color: var(--muted); }
 .group-head h1 { font-size: clamp(2.4rem, 5vw, 3.2rem); line-height: 1; letter-spacing: -.01em; }
+.group-head h1 .no { display: block; margin-bottom: 10px; font: 400 .9rem var(--sans); letter-spacing: 0; color: var(--muted); }
 .head-facts { display: flex; flex-wrap: wrap; gap: 6px 30px; margin: 0; font-size: .9rem; }
 .head-facts dt { color: var(--muted); font-size: .8rem; }
 .head-facts dd { margin: 0; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; }
@@ -239,6 +239,11 @@ svg .drag { cursor: grab; }
 .step-nav #next { text-align: right; margin-left: auto; }
 .step-nav button span { display: block; font: .76rem var(--sans); color: var(--muted); margin-bottom: 2px; }
 .step-nav button[hidden] { display: none; }
+
+/* static reference section under the viewer */
+.group-ref { max-width: 980px; margin-top: 56px; padding-top: 26px; border-top: 1px solid var(--line); scroll-margin-top: 70px; }
+.group-ref .summary { font-size: 1.05rem; max-width: 52em; }
+.sys-block { scroll-margin-top: 70px; }
 
 /* ---------- small screens ---------- */
 @media (max-width: 1000px) {

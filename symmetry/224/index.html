@@ -4,8 +4,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pn-3m (No. 224) · Space groups · Osman Goni Ridwan</title>
-  <meta name="description" content="Space group Pn-3m (No. 224), cubic: symmetry operations, symmetry elements and Wyckoff positions, shown step by step in 3D.">
+  <title>Space group 224 (Pn-3m): Wyckoff positions and symmetry operations</title>
+  <meta name="description" content="Space group 224, Pn-3m, Pn3m (full symbol P 42/n -3 2/m): cubic, point group m-3m. Interactive 3D view of its 48 symmetry operations and 12 Wyckoff positions.">
+  <meta name="author" content="Osman Goni Ridwan">
+  <link rel="canonical" href="https://oridwan.github.io/symmetry/224/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Space group 224 (Pn-3m): Wyckoff positions and symmetry operations">
+  <meta property="og:description" content="Space group 224, Pn-3m, Pn3m (full symbol P 42/n -3 2/m): cubic, point group m-3m. Interactive 3D view of its 48 symmetry operations and 12 Wyckoff positions.">
+  <meta property="og:url" content="https://oridwan.github.io/symmetry/224/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Space group 224 (Pn-3m): Wyckoff positions and symmetry operations">
+  <meta name="twitter:description" content="Space group 224, Pn-3m, Pn3m (full symbol P 42/n -3 2/m): cubic, point group m-3m. Interactive 3D view of its 48 symmetry operations and 12 Wyckoff positions.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/learn-symmetry.webp">
+  <script type="application/ld+json">[
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Space groups",
+    "item": "https://oridwan.github.io/symmetry/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "No. 224 Pn-3m",
+    "item": "https://oridwan.github.io/symmetry/224/"
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Space group 224 (Pn-3m): Wyckoff positions and symmetry operations",
+  "description": "Space group 224, Pn-3m, Pn3m (full symbol P 42/n -3 2/m): cubic, point group m-3m. Interactive 3D view of its 48 symmetry operations and 12 Wyckoff positions.",
+  "url": "https://oridwan.github.io/symmetry/224/",
+  "learningResourceType": "interactive resource",
+  "educationalLevel": "university",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": {
+   "@type": "Person",
+   "name": "Osman Goni Ridwan",
+   "url": "https://oridwan.github.io/"
+  },
+  "about": {
+   "@type": "Thing",
+   "name": "Space group Pn-3m"
+  },
+  "isPartOf": {
+   "@type": "LearningResource",
+   "name": "Space-group symmetry",
+   "url": "https://oridwan.github.io/symmetry/"
+  }
+ }
+]</script>
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,40 +76,133 @@
   <div class="sym-top-in">
     <a class="brand" href="../../">Osman Goni Ridwan</a>
     <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><span>No. 224</span></nav>
-    <nav class="group-nav" id="groupNav" aria-label="Neighbouring groups"></nav>
+    <nav class="group-nav" aria-label="Neighbouring groups"><a href="../223/" rel="prev">← 223 Pm<span class="ob">3</span>n</a><a href="../225/" rel="next">225 Fm<span class="ob">3</span>m →</a></nav>
   </div>
 </header>
 
 <main class="group" id="main">
-  <section class="group-head" id="groupHead"></section>
+  <section class="group-head">
+      <h1><span class="no">Space group 224</span>Pn<span class="ob">3</span>m</h1>
+      <dl class="head-facts">
+        <div><dt>Full symbol</dt><dd>P 4<sub>2</sub>/n <span class="ob">3</span> 2/m</dd></div>
+        <div><dt>Crystal system</dt><dd>cubic</dd></div>
+        <div><dt>Point group</dt><dd>m<span class="ob">3</span>m</dd></div>
+        <div><dt>Schoenflies</dt><dd>O<sub>h</sub><sup>4</sup></dd></div>
+        <div><dt>Operations</dt><dd>48</dd></div>
+        <div><dt>Wyckoff positions</dt><dd>12</dd></div>
+      </dl>
+  </section>
 
   <div class="group-body">
     <section class="stage" aria-label="3D view">
       <div id="viewer"></div>
       <div class="atom-panel" id="atomPanel" hidden>
         <div class="sliders">
-          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0"><output></output></label>
-          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1"><output></output></label>
-          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2"><output></output></label>
+          <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0" aria-label="x coordinate"><output></output></label>
+          <label><i>y</i><input type="range" min="0" max="1" step="0.01" data-c="1" aria-label="y coordinate"><output></output></label>
+          <label><i>z</i><input type="range" min="0" max="1" step="0.01" data-c="2" aria-label="z coordinate"><output></output></label>
         </div>
         <p class="status" id="status"></p>
       </div>
       <p class="legend" id="legend"></p>
     </section>
 
-    <section class="lesson" aria-label="Lesson">
+    <section class="lesson" aria-label="Step-by-step walk-through">
       <ol class="toc-steps" id="steps"></ol>
-      <article class="step prose" id="step" tabindex="-1"></article>
+      <article class="step prose" id="step" tabindex="-1">
+        <noscript><p>The interactive walk-through needs JavaScript. The reference tables below work without it.</p></noscript>
+      </article>
       <nav class="step-nav">
-        <button type="button" id="prev"></button>
-        <button type="button" id="next"></button>
+        <button type="button" id="prev" hidden></button>
+        <button type="button" id="next" hidden></button>
       </nav>
     </section>
   </div>
+
+  <section class="group-ref prose" id="reference">
+      <h2>Pn<span class="ob">3</span>m at a glance</h2>
+      <p class="summary">Pn<span class="ob">3</span>m (No. 224; full symbol P 4<sub>2</sub>/n <span class="ob">3</span> 2/m; Schoenflies symbol O<sub>h</sub><sup>4</sup>) is a cubic space group in the crystal class m<span class="ob">3</span>m. Its lattice is primitive. It is centrosymmetric. A general point has 48 equivalent positions per conventional cell. There are 12 Wyckoff positions, from 2<i>a</i> (site symmetry <span class="ob">4</span>3m) to the general position 48<i>l</i>. The symbol is also written Pn-3m, Pn3m, P42/n-32/m.</p>
+      <h3>Symmetry operations</h3>
+      <p>Coordinate triplets of the general position in the standard setting.</p>
+      
+      <div class="scroll-x"><table class="tbl ops"><thead><tr><th></th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td>(1)</td><td class="m">x, y, z</td></tr>
+<tr><td>(2)</td><td class="m">−x+½, −y+½, z</td></tr>
+<tr><td>(3)</td><td class="m">−x+½, y, −z+½</td></tr>
+<tr><td>(4)</td><td class="m">x, −y+½, −z+½</td></tr>
+<tr><td>(5)</td><td class="m">z, x, y</td></tr>
+<tr><td>(6)</td><td class="m">z, −x+½, −y+½</td></tr>
+<tr><td>(7)</td><td class="m">−z+½, −x+½, y</td></tr>
+<tr><td>(8)</td><td class="m">−z+½, x, −y+½</td></tr>
+<tr><td>(9)</td><td class="m">y, z, x</td></tr>
+<tr><td>(10)</td><td class="m">−y+½, z, −x+½</td></tr>
+<tr><td>(11)</td><td class="m">y, −z+½, −x+½</td></tr>
+<tr><td>(12)</td><td class="m">−y+½, −z+½, x</td></tr>
+<tr><td>(13)</td><td class="m">y+½, x+½, −z</td></tr>
+<tr><td>(14)</td><td class="m">−y, −x, −z</td></tr>
+<tr><td>(15)</td><td class="m">y+½, −x, z+½</td></tr>
+<tr><td>(16)</td><td class="m">−y, x+½, z+½</td></tr>
+<tr><td>(17)</td><td class="m">x+½, z+½, −y</td></tr>
+<tr><td>(18)</td><td class="m">−x, z+½, y+½</td></tr>
+<tr><td>(19)</td><td class="m">−x, −z, −y</td></tr>
+<tr><td>(20)</td><td class="m">x+½, −z, y+½</td></tr>
+<tr><td>(21)</td><td class="m">z+½, y+½, −x</td></tr>
+<tr><td>(22)</td><td class="m">z+½, −y, x+½</td></tr>
+<tr><td>(23)</td><td class="m">−z, y+½, x+½</td></tr>
+<tr><td>(24)</td><td class="m">−z, −y, −x</td></tr>
+<tr><td>(25)</td><td class="m">−x, −y, −z</td></tr>
+<tr><td>(26)</td><td class="m">x+½, y+½, −z</td></tr>
+<tr><td>(27)</td><td class="m">x+½, −y, z+½</td></tr>
+<tr><td>(28)</td><td class="m">−x, y+½, z+½</td></tr>
+<tr><td>(29)</td><td class="m">−z, −x, −y</td></tr>
+<tr><td>(30)</td><td class="m">−z, x+½, y+½</td></tr>
+<tr><td>(31)</td><td class="m">z+½, x+½, −y</td></tr>
+<tr><td>(32)</td><td class="m">z+½, −x, y+½</td></tr>
+<tr><td>(33)</td><td class="m">−y, −z, −x</td></tr>
+<tr><td>(34)</td><td class="m">y+½, −z, x+½</td></tr>
+<tr><td>(35)</td><td class="m">−y, z+½, x+½</td></tr>
+<tr><td>(36)</td><td class="m">y+½, z+½, −x</td></tr>
+<tr><td>(37)</td><td class="m">−y+½, −x+½, z</td></tr>
+<tr><td>(38)</td><td class="m">y, x, z</td></tr>
+<tr><td>(39)</td><td class="m">−y+½, x, −z+½</td></tr>
+<tr><td>(40)</td><td class="m">y, −x+½, −z+½</td></tr>
+<tr><td>(41)</td><td class="m">−x+½, −z+½, y</td></tr>
+<tr><td>(42)</td><td class="m">x, −z+½, −y+½</td></tr>
+<tr><td>(43)</td><td class="m">x, z, y</td></tr>
+<tr><td>(44)</td><td class="m">−x+½, z, −y+½</td></tr>
+<tr><td>(45)</td><td class="m">−z+½, −y+½, x</td></tr>
+<tr><td>(46)</td><td class="m">−z+½, y, −x+½</td></tr>
+<tr><td>(47)</td><td class="m">z, −y+½, −x+½</td></tr>
+<tr><td>(48)</td><td class="m">z, y, x</td></tr>
+      </tbody></table></div>
+      <h3>Wyckoff positions</h3>
+      <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>
+      <tr><td class="m">48</td><td class="m"><i>l</i></td><td class="m">1</td><td class="m coords">(x, y, z) (−x+½, −y+½, z) (−x+½, y, −z+½) (x, −y+½, −z+½) (z, x, y) (z, −x+½, −y+½) (−z+½, −x+½, y) (−z+½, x, −y+½) (y, z, x) (−y+½, z, −x+½) (y, −z+½, −x+½) (−y+½, −z+½, x) (y+½, x+½, −z) (−y, −x, −z) (y+½, −x, z+½) (−y, x+½, z+½) (x+½, z+½, −y) (−x, z+½, y+½) (−x, −z, −y) (x+½, −z, y+½) (z+½, y+½, −x) (z+½, −y, x+½) (−z, y+½, x+½) (−z, −y, −x) (−x, −y, −z) (x+½, y+½, −z) (x+½, −y, z+½) (−x, y+½, z+½) (−z, −x, −y) (−z, x+½, y+½) (z+½, x+½, −y) (z+½, −x, y+½) (−y, −z, −x) (y+½, −z, x+½) (−y, z+½, x+½) (y+½, z+½, −x) (−y+½, −x+½, z) (y, x, z) (−y+½, x, −z+½) (y, −x+½, −z+½) (−x+½, −z+½, y) (x, −z+½, −y+½) (x, z, y) (−x+½, z, −y+½) (−z+½, −y+½, x) (−z+½, y, −x+½) (z, −y+½, −x+½) (z, y, x)</td></tr>
+<tr><td class="m">24</td><td class="m"><i>k</i></td><td class="m">..m</td><td class="m coords">(x, x, z) (−x+½, −x+½, z) (−x+½, x, −z+½) (x, −x+½, −z+½) (z, x, x) (z, −x+½, −x+½) (−z+½, −x+½, x) (−z+½, x, −x+½) (x, z, x) (−x+½, z, −x+½) (x, −z+½, −x+½) (−x+½, −z+½, x) (x+½, x+½, −z) (−x, −x, −z) (x+½, −x, z+½) (−x, x+½, z+½) (x+½, z+½, −x) (−x, z+½, x+½) (−x, −z, −x) (x+½, −z, x+½) (z+½, x+½, −x) (z+½, −x, x+½) (−z, x+½, x+½) (−z, −x, −x)</td></tr>
+<tr><td class="m">24</td><td class="m"><i>j</i></td><td class="m">..2</td><td class="m coords">(½, y, −y) (0, −y+½, −y) (0, y, y+½) (½, −y+½, y+½) (−y, ½, y) (−y, 0, −y+½) (y+½, 0, y) (y+½, ½, −y+½) (y, −y, ½) (−y+½, −y, 0) (y, y+½, 0) (−y+½, y+½, ½) (½, −y, y) (0, y+½, y) (0, −y, −y+½) (½, y+½, −y+½) (y, ½, −y) (y, 0, y+½) (−y+½, 0, −y) (−y+½, ½, y+½) (−y, y, ½) (y+½, y, 0) (−y, −y+½, 0) (y+½, −y+½, ½)</td></tr>
+<tr><td class="m">24</td><td class="m"><i>i</i></td><td class="m">..2</td><td class="m coords">(½, y, y+½) (0, −y+½, y+½) (0, y, −y) (½, −y+½, −y) (y+½, ½, y) (y+½, 0, −y+½) (−y, 0, y) (−y, ½, −y+½) (y, y+½, ½) (−y+½, y+½, 0) (y, −y, 0) (−y+½, −y, ½) (½, −y, −y+½) (0, y+½, −y+½) (0, −y, y) (½, y+½, y) (−y+½, ½, −y) (−y+½, 0, y+½) (y, 0, −y) (y, ½, y+½) (−y, −y+½, ½) (y+½, −y+½, 0) (−y, y, 0) (y+½, y, ½)</td></tr>
+<tr><td class="m">24</td><td class="m"><i>h</i></td><td class="m">2..</td><td class="m coords">(x, ¼, ¾) (−x+½, ¼, ¾) (¾, x, ¼) (¾, −x+½, ¼) (¼, ¾, x) (¼, ¾, −x+½) (¾, x+½, ¼) (¾, −x, ¼) (x+½, ¼, ¾) (−x, ¼, ¾) (¼, ¾, −x) (¼, ¾, x+½) (−x, ¾, ¼) (x+½, ¾, ¼) (¼, −x, ¾) (¼, x+½, ¾) (¾, ¼, −x) (¾, ¼, x+½) (¼, −x+½, ¾) (¼, x, ¾) (−x+½, ¾, ¼) (x, ¾, ¼) (¾, ¼, x) (¾, ¼, −x+½)</td></tr>
+<tr><td class="m">12</td><td class="m"><i>g</i></td><td class="m">2.mm</td><td class="m coords">(x, ¼, ¼) (−x+½, ¼, ¼) (¼, x, ¼) (¼, −x+½, ¼) (¼, ¼, x) (¼, ¼, −x+½) (¾, x+½, ¾) (¾, −x, ¾) (x+½, ¾, ¾) (−x, ¾, ¾) (¾, ¾, −x) (¾, ¾, x+½)</td></tr>
+<tr><td class="m">12</td><td class="m"><i>f</i></td><td class="m">2.22</td><td class="m coords">(½, ¼, ¾) (0, ¼, ¾) (¾, ½, ¼) (¾, 0, ¼) (¼, ¾, ½) (¼, ¾, 0) (½, ¾, ¼) (0, ¾, ¼) (¼, ½, ¾) (¼, 0, ¾) (¾, ¼, ½) (¾, ¼, 0)</td></tr>
+<tr><td class="m">8</td><td class="m"><i>e</i></td><td class="m">.3m</td><td class="m coords">(x, x, x) (−x+½, −x+½, x) (−x+½, x, −x+½) (x, −x+½, −x+½) (x+½, x+½, −x) (−x, −x, −x) (x+½, −x, x+½) (−x, x+½, x+½)</td></tr>
+<tr><td class="m">6</td><td class="m"><i>d</i></td><td class="m"><span class="ob">4</span>2.m</td><td class="m coords">(¼, ¾, ¾) (¾, ¼, ¾) (¾, ¾, ¼) (¼, ¾, ¼) (¾, ¼, ¼) (¼, ¼, ¾)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>c</i></td><td class="m">.<span class="ob">3</span>m</td><td class="m coords">(½, ½, ½) (0, 0, ½) (0, ½, 0) (½, 0, 0)</td></tr>
+<tr><td class="m">4</td><td class="m"><i>b</i></td><td class="m">.<span class="ob">3</span>m</td><td class="m coords">(0, 0, 0) (½, ½, 0) (½, 0, ½) (0, ½, ½)</td></tr>
+<tr><td class="m">2</td><td class="m"><i>a</i></td><td class="m"><span class="ob">4</span>3m</td><td class="m coords">(¼, ¼, ¼) (¾, ¾, ¾)</td></tr>
+      </tbody></table></div>
+      <form class="ext" method="post" action="https://cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list" target="_blank">
+        <input type="hidden" name="gnum" value="224">
+        <button type="submit" name="standard" value="Standard/Default Setting">Compare with the Bilbao Crystallographic Server (WYCKPOS) ↗</button>
+      </form>
+      <h3>Related space groups</h3>
+      <p><b>Same crystal class (m<span class="ob">3</span>m):</b> <a href="../221/">221 Pm<span class="ob">3</span>m</a>, <a href="../222/">222 Pn<span class="ob">3</span>n</a>, <a href="../223/">223 Pm<span class="ob">3</span>n</a>, <a href="../225/">225 Fm<span class="ob">3</span>m</a>, <a href="../226/">226 Fm<span class="ob">3</span>c</a>, <a href="../227/">227 Fd<span class="ob">3</span>m</a>, <a href="../228/">228 Fd<span class="ob">3</span>c</a>, <a href="../229/">229 Im<span class="ob">3</span>m</a>, <a href="../230/">230 Ia<span class="ob">3</span>d</a>.</p>
+      <p><b>Neighbouring numbers:</b> <a href="../223/">223 Pm<span class="ob">3</span>n</a>, <a href="../225/">225 Fm<span class="ob">3</span>m</a>.
+        <a href="../#sys-cubic">All cubic space groups</a> ·
+        <a href="../">Space-group symmetry tutorial</a></p>
+    </section>
 </main>
 
-<noscript><p class="prose" style="padding:24px">This page needs JavaScript for the 3D view.</p></noscript>
-<script id="sg-data" type="application/json">{"number":224,"short":"Pn-3m","full":"P 4_2/n -3 2/m","system":"cubic","pointGroup":"m-3m","choice":"2","centrosymmetric":true,"sohncke":false,"polar":false,"example":"","ops":["x,y,z","-x+1/2,-y+1/2,z","-x+1/2,y,-z+1/2","x,-y+1/2,-z+1/2","z,x,y","z,-x+1/2,-y+1/2","-z+1/2,-x+1/2,y","-z+1/2,x,-y+1/2","y,z,x","-y+1/2,z,-x+1/2","y,-z+1/2,-x+1/2","-y+1/2,-z+1/2,x","y+1/2,x+1/2,-z","-y,-x,-z","y+1/2,-x,z+1/2","-y,x+1/2,z+1/2","x+1/2,z+1/2,-y","-x,z+1/2,y+1/2","-x,-z,-y","x+1/2,-z,y+1/2","z+1/2,y+1/2,-x","z+1/2,-y,x+1/2","-z,y+1/2,x+1/2","-z,-y,-x","-x,-y,-z","x+1/2,y+1/2,-z","x+1/2,-y,z+1/2","-x,y+1/2,z+1/2","-z,-x,-y","-z,x+1/2,y+1/2","z+1/2,x+1/2,-y","z+1/2,-x,y+1/2","-y,-z,-x","y+1/2,-z,x+1/2","-y,z+1/2,x+1/2","y+1/2,z+1/2,-x","-y+1/2,-x+1/2,z","y,x,z","-y+1/2,x,-z+1/2","y,-x+1/2,-z+1/2","-x+1/2,-z+1/2,y","x,-z+1/2,-y+1/2","x,z,y","-x+1/2,z,-y+1/2","-z+1/2,-y+1/2,x","-z+1/2,y,-x+1/2","z,-y+1/2,-x+1/2","z,y,x"],"wyckoff":[{"m":48,"l":"l","site":"1","coords":["x,y,z","-x+1/2,-y+1/2,z","-x+1/2,y,-z+1/2","x,-y+1/2,-z+1/2","z,x,y","z,-x+1/2,-y+1/2","-z+1/2,-x+1/2,y","-z+1/2,x,-y+1/2","y,z,x","-y+1/2,z,-x+1/2","y,-z+1/2,-x+1/2","-y+1/2,-z+1/2,x","y+1/2,x+1/2,-z","-y,-x,-z","y+1/2,-x,z+1/2","-y,x+1/2,z+1/2","x+1/2,z+1/2,-y","-x,z+1/2,y+1/2","-x,-z,-y","x+1/2,-z,y+1/2","z+1/2,y+1/2,-x","z+1/2,-y,x+1/2","-z,y+1/2,x+1/2","-z,-y,-x","-x,-y,-z","x+1/2,y+1/2,-z","x+1/2,-y,z+1/2","-x,y+1/2,z+1/2","-z,-x,-y","-z,x+1/2,y+1/2","z+1/2,x+1/2,-y","z+1/2,-x,y+1/2","-y,-z,-x","y+1/2,-z,x+1/2","-y,z+1/2,x+1/2","y+1/2,z+1/2,-x","-y+1/2,-x+1/2,z","y,x,z","-y+1/2,x,-z+1/2","y,-x+1/2,-z+1/2","-x+1/2,-z+1/2,y","x,-z+1/2,-y+1/2","x,z,y","-x+1/2,z,-y+1/2","-z+1/2,-y+1/2,x","-z+1/2,y,-x+1/2","z,-y+1/2,-x+1/2","z,y,x"]},{"m":24,"l":"k","site":"..m","coords":["x,x,z","-x+1/2,-x+1/2,z","-x+1/2,x,-z+1/2","x,-x+1/2,-z+1/2","z,x,x","z,-x+1/2,-x+1/2","-z+1/2,-x+1/2,x","-z+1/2,x,-x+1/2","x,z,x","-x+1/2,z,-x+1/2","x,-z+1/2,-x+1/2","-x+1/2,-z+1/2,x","x+1/2,x+1/2,-z","-x,-x,-z","x+1/2,-x,z+1/2","-x,x+1/2,z+1/2","x+1/2,z+1/2,-x","-x,z+1/2,x+1/2","-x,-z,-x","x+1/2,-z,x+1/2","z+1/2,x+1/2,-x","z+1/2,-x,x+1/2","-z,x+1/2,x+1/2","-z,-x,-x"]},{"m":24,"l":"j","site":"..2","coords":["1/2,y,-y","0,-y+1/2,-y","0,y,y+1/2","1/2,-y+1/2,y+1/2","-y,1/2,y","-y,0,-y+1/2","y+1/2,0,y","y+1/2,1/2,-y+1/2","y,-y,1/2","-y+1/2,-y,0","y,y+1/2,0","-y+1/2,y+1/2,1/2","1/2,-y,y","0,y+1/2,y","0,-y,-y+1/2","1/2,y+1/2,-y+1/2","y,1/2,-y","y,0,y+1/2","-y+1/2,0,-y","-y+1/2,1/2,y+1/2","-y,y,1/2","y+1/2,y,0","-y,-y+1/2,0","y+1/2,-y+1/2,1/2"]},{"m":24,"l":"i","site":"..2","coords":["1/2,y,y+1/2","0,-y+1/2,y+1/2","0,y,-y","1/2,-y+1/2,-y","y+1/2,1/2,y","y+1/2,0,-y+1/2","-y,0,y","-y,1/2,-y+1/2","y,y+1/2,1/2","-y+1/2,y+1/2,0","y,-y,0","-y+1/2,-y,1/2","1/2,-y,-y+1/2","0,y+1/2,-y+1/2","0,-y,y","1/2,y+1/2,y","-y+1/2,1/2,-y","-y+1/2,0,y+1/2","y,0,-y","y,1/2,y+1/2","-y,-y+1/2,1/2","y+1/2,-y+1/2,0","-y,y,0","y+1/2,y,1/2"]},{"m":24,"l":"h","site":"2..","coords":["x,1/4,3/4","-x+1/2,1/4,3/4","3/4,x,1/4","3/4,-x+1/2,1/4","1/4,3/4,x","1/4,3/4,-x+1/2","3/4,x+1/2,1/4","3/4,-x,1/4","x+1/2,1/4,3/4","-x,1/4,3/4","1/4,3/4,-x","1/4,3/4,x+1/2","-x,3/4,1/4","x+1/2,3/4,1/4","1/4,-x,3/4","1/4,x+1/2,3/4","3/4,1/4,-x","3/4,1/4,x+1/2","1/4,-x+1/2,3/4","1/4,x,3/4","-x+1/2,3/4,1/4","x,3/4,1/4","3/4,1/4,x","3/4,1/4,-x+1/2"]},{"m":12,"l":"g","site":"2.mm","coords":["x,1/4,1/4","-x+1/2,1/4,1/4","1/4,x,1/4","1/4,-x+1/2,1/4","1/4,1/4,x","1/4,1/4,-x+1/2","3/4,x+1/2,3/4","3/4,-x,3/4","x+1/2,3/4,3/4","-x,3/4,3/4","3/4,3/4,-x","3/4,3/4,x+1/2"]},{"m":12,"l":"f","site":"2.22","coords":["1/2,1/4,3/4","0,1/4,3/4","3/4,1/2,1/4","3/4,0,1/4","1/4,3/4,1/2","1/4,3/4,0","1/2,3/4,1/4","0,3/4,1/4","1/4,1/2,3/4","1/4,0,3/4","3/4,1/4,1/2","3/4,1/4,0"]},{"m":8,"l":"e","site":".3m","coords":["x,x,x","-x+1/2,-x+1/2,x","-x+1/2,x,-x+1/2","x,-x+1/2,-x+1/2","x+1/2,x+1/2,-x","-x,-x,-x","x+1/2,-x,x+1/2","-x,x+1/2,x+1/2"]},{"m":6,"l":"d","site":"-42.m","coords":["1/4,3/4,3/4","3/4,1/4,3/4","3/4,3/4,1/4","1/4,3/4,1/4","3/4,1/4,1/4","1/4,1/4,3/4"]},{"m":4,"l":"c","site":".-3m","coords":["1/2,1/2,1/2","0,0,1/2","0,1/2,0","1/2,0,0"]},{"m":4,"l":"b","site":".-3m","coords":["0,0,0","1/2,1/2,0","1/2,0,1/2","0,1/2,1/2"]},{"m":2,"l":"a","site":"-43m","coords":["1/4,1/4,1/4","3/4,3/4,3/4"]}]}</script>
+<script id="sg-data" type="application/json">{"number":224,"short":"Pn-3m","full":"P 4_2/n -3 2/m","schoenflies":"Oh^4","system":"cubic","pointGroup":"m-3m","choice":"2","centrosymmetric":true,"sohncke":false,"polar":false,"example":"","ops":["x,y,z","-x+1/2,-y+1/2,z","-x+1/2,y,-z+1/2","x,-y+1/2,-z+1/2","z,x,y","z,-x+1/2,-y+1/2","-z+1/2,-x+1/2,y","-z+1/2,x,-y+1/2","y,z,x","-y+1/2,z,-x+1/2","y,-z+1/2,-x+1/2","-y+1/2,-z+1/2,x","y+1/2,x+1/2,-z","-y,-x,-z","y+1/2,-x,z+1/2","-y,x+1/2,z+1/2","x+1/2,z+1/2,-y","-x,z+1/2,y+1/2","-x,-z,-y","x+1/2,-z,y+1/2","z+1/2,y+1/2,-x","z+1/2,-y,x+1/2","-z,y+1/2,x+1/2","-z,-y,-x","-x,-y,-z","x+1/2,y+1/2,-z","x+1/2,-y,z+1/2","-x,y+1/2,z+1/2","-z,-x,-y","-z,x+1/2,y+1/2","z+1/2,x+1/2,-y","z+1/2,-x,y+1/2","-y,-z,-x","y+1/2,-z,x+1/2","-y,z+1/2,x+1/2","y+1/2,z+1/2,-x","-y+1/2,-x+1/2,z","y,x,z","-y+1/2,x,-z+1/2","y,-x+1/2,-z+1/2","-x+1/2,-z+1/2,y","x,-z+1/2,-y+1/2","x,z,y","-x+1/2,z,-y+1/2","-z+1/2,-y+1/2,x","-z+1/2,y,-x+1/2","z,-y+1/2,-x+1/2","z,y,x"],"wyckoff":[{"m":48,"l":"l","site":"1","coords":["x,y,z","-x+1/2,-y+1/2,z","-x+1/2,y,-z+1/2","x,-y+1/2,-z+1/2","z,x,y","z,-x+1/2,-y+1/2","-z+1/2,-x+1/2,y","-z+1/2,x,-y+1/2","y,z,x","-y+1/2,z,-x+1/2","y,-z+1/2,-x+1/2","-y+1/2,-z+1/2,x","y+1/2,x+1/2,-z","-y,-x,-z","y+1/2,-x,z+1/2","-y,x+1/2,z+1/2","x+1/2,z+1/2,-y","-x,z+1/2,y+1/2","-x,-z,-y","x+1/2,-z,y+1/2","z+1/2,y+1/2,-x","z+1/2,-y,x+1/2","-z,y+1/2,x+1/2","-z,-y,-x","-x,-y,-z","x+1/2,y+1/2,-z","x+1/2,-y,z+1/2","-x,y+1/2,z+1/2","-z,-x,-y","-z,x+1/2,y+1/2","z+1/2,x+1/2,-y","z+1/2,-x,y+1/2","-y,-z,-x","y+1/2,-z,x+1/2","-y,z+1/2,x+1/2","y+1/2,z+1/2,-x","-y+1/2,-x+1/2,z","y,x,z","-y+1/2,x,-z+1/2","y,-x+1/2,-z+1/2","-x+1/2,-z+1/2,y","x,-z+1/2,-y+1/2","x,z,y","-x+1/2,z,-y+1/2","-z+1/2,-y+1/2,x","-z+1/2,y,-x+1/2","z,-y+1/2,-x+1/2","z,y,x"]},{"m":24,"l":"k","site":"..m","coords":["x,x,z","-x+1/2,-x+1/2,z","-x+1/2,x,-z+1/2","x,-x+1/2,-z+1/2","z,x,x","z,-x+1/2,-x+1/2","-z+1/2,-x+1/2,x","-z+1/2,x,-x+1/2","x,z,x","-x+1/2,z,-x+1/2","x,-z+1/2,-x+1/2","-x+1/2,-z+1/2,x","x+1/2,x+1/2,-z","-x,-x,-z","x+1/2,-x,z+1/2","-x,x+1/2,z+1/2","x+1/2,z+1/2,-x","-x,z+1/2,x+1/2","-x,-z,-x","x+1/2,-z,x+1/2","z+1/2,x+1/2,-x","z+1/2,-x,x+1/2","-z,x+1/2,x+1/2","-z,-x,-x"]},{"m":24,"l":"j","site":"..2","coords":["1/2,y,-y","0,-y+1/2,-y","0,y,y+1/2","1/2,-y+1/2,y+1/2","-y,1/2,y","-y,0,-y+1/2","y+1/2,0,y","y+1/2,1/2,-y+1/2","y,-y,1/2","-y+1/2,-y,0","y,y+1/2,0","-y+1/2,y+1/2,1/2","1/2,-y,y","0,y+1/2,y","0,-y,-y+1/2","1/2,y+1/2,-y+1/2","y,1/2,-y","y,0,y+1/2","-y+1/2,0,-y","-y+1/2,1/2,y+1/2","-y,y,1/2","y+1/2,y,0","-y,-y+1/2,0","y+1/2,-y+1/2,1/2"]},{"m":24,"l":"i","site":"..2","coords":["1/2,y,y+1/2","0,-y+1/2,y+1/2","0,y,-y","1/2,-y+1/2,-y","y+1/2,1/2,y","y+1/2,0,-y+1/2","-y,0,y","-y,1/2,-y+1/2","y,y+1/2,1/2","-y+1/2,y+1/2,0","y,-y,0","-y+1/2,-y,1/2","1/2,-y,-y+1/2","0,y+1/2,-y+1/2","0,-y,y","1/2,y+1/2,y","-y+1/2,1/2,-y","-y+1/2,0,y+1/2","y,0,-y","y,1/2,y+1/2","-y,-y+1/2,1/2","y+1/2,-y+1/2,0","-y,y,0","y+1/2,y,1/2"]},{"m":24,"l":"h","site":"2..","coords":["x,1/4,3/4","-x+1/2,1/4,3/4","3/4,x,1/4","3/4,-x+1/2,1/4","1/4,3/4,x","1/4,3/4,-x+1/2","3/4,x+1/2,1/4","3/4,-x,1/4","x+1/2,1/4,3/4","-x,1/4,3/4","1/4,3/4,-x","1/4,3/4,x+1/2","-x,3/4,1/4","x+1/2,3/4,1/4","1/4,-x,3/4","1/4,x+1/2,3/4","3/4,1/4,-x","3/4,1/4,x+1/2","1/4,-x+1/2,3/4","1/4,x,3/4","-x+1/2,3/4,1/4","x,3/4,1/4","3/4,1/4,x","3/4,1/4,-x+1/2"]},{"m":12,"l":"g","site":"2.mm","coords":["x,1/4,1/4","-x+1/2,1/4,1/4","1/4,x,1/4","1/4,-x+1/2,1/4","1/4,1/4,x","1/4,1/4,-x+1/2","3/4,x+1/2,3/4","3/4,-x,3/4","x+1/2,3/4,3/4","-x,3/4,3/4","3/4,3/4,-x","3/4,3/4,x+1/2"]},{"m":12,"l":"f","site":"2.22","coords":["1/2,1/4,3/4","0,1/4,3/4","3/4,1/2,1/4","3/4,0,1/4","1/4,3/4,1/2","1/4,3/4,0","1/2,3/4,1/4","0,3/4,1/4","1/4,1/2,3/4","1/4,0,3/4","3/4,1/4,1/2","3/4,1/4,0"]},{"m":8,"l":"e","site":".3m","coords":["x,x,x","-x+1/2,-x+1/2,x","-x+1/2,x,-x+1/2","x,-x+1/2,-x+1/2","x+1/2,x+1/2,-x","-x,-x,-x","x+1/2,-x,x+1/2","-x,x+1/2,x+1/2"]},{"m":6,"l":"d","site":"-42.m","coords":["1/4,3/4,3/4","3/4,1/4,3/4","3/4,3/4,1/4","1/4,3/4,1/4","3/4,1/4,1/4","1/4,1/4,3/4"]},{"m":4,"l":"c","site":".-3m","coords":["1/2,1/2,1/2","0,0,1/2","0,1/2,0","1/2,0,0"]},{"m":4,"l":"b","site":".-3m","coords":["0,0,0","1/2,1/2,0","1/2,0,1/2","0,1/2,1/2"]},{"m":2,"l":"a","site":"-43m","coords":["1/4,1/4,1/4","3/4,3/4,3/4"]}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="../sg-core.js"></script>
