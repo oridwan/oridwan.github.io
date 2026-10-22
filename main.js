@@ -21,10 +21,37 @@
     toggle.setAttribute('aria-expanded', String(open));
   });
   nav.addEventListener('click', function (e) {
-    if (e.target.tagName === 'A') {
+    if (e.target.closest('a')) {
       nav.classList.remove('open');
       toggle.setAttribute('aria-expanded', 'false');
+      setDd(false);
     }
+  });
+
+  // "Learn with me" dropdown: hover opens it on desktop; click, Enter or tap toggles it
+  var dd = nav.querySelector('.nav-dd');
+  var ddBtn = dd.querySelector('.nav-dd-toggle');
+  var hoverNav = window.matchMedia('(hover: hover) and (min-width: 1001px)');
+  var ddTimer;
+  function setDd(open) {
+    clearTimeout(ddTimer);
+    dd.classList.toggle('open', open);
+    ddBtn.setAttribute('aria-expanded', String(open));
+  }
+  ddBtn.addEventListener('click', function (e) {
+    // A mouse click on desktop keeps the hover-opened menu open instead of closing it.
+    setDd(e.detail > 0 && hoverNav.matches ? true : !dd.classList.contains('open'));
+  });
+  dd.addEventListener('mouseenter', function () { if (hoverNav.matches) setDd(true); });
+  dd.addEventListener('mouseleave', function () {
+    if (hoverNav.matches) ddTimer = setTimeout(function () { setDd(false); }, 150);
+  });
+  dd.addEventListener('focusout', function (e) {
+    if (!dd.contains(e.relatedTarget) && !dd.matches(':hover')) setDd(false);
+  });
+  document.addEventListener('click', function (e) { if (!dd.contains(e.target)) setDd(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && dd.classList.contains('open')) { setDd(false); ddBtn.focus(); }
   });
 
   // Scrollspy
@@ -36,6 +63,7 @@
         links.forEach(function (l) {
           l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id);
         });
+        ddBtn.classList.toggle('active', entry.target.id === 'learn');
       });
     }, { rootMargin: '-45% 0px -50% 0px' });
     links.forEach(function (l) {

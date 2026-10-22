@@ -368,7 +368,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=f48671b6">
+  <link rel="stylesheet" href="style.css?v=67d9dd3d">
   <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -383,12 +383,22 @@
     <div class="nav-links" id="primary-nav">
       <a href="#research">Research</a>
       <a href="#expertise">Expertise</a>
-      <a href="#learn">Learn with me</a>
+      <div class="nav-dd">
+        <button class="nav-dd-toggle" type="button" aria-expanded="false" aria-controls="learn-menu">
+          Learn with me
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="nav-dd-menu" id="learn-menu">
+          <a href="symmetry/"><span class="dd-title">Crystallographic symmetry</span><span class="dd-note">Interactive tutorial</span></a>
+          <a href="symmetry/#groups"><span class="dd-title">The 230 space groups</span><span class="dd-note">A 3D page for each group</span></a>
+          <span class="dd-item is-soon"><span class="dd-title">DFT fundamentals and VASP</span><span class="dd-note">In progress</span></span>
+          <a class="dd-all" href="#learn">Overview of the tutorials</a>
+        </div>
+      </div>
       <a href="#publications">Publications</a>
       <a href="#experience">Experience</a>
       <a href="#honors">Honors</a>
       <a href="#contact">Contact</a>
-      <a href="symmetry/">Space groups</a>
       <a class="nav-cv" href="assets/OGR.pdf" target="_blank" rel="noopener">CV</a>
     </div>
   </nav>
@@ -967,6 +977,6 @@
   </div>
 </footer>
 
-<script src="main.js?v=fc43fef2" defer></script>
+<script src="main.js?v=27cfc4a0" defer></script>
 </body>
 </html>
