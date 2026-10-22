@@ -40,6 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "publications.json"
 OVERRIDES = ROOT / "data" / "pub_overrides.json"
 INDEX = ROOT / "index.html"
+SITEMAP = ROOT / "sitemap.xml"
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
@@ -443,6 +444,7 @@ def main() -> int:
         "h_index": metrics["h_index"],
         "publications": metrics["publications"],
         "journal": sum(p["type"] == "journal" for p in public),
+        "preprint": sum(p["type"] == "preprint" for p in public),
         "first_author_journal": sum(p["type"] == "journal" and p["first_author"]
                                     for p in public),
     }
@@ -455,6 +457,10 @@ def main() -> int:
         text = re.sub(r'(data-stat="updated"[^>]*>)[^<]*(<)',
                       rf"\g<1>{MONTHS[d.month - 1]} {d.year}\2", text)
     INDEX.write_text(text)
+    if fresh and changed and SITEMAP.exists():
+        SITEMAP.write_text(re.sub(r"<lastmod>[^<]*</lastmod>",
+                                  f"<lastmod>{metrics['updated']}</lastmod>",
+                                  SITEMAP.read_text()))
     print(f"Wrote {len(pubs)} publications to index.html")
     return 0
 

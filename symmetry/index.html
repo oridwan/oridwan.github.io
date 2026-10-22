@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space-group symmetry · Osman Goni Ridwan</title>
+  <meta name="description" content="An interactive introduction to crystallographic symmetry: lattices, symmetry operations, crystal systems, Bravais lattices, Hermann–Mauguin symbols and Wyckoff positions, with a 3D page for each of the 230 space groups.">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://oridwan.github.io/symmetry/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="symmetry.css">
+</head>
+<body class="sym">
+
+<header class="sym-top">
+  <div class="sym-top-in">
+    <a class="brand" href="../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><span>Space groups</span></nav>
+    <nav class="group-nav"><a href="#groups">All 230 groups</a></nav>
+  </div>
+</header>
+
+<div class="guide">
+  <aside class="toc" aria-label="Contents">
+    <p class="toc-title">Contents</p>
+    <ol>
+      <li><a href="#lattice">Lattice and motif</a></li>
+      <li><a href="#operations">Symmetry operations</a></li>
+      <li><a href="#systems">Crystal systems</a></li>
+      <li><a href="#bravais">Bravais lattices</a></li>
+      <li><a href="#space-groups">From point groups to space groups</a></li>
+      <li><a href="#symbols">Hermann–Mauguin symbols</a></li>
+      <li><a href="#wyckoff">Wyckoff positions</a></li>
+      <li><a href="#groups">The 230 space groups</a></li>
+    </ol>
+  </aside>
+
+  <main class="prose guide-main" id="main">
+    <header class="guide-head">
+      <h1>Space-group symmetry</h1>
+      <p class="lede">An introduction to crystallographic symmetry built around figures you can manipulate. Each section introduces one idea; the last one links to a page for every space group, where its operations, symmetry elements and Wyckoff positions are shown step by step in three dimensions.</p>
+      <p class="byline">Data follow the standard settings of the <i>International Tables for Crystallography</i>, Vol. A, generated with <a href="https://github.com/MaterSim/PyXtal">PyXtal</a> and <a href="https://spglib.readthedocs.io/">spglib</a>. Every group page links to the <a href="https://cryst.ehu.es/cryst/get_wp.html">Bilbao Crystallographic Server</a> for comparison.</p>
+    </header>
+
+    <!-- 1 -->
+    <section id="lattice">
+      <h2><span class="secno">1</span>Lattice and motif</h2>
+      <p>A crystal is a periodic arrangement: one unit, the <b>motif</b>, repeated by a <b>lattice</b> of translations. Three non-coplanar translation vectors <i>a</i>, <i>b</i>, <i>c</i> span the <b>unit cell</b>, and any point is written in <b>fractional coordinates</b> <i>(x, y, z)</i>:</p>
+      <p class="eq"><b>r</b> = <i>x</i> <b>a</b> + <i>y</i> <b>b</b> + <i>z</i> <b>c</b></p>
+      <p>Adding a whole number to a coordinate moves the point to the same place in a neighbouring cell. Coordinates are therefore usually reduced to 0 ≤ <i>x</i>, <i>y</i>, <i>z</i> &lt; 1. The figure shows the two-dimensional case.</p>
+      <figure class="fig">
+        <div class="fig-body"><svg id="fig1" viewBox="0 0 640 380" role="img" aria-label="A two-dimensional lattice with a repeated motif"></svg></div>
+        <div class="fig-controls" id="fig1c">
+          <label>|<i>a</i>| <input type="range" min="60" max="130" value="96" data-k="a"></label>
+          <label>|<i>b</i>| <input type="range" min="60" max="130" value="80" data-k="b"></label>
+          <label><i>γ</i> <input type="range" min="60" max="120" value="75" data-k="g"><output></output></label>
+          <span class="readout" id="fig1r"></span>
+        </div>
+        <figcaption><b>Figure 1.</b> A two-dimensional crystal. Drag the shaded motif inside the highlighted cell, or change the cell with the sliders; every copy follows. The readout gives the motif's fractional coordinates.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section id="operations">
+      <h2><span class="secno">2</span>Symmetry operations</h2>
+      <p>A <b>symmetry operation</b> moves the whole pattern onto itself. Lattice translations are always among them. The others are rotations, reflections and their combinations, and the geometric object that stays fixed (an axis, a plane or a point) is called the <b>symmetry element</b>.</p>
+
+      <h3>2.1&ensp;In the plane</h3>
+      <p>In two dimensions the possibilities are rotations, reflections in a line, and glide reflections (reflection followed by a translation of half a lattice repeat along the line). Rotations are limited to 2-, 3-, 4- and 6-fold. A 5-fold or 7-fold rotation cannot be combined with a lattice, a result known as the <i>crystallographic restriction</i>.</p>
+      <figure class="fig">
+        <div class="fig-body"><svg id="fig2" viewBox="0 0 640 340" role="img" aria-label="Symmetry operations in the plane"></svg></div>
+        <div class="fig-controls seg" id="fig2c">
+          <button type="button" data-op="2" class="on">2</button><button type="button" data-op="3">3</button><button type="button" data-op="4">4</button><button type="button" data-op="6">6</button><button type="button" data-op="m"><i>m</i></button><button type="button" data-op="g"><i>g</i></button>
+          <button type="button" class="play" data-op="play">Replay</button>
+        </div>
+        <figcaption><b>Figure 2.</b> Repeated application of one operation to a motif. Symbols follow the International Tables: a lens for a 2-fold point, a triangle, square and hexagon for 3-, 4- and 6-fold points, a solid line for a mirror and a dashed line for a glide. Blue copies keep the original handedness; orange copies are mirror images.</figcaption>
+      </figure>
+
+      <h3>2.2&ensp;In three dimensions</h3>
+      <p>Two new kinds of operation appear in three dimensions: <b>inversion</b> through a point, and <b>rotoinversion</b>, a rotation followed by inversion. A rotation may also be coupled to a translation along its axis (a <b>screw rotation</b>), and a reflection to a translation parallel to its plane (a <b>glide reflection</b>). Because of their translation part, screw and glide operations leave no point fixed.</p>
+      <div class="scroll-x">
+      <table class="tbl">
+        <thead><tr><th>Operation</th><th>Symbols</th><th>Fixed points</th><th>Handedness</th></tr></thead>
+        <tbody>
+          <tr><td>Rotation</td><td class="m">2, 3, 4, 6</td><td>a line (the axis)</td><td>kept</td></tr>
+          <tr><td>Screw rotation</td><td class="m">2<sub>1</sub>, 3<sub>1</sub>, 3<sub>2</sub>, 4<sub>1</sub>, 4<sub>2</sub>, 4<sub>3</sub>, 6<sub>1</sub> … 6<sub>5</sub></td><td>none</td><td>kept</td></tr>
+          <tr><td>Inversion</td><td class="m"><span class="ob">1</span></td><td>a point</td><td>reversed</td></tr>
+          <tr><td>Rotoinversion</td><td class="m"><span class="ob">3</span>, <span class="ob">4</span>, <span class="ob">6</span></td><td>a point</td><td>reversed</td></tr>
+          <tr><td>Reflection</td><td class="m"><i>m</i> (= <span class="ob">2</span>)</td><td>a plane</td><td>reversed</td></tr>
+          <tr><td>Glide reflection</td><td class="m"><i>a</i>, <i>b</i>, <i>c</i>, <i>n</i>, <i>d</i>, <i>e</i></td><td>none</td><td>reversed</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <figure class="fig">
+        <div class="fig-body fig-3d"><div id="fig3"></div></div>
+        <div class="fig-controls seg wrap" id="fig3c"></div>
+        <p class="fig-formula" id="fig3f"></p>
+        <figcaption><b>Figure 3.</b> Each operation applied to an atom carrying a handedness marker. The dashed trail is the path of the motion; a dashed axis is a screw axis, and a plane with a dashed outline is a glide plane. Drag to rotate.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 3 -->
+    <section id="systems">
+      <h2><span class="secno">3</span>Crystal systems</h2>
+      <p>Rotational symmetry constrains the shape of the unit cell. A 4-fold axis along <i>c</i>, for instance, forces <i>a</i> = <i>b</i> and a right angle between them. Grouping crystals by the symmetry they must have gives seven <b>crystal systems</b>. The system is defined by the symmetry, not by the cell shape alone: a cell can be metrically cubic by accident and still be tetragonal.</p>
+      <figure class="fig split">
+        <div class="fig-body fig-3d"><div id="fig4"></div></div>
+        <div class="fig-side">
+          <div class="fig-controls seg wrap" id="fig4c"></div>
+          <dl class="facts" id="fig4t"></dl>
+        </div>
+        <figcaption><b>Figure 4.</b> The conventional cell of each crystal system with its characteristic rotation axes drawn inside one cell.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 4 -->
+    <section id="bravais">
+      <h2><span class="secno">4</span>Centring and the 14 Bravais lattices</h2>
+      <p>The conventional cell is chosen so that its edges follow the symmetry directions. Sometimes such a cell contains more than one lattice point, and the extra points sit at its centre or on its faces. The <b>centring</b> is given by a letter: <i>P</i> (primitive), <i>A</i>, <i>B</i> or <i>C</i> (one pair of faces centred), <i>I</i> (body-centred), <i>F</i> (all faces centred) and <i>R</i> (rhombohedral, in hexagonal axes).</p>
+      <p>Combining centrings with crystal systems gives exactly 14 distinct <b>Bravais lattices</b>. Other combinations are not new: a <i>C</i>-centred tetragonal lattice, for example, is the same as a smaller primitive tetragonal one.</p>
+      <figure class="fig split">
+        <div class="fig-body fig-3d"><div id="fig5"></div></div>
+        <div class="fig-side">
+          <div class="fig-controls seg wrap" id="fig5c"></div>
+          <p class="fig-note" id="fig5t"></p>
+        </div>
+        <figcaption><b>Figure 5.</b> Lattice points of the conventional cell for each Bravais lattice. Labels combine the crystal family (a, m, o, t, h, c) with the centring letter.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 5 -->
+    <section id="space-groups">
+      <h2><span class="secno">5</span>From point groups to space groups</h2>
+      <p>If the translations are ignored, the operations of a crystal reduce to rotations, reflections, inversion and rotoinversions about a single point. These form one of the 32 crystallographic <b>point groups</b> (crystal classes), which govern macroscopic properties such as optical activity, piezoelectricity and the symmetry of the diffraction pattern.</p>
+      <p>A <b>space group</b> combines a Bravais lattice with a point group, and allows each rotation or reflection to carry a fractional translation. When that translation cannot be removed by moving the origin, it produces a screw axis or glide plane. Every operation is written as a coordinate triplet. In P2<sub>1</sub>/c, for example,</p>
+      <p class="eq">(<i>x</i>, <i>y</i>, <i>z</i>) → (−<i>x</i>, <i>y</i> + ½, −<i>z</i> + ½)</p>
+      <p>is a 2-fold rotation about the line (0, <i>y</i>, ¼) combined with a translation of ½ along <i>b</i>: a 2<sub>1</sub> screw axis. In matrix form, an operation is a pair (<i>W</i>, <i>w</i>) acting as <b>x</b>′ = <i>W</i><b>x</b> + <i>w</i>. <i>W</i> is the rotation part and <i>w</i> the translation part.</p>
+      <div class="scroll-x">
+      <table class="tbl num">
+        <thead><tr><th>Crystal system</th><th>Point groups</th><th>Space groups</th><th>Numbers</th></tr></thead>
+        <tbody>
+          <tr><td>Triclinic</td><td>2</td><td>2</td><td>1–2</td></tr>
+          <tr><td>Monoclinic</td><td>3</td><td>13</td><td>3–15</td></tr>
+          <tr><td>Orthorhombic</td><td>3</td><td>59</td><td>16–74</td></tr>
+          <tr><td>Tetragonal</td><td>7</td><td>68</td><td>75–142</td></tr>
+          <tr><td>Trigonal</td><td>5</td><td>25</td><td>143–167</td></tr>
+          <tr><td>Hexagonal</td><td>7</td><td>27</td><td>168–194</td></tr>
+          <tr><td>Cubic</td><td>5</td><td>36</td><td>195–230</td></tr>
+          <tr class="total"><td>Total</td><td>32</td><td>230</td><td></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Eleven of the 230 groups come in enantiomorphic pairs, such as P4<sub>1</sub> and P4<sub>3</sub>, which are mirror images of each other. Counting each pair once gives 219 distinct types.</p>
+    </section>
+
+    <!-- 6 -->
+    <section id="symbols">
+      <h2><span class="secno">6</span>Reading Hermann–Mauguin symbols</h2>
+      <p>A space-group symbol is the lattice letter followed by up to three entries. Each entry describes the symmetry belonging to one set of directions: a rotation or screw axis along the direction, a plane perpendicular to it, or both, written as a fraction (2/<i>m</i>, 4<sub>2</sub>/<i>n</i>). Which direction each position refers to depends on the crystal system:</p>
+      <div class="scroll-x">
+      <table class="tbl">
+        <thead><tr><th>System</th><th>First position</th><th>Second</th><th>Third</th></tr></thead>
+        <tbody>
+          <tr><td>Monoclinic</td><td colspan="3">the unique axis, <i>b</i> in the standard setting (full symbol P 1 2<sub>1</sub>/c 1)</td></tr>
+          <tr><td>Orthorhombic</td><td><i>a</i></td><td><i>b</i></td><td><i>c</i></td></tr>
+          <tr><td>Tetragonal</td><td><i>c</i></td><td><i>a</i>, <i>b</i></td><td>[110], [1<span class="ob">1</span>0]</td></tr>
+          <tr><td>Trigonal, hexagonal</td><td><i>c</i></td><td><i>a</i>, <i>b</i>, <i>a</i>+<i>b</i></td><td>[1<span class="ob">1</span>0], [120], [<span class="ob">2</span><span class="ob">1</span>0]</td></tr>
+          <tr><td>Cubic</td><td><i>a</i>, <i>b</i>, <i>c</i></td><td>body diagonals ⟨111⟩</td><td>face diagonals ⟨110⟩</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>The <b>short symbol</b> omits entries that follow from the others; the <b>full symbol</b> lists all of them. Look up any group to see its symbol taken apart:</p>
+      <figure class="fig">
+        <div class="decoder">
+          <label for="hmIn">Space group</label>
+          <input id="hmIn" list="hmList" placeholder="number or symbol, e.g. 62 or Pnma" autocomplete="off">
+          <datalist id="hmList"></datalist>
+        </div>
+        <div id="hmOut" class="decoder-out"></div>
+        <figcaption><b>Figure 6.</b> Hermann–Mauguin symbol decoder. Glide letters: <i>a</i>, <i>b</i>, <i>c</i> glide by ½ along that axis; <i>n</i> by ½ along a face diagonal; <i>d</i> by ¼ along a diagonal; <i>e</i> marks a plane with two glides.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 7 -->
+    <section id="wyckoff">
+      <h2><span class="secno">7</span>Wyckoff positions and site symmetry</h2>
+      <p>Applying all operations of a group to a point in general position produces the maximum number of copies. If the point lies on a symmetry element that leaves points fixed (a rotation axis, a mirror plane or an inversion centre), some operations map it onto itself and copies coincide. The point is then in a <b>special position</b>.</p>
+      <p>Each family of equivalent positions is a <b>Wyckoff position</b>, labelled by its <b>multiplicity</b> (the number of copies per cell) and a <b>Wyckoff letter</b>, from <i>a</i> for the most special up to the general position. The operations that leave a point fixed form its <b>site-symmetry group</b>, and</p>
+      <p class="eq">multiplicity × order of the site-symmetry group = multiplicity of the general position.</p>
+      <p>The plane group <i>p</i>2<i>mm</i> shows every case. Drag the point and watch the copies merge on the mirror lines and at their intersections. Near a symmetry element the point snaps onto it.</p>
+      <figure class="fig split">
+        <div class="fig-body"><svg id="fig7" viewBox="0 0 420 420" role="img" aria-label="Wyckoff positions of plane group p2mm"></svg></div>
+        <div class="fig-side">
+          <p class="fig-note" id="fig7s"></p>
+          <table class="tbl wyck" id="fig7t"></table>
+        </div>
+        <figcaption><b>Figure 7.</b> Plane group <i>p</i>2<i>mm</i> (No. 6): mirror lines (solid) and 2-fold points (lenses). The site symmetry is written in oriented form: its characters refer to the symmetry directions of the full symbol, and a dot marks a direction with no symmetry at that site.</figcaption>
+      </figure>
+      <p>Tables such as the Bilbao server's <a href="https://cryst.ehu.es/cryst/get_wp.html">WYCKPOS</a> list the same four columns for every space group: multiplicity, letter, site symmetry and coordinate triplets. For centred lattices, the triplets are preceded by the centring vectors, e.g. (0, 0, 0)+ (½, ½, 0)+, meaning each listed position is repeated at each centring translation. A worked example in three dimensions is the page for <a href="14/">P2<sub>1</sub>/c</a>.</p>
+    </section>
+
+    <!-- 8 -->
+    <section id="groups">
+      <h2><span class="secno">8</span>The 230 space groups</h2>
+      <p>Grouped by crystal system and crystal class. Each page walks through the group's operations in 3D and ends with its tables.</p>
+      <div class="browse-tools">
+        <input id="q" type="search" placeholder="Filter by number, symbol or material" aria-label="Filter space groups">
+        <label class="check"><input type="checkbox" id="fC"> centrosymmetric</label>
+        <label class="check"><input type="checkbox" id="fK"> Sohncke (chiral-compatible)</label>
+        <span id="count" class="muted"></span>
+      </div>
+      <div id="browse" class="browse"></div>
+    </section>
+
+    <footer class="guide-foot">
+      <h3>Further reading</h3>
+      <ul class="refs">
+        <li>M. I. Aroyo (ed.), <i>International Tables for Crystallography</i>, Vol. A: Space-group symmetry, 6th ed., IUCr/Wiley, 2016.</li>
+        <li>M. I. Aroyo et al., “Bilbao Crystallographic Server: I. Databases and crystallographic computing programs”, <i>Z. Kristallogr.</i> 221, 15–27 (2006).</li>
+        <li>C. Hammond, <i>The Basics of Crystallography and Diffraction</i>, 4th ed., Oxford University Press, 2015.</li>
+      </ul>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="sg-core.js"></script>
+<script src="sg-view.js"></script>
+<script src="data/index.js"></script>
+<script src="guide.js"></script>
+</body>
+</html>

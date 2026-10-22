@@ -60,30 +60,6 @@
     revealEls.forEach(function (el) { el.classList.add('in'); });
   }
 
-  // Count-up for impact figures
-  var counts = document.querySelectorAll('.impact .count');
-  function countUp(el) {
-    var target = parseInt(el.textContent.replace(/,/g, ''), 10);
-    if (!target || reduceMotion) return;
-    var start = null, dur = 1400;
-    function step(ts) {
-      if (start === null) start = ts;
-      var t = Math.min((ts - start) / dur, 1);
-      var eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = Math.round(target * eased).toLocaleString('en-US');
-      if (t < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-  if ('IntersectionObserver' in window) {
-    var counter = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) { countUp(entry.target); counter.unobserve(entry.target); }
-      });
-    }, { threshold: 0.6 });
-    counts.forEach(function (el) { counter.observe(el); });
-  }
-
   // Publications: filter, search, sort
   var list = document.getElementById('pub-list');
   if (list) {
