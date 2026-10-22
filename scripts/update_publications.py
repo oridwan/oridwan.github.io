@@ -442,7 +442,9 @@ def main() -> int:
         "citations": metrics["citations"],
         "h_index": metrics["h_index"],
         "publications": metrics["publications"],
-        "first_author": metrics["first_author"],
+        "journal": sum(p["type"] == "journal" for p in public),
+        "first_author_journal": sum(p["type"] == "journal" and p["first_author"]
+                                    for p in public),
     }
     for key, val in stats.items():
         text = re.sub(rf'(data-stat="{key}"[^>]*>)[^<]*(<)', rf"\g<1>{val}\2",

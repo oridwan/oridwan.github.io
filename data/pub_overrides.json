@@ -1,18 +1,31 @@
 {
   "_README": "Manual additions merged on top of Google Scholar data. Keys are Scholar citation IDs (the part after ':' in a Scholar 'citation_for_view' URL). Supported fields: title, authors, venue, date, type (journal|preprint|conference), doi, arxiv, links [{label,url}], highlight, featured, hidden.",
-
   "2osOgNQ5qMEC": {
     "_title": "AI-assisted rapid crystal structure generation towards a target local environment",
     "arxiv": "2506.08224",
-    "links": [{"label": "Code", "url": "https://github.com/MaterSim/LEGO-xtal"}],
-    "highlight": "LEGO-xtal: symmetry-aware generation that expanded 25 known sp² carbon allotropes into 1,700+ new low-energy candidates.",
+    "links": [
+      {
+        "label": "Code",
+        "url": "https://github.com/MaterSim/LEGO-xtal"
+      },
+      {
+        "label": "Database",
+        "url": "https://mmi.charlotte.edu/carbon_sp2"
+      }
+    ],
+    "highlight": "LEGO-xtal: 1,741 low-energy sp² carbon allotropes generated from 25 known seeds, including four new negative-curvature graphites.",
     "featured": true
   },
   "Tyk-4Ss8FVUC": {
     "_title": "Crystal generation using the fully differentiable pipeline and latent space optimization",
     "arxiv": "2601.04606",
-    "links": [{"label": "Code", "url": "https://github.com/MaterSim/LEGO-Xtal-GPU"}],
-    "highlight": "End-to-end differentiable, GPU-batched crystal generation with latent-space refinement (~5× speedup).",
+    "links": [
+      {
+        "label": "Code",
+        "url": "https://github.com/MaterSim/LEGO-Xtal-GPU"
+      }
+    ],
+    "highlight": "Differentiable, GPU-batched LEGO-xtal: ~5× faster than the CPU workflow, and alternating direct/latent refinement yields ~2.5× more unique low-energy structures.",
     "featured": true
   },
   "W7OEmFMy1HYC": {

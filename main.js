@@ -135,6 +135,101 @@
     sort.addEventListener('change', function () { state.sort = sort.value; apply(); });
   }
 
+  // Projects carousel: native horizontal scroll with snap, auto-advances while
+  // visible; pauses on hover/focus, when hidden, or via the pause button.
+  var carousel = document.getElementById('carousel');
+  if (carousel) {
+    var track = document.getElementById('car-track');
+    var slides = Array.prototype.slice.call(track.querySelectorAll('.slide'));
+    var dots = Array.prototype.slice.call(document.querySelectorAll('#car-dots button'));
+    var controls = document.querySelector('.carousel-controls');
+    var toggleBtn = document.getElementById('car-toggle');
+    var DELAY = 7000;
+    var current = 0, timer = null, playing = !reduceMotion, held = false, inView = false;
+    carousel.style.setProperty('--car-delay', DELAY + 'ms');
+
+    function offsetOf(i) { return slides[i].offsetLeft - slides[0].offsetLeft; }
+
+    function setActive(i, restartFill) {
+      current = i;
+      dots.forEach(function (d, k) {
+        var on = k === i;
+        if (on && restartFill) { d.classList.remove('is-active'); void d.offsetWidth; }
+        d.classList.toggle('is-active', on);
+        if (on) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+      });
+    }
+
+    function go(i) {
+      i = (i + slides.length) % slides.length;
+      track.scrollTo({ left: offsetOf(i), behavior: reduceMotion ? 'auto' : 'smooth' });
+      setActive(i, false);
+      schedule();
+    }
+
+    function schedule() {
+      clearTimeout(timer);
+      var run = playing && !held && inView && !document.hidden;
+      carousel.classList.toggle('is-running', run);
+      if (run) {
+        setActive(current, true);
+        timer = setTimeout(function () { go(current + 1); }, DELAY);
+      }
+    }
+
+    // Sync the active dot once scrolling settles (covers swipes and drags).
+    var settle = null;
+    track.addEventListener('scroll', function () {
+      clearTimeout(settle);
+      settle = setTimeout(function () {
+        var x = track.scrollLeft, best = 0;
+        slides.forEach(function (s, k) {
+          if (Math.abs(offsetOf(k) - x) < Math.abs(offsetOf(best) - x)) best = k;
+        });
+        if (best !== current) { setActive(best, false); schedule(); }
+      }, 150);
+    }, { passive: true });
+
+    dots.forEach(function (d, k) { d.addEventListener('click', function () { go(k); }); });
+    document.getElementById('car-prev').addEventListener('click', function () { go(current - 1); });
+    document.getElementById('car-next').addEventListener('click', function () { go(current + 1); });
+    track.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(current + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(current - 1); }
+    });
+
+    toggleBtn.addEventListener('click', function () {
+      playing = !playing;
+      controls.classList.toggle('is-paused', !playing);
+      toggleBtn.setAttribute('aria-label', playing ? 'Pause automatic rotation' : 'Start automatic rotation');
+      schedule();
+    });
+    if (!playing) {
+      controls.classList.add('is-paused');
+      toggleBtn.setAttribute('aria-label', 'Start automatic rotation');
+    }
+
+    carousel.addEventListener('mouseenter', function () { held = true; schedule(); });
+    carousel.addEventListener('mouseleave', function () { held = false; schedule(); });
+    carousel.addEventListener('focusin', function () { held = true; schedule(); });
+    carousel.addEventListener('focusout', function (e) {
+      if (!carousel.contains(e.relatedTarget)) { held = false; schedule(); }
+    });
+    track.addEventListener('touchstart', function () { held = true; schedule(); }, { passive: true });
+    track.addEventListener('touchend', function () {
+      setTimeout(function () { held = false; schedule(); }, 4000);
+    }, { passive: true });
+    document.addEventListener('visibilitychange', schedule);
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        schedule();
+      }, { threshold: 0.4 }).observe(carousel);
+    }
+    setActive(0, false);
+  }
+
   // News: show earlier updates
   var newsToggle = document.getElementById('news-toggle');
   var newsList = document.getElementById('news-list');

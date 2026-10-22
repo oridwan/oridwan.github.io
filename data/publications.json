@@ -194,7 +194,7 @@
           "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:Tyk-4Ss8FVUC"
         }
       ],
-      "highlight": "End-to-end differentiable, GPU-batched crystal generation with latent-space refinement (~5× speedup).",
+      "highlight": "Differentiable, GPU-batched LEGO-xtal: ~5× faster than the CPU workflow, and alternating direct/latent refinement yields ~2.5× more unique low-energy structures.",
       "featured": true,
       "_scholar": {
         "scholar_id": "Tyk-4Ss8FVUC",
@@ -380,11 +380,15 @@
           "url": "https://github.com/MaterSim/LEGO-xtal"
         },
         {
+          "label": "Database",
+          "url": "https://mmi.charlotte.edu/carbon_sp2"
+        },
+        {
           "label": "Scholar",
           "url": "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=-NaiqfUAAAAJ&citation_for_view=-NaiqfUAAAAJ:2osOgNQ5qMEC"
         }
       ],
-      "highlight": "LEGO-xtal: symmetry-aware generation that expanded 25 known sp² carbon allotropes into 1,700+ new low-energy candidates.",
+      "highlight": "LEGO-xtal: 1,741 low-energy sp² carbon allotropes generated from 25 known seeds, including four new negative-curvature graphites.",
       "featured": true,
       "_scholar": {
         "scholar_id": "2osOgNQ5qMEC",
