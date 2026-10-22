@@ -368,7 +368,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20bcea37">
   <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -381,11 +381,11 @@
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="primary-nav">
+      <a href="#research">Research</a>
       <a href="#expertise">Expertise</a>
-      <a href="#projects">Projects</a>
       <a href="#publications">Publications</a>
       <a href="#experience">Experience</a>
-      <a href="#news">News</a>
+      <a href="#honors">Honors</a>
       <a href="#contact">Contact</a>
       <a class="nav-cv" href="assets/OGR.pdf" target="_blank" rel="noopener">CV</a>
     </div>
@@ -394,115 +394,47 @@
 
 <main id="main">
 
-  <!-- HERO -->
-  <section class="hero" id="top">
-    <div class="hero-lattice" aria-hidden="true"></div>
-    <div class="container hero-grid">
-      <div class="hero-text">
-        <p class="eyebrow">Computational Materials Scientist · Ph.D. Candidate, UNC Charlotte</p>
+  <!-- INTRO -->
+  <section class="intro" id="top">
+    <div class="container intro-grid">
+      <div class="intro-text">
         <h1>Osman Goni Ridwan</h1>
-        <p class="lead">I combine <strong>first-principles simulation</strong>, <strong>machine-learning potentials and molecular dynamics</strong>, and <strong>generative AI</strong> to discover and understand crystalline materials, from rare-earth magnets and proton-conducting ceramics to carbon allotropes and molecular crystals.</p>
-        <p class="hero-sub">Ph.D. candidate in the Materials Modeling &amp; Informatics Lab with Prof. Qiang Zhu, and LLNL Academic Cooperation Participant in computational chemistry and materials science. Lead developer of LEGO-xtal, CSPFlow and the MMI Data Hub.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="assets/OGR.pdf" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M4 19h16" /></svg>
-            Download CV
-          </a>
-          <a class="btn" href="#projects">View projects</a>
-        </div>
-        <ul class="profile-links" aria-label="Profiles">
-          <li><a href="https://scholar.google.com/citations?user=-NaiqfUAAAAJ&amp;hl=en" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 9.5l11 6.5 9-5.3V17h2V9.5L12 3Zm-6.5 9.6V16c0 2.2 2.9 4 6.5 4s6.5-1.8 6.5-4v-3.4L12 16.5l-6.5-3.9Z" fill="currentColor" stroke="none"/></svg>Scholar</a></li>
-          <li><a href="https://github.com/oridwan" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.58 9.58 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>GitHub</a></li>
-          <li><a href="https://mmi.charlotte.edu/" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-13M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></svg>Data Hub</a></li>
-          <li><a href="https://www.linkedin.com/in/ogridwan" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg>LinkedIn</a></li>
-          <li><a href="mailto:oridwan@charlotte.edu">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z M3 6l9 7 9-7" /></svg>Email</a></li>
-        </ul>
+        <p class="role">Computational Materials Scientist</p>
+        <p class="affil">Ph.D. Candidate, Mechanical Engineering · University of North Carolina at Charlotte</p>
+        <p class="bio">I study crystalline materials with first-principles simulation, machine-learning interatomic potentials and molecular dynamics, and generative models for structure discovery. My work spans rare-earth permanent magnets, proton-conducting ceramics, carbon allotropes and molecular crystals.</p>
+        <p class="bio">I work in the Materials Modeling &amp; Informatics Lab with Prof. Qiang Zhu and am an Academic Cooperation Participant at Lawrence Livermore National Laboratory. I expect to complete my Ph.D. in December 2027.</p>
+        <p class="intro-links">
+          <a class="btn btn-primary" href="assets/OGR.pdf" target="_blank" rel="noopener">Curriculum vitae (PDF)</a>
+          <a href="https://scholar.google.com/citations?user=-NaiqfUAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>
+          <a href="https://github.com/oridwan" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://mmi.charlotte.edu/" target="_blank" rel="noopener">MMI Data Hub</a>
+          <a href="https://www.linkedin.com/in/ogridwan" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="mailto:oridwan@charlotte.edu">Email</a>
+        </p>
       </div>
-      <figure class="hero-photo">
+      <figure class="portrait">
         <img src="assets/portrait.jpg" alt="Portrait of Osman Goni Ridwan" width="640" height="567" fetchpriority="high">
       </figure>
     </div>
-
     <div class="container">
-      <dl class="snapshot">
-        <div>
-          <dt>Currently</dt>
-          <dd><strong>Lawrence Livermore National Laboratory</strong><span>Academic Cooperation Participant 2026–27, following a summer 2026 graduate internship</span></dd>
-        </div>
-        <div>
-          <dt>Ph.D.</dt>
-          <dd><strong>Expected December 2027</strong><span>Mechanical Engineering, UNC Charlotte · GPA 4.00</span></dd>
-        </div>
-        <div>
-          <dt>Publications</dt>
-          <dd><strong><span data-stat="journal">4</span> peer-reviewed · <span data-stat="preprint">4</span> preprints</strong><span><span data-stat="first_author_journal">2</span> first-author journal articles</span></dd>
-        </div>
-        <div>
-          <dt>Service</dt>
-          <dd><strong>Peer reviewer for 5 journals</strong><span>including <em>npj Comput. Mater.</em>, <em>J. Chem. Phys.</em> and <em>MLST</em></span></dd>
-        </div>
+      <dl class="intro-facts">
+        <div><dt>Currently</dt><dd>Academic Cooperation Participant, Lawrence Livermore National Laboratory (2026–27)</dd></div>
+        <div><dt>Ph.D.</dt><dd>Expected December 2027</dd></div>
+        <div><dt>Publications</dt><dd><span data-stat="journal">4</span> peer-reviewed, <span data-stat="preprint">4</span> preprints; <span data-stat="first_author_journal">2</span> first-author journal articles</dd></div>
+        <div><dt>Service</dt><dd>Peer reviewer for five journals</dd></div>
       </dl>
     </div>
   </section>
 
-  <!-- EXPERTISE -->
-  <section class="section" id="expertise">
+  <!-- RESEARCH -->
+  <section class="section" id="research">
     <div class="container">
-      <header class="section-head reveal">
-        <p class="kicker">Expertise</p>
-        <h2>Atomistic simulation, accelerated by machine learning</h2>
-        <p class="section-intro">My foundation is first-principles simulation. Machine-learning potentials make it fast enough to screen thousands of structures, and generative models widen the search beyond what is already known.</p>
-      </header>
-      <div class="expertise-grid">
-        <article class="expertise-card reveal">
-          <h3>First-principles simulation</h3>
-          <p>Density functional theory with VASP, from PBE and r²SCAN energetics to spin-polarized calculations of rare-earth magnets with frozen-4f cores and Hund's-rule moment reconstruction; DFTB for large organic crystals.</p>
-          <p class="props"><span>Properties</span> thermodynamic stability (convex hull), migration barriers (NEB), phonons, elastic constants, magnetic moments, X-ray absorption</p>
-          <p class="applied"><span>Applied to</span> rare-earth magnets · proton-conducting ceramics · peptide crystals · boron nitride</p>
-          <ul class="chips"><li>VASP</li><li>DFTB+</li><li>pymatgen</li><li>ASE</li></ul>
-        </article>
-        <article class="expertise-card reveal">
-          <h3>ML potentials &amp; molecular dynamics</h3>
-          <p>Universal machine-learning interatomic potentials and classical force fields for relaxation, screening and molecular dynamics, with energies checked and calibrated against DFT, and benchmarked for crystal structure prediction of energetic molecular crystals.</p>
-          <p class="applied"><span>Applied to</span> proton transport in ceramic electrolytes · energetic molecular crystals · carbon allotropes · rare-earth magnets</p>
-          <ul class="chips"><li>MACE</li><li>UMA</li><li>MatterSim</li><li>CHGNet</li><li>TorchANI</li><li>ReaxFF</li><li>GULP</li></ul>
-        </article>
-        <article class="expertise-card reveal">
-          <h3>Generative AI for structure discovery</h3>
-          <p>Symmetry-aware generative models that build crystals from space-group and Wyckoff-site representations and steer them toward a target local environment, together with diffusion models, differentiable latent-space optimization and reciprocal-space representations.</p>
-          <p class="applied"><span>Applied to</span> carbon allotropes · rare-earth magnets</p>
-          <ul class="chips"><li>PyTorch</li><li>VAE · CVAE · GAN</li><li>MatterGen</li><li>PyXtal</li></ul>
-        </article>
-        <article class="expertise-card reveal">
-          <h3>Workflows &amp; open data</h3>
-          <p>Automated, restartable HPC pipelines that carry thousands of candidates from generation to DFT, and an open database that publishes the results for others to search and reuse.</p>
-          <p class="applied"><span>Built</span> CSPFlow · MMI Data Hub</p>
-          <ul class="chips"><li>Python</li><li>SLURM</li><li>SQLite</li><li>Git</li></ul>
-        </article>
-      </div>
-      <div class="systems reveal">
-        <p class="systems-label">Materials I've worked on</p>
-        <ul class="chips">
-          <li>Rare-earth permanent magnets</li><li>Proton-conducting ceramics</li><li>Carbon allotropes</li><li>Molecular &amp; peptide crystals</li><li>Energetic materials</li><li>Boron nitride</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROJECTS -->
-  <section class="section section-alt" id="projects">
-    <div class="container">
-      <header class="section-head section-head-split reveal">
+      <div class="section-head section-head-split">
         <div>
-          <p class="kicker">Projects</p>
-          <h2>Featured work</h2>
+          <h2>Selected research</h2>
+          <p class="lede">Four projects that I lead. Use the arrows or swipe to browse.</p>
         </div>
-        <div class="carousel-controls" aria-label="Carousel controls">
+        <div class="carousel-controls">
           <button class="icon-btn" id="car-prev" aria-label="Previous project">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
           </button>
@@ -514,60 +446,57 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
           </button>
         </div>
-      </header>
+      </div>
 
-      <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Featured projects">
+      <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Selected research">
         <div class="carousel-track" id="car-track" tabindex="0">
 
           <article class="slide" role="group" aria-roledescription="slide" aria-label="1 of 4: LEGO-xtal">
             <figure class="slide-media">
               <a href="assets/fig/lego-xtal-ncg.webp" target="_blank" rel="noopener"><img src="assets/fig/lego-xtal-record.webp" alt="Three negative-curvature graphite frameworks with DFT energies: the previous lowest-energy structure mct-cI192 at 0.211 eV per atom, and two new structures found by LEGO-xtal, NCG1-cP192 at 0.197 and NCG2-cP108 at 0.201 eV per atom." width="1500" height="582" loading="lazy"></a>
-              <figcaption>The previous lowest-energy negative-curvature graphite (a) and two new frameworks found by LEGO-xtal (e, f) that lie below it. DFT-r²SCAN energies relative to graphite. From Ridwan <i>et al.</i>, <i>npj Comput. Mater.</i> <b>12</b>, 64 (2026), CC BY 4.0. <a href="assets/fig/lego-xtal-ncg.webp" target="_blank" rel="noopener">See all eight structures</a></figcaption>
+              <figcaption>The previous lowest-energy negative-curvature graphite (a) and two new frameworks found by LEGO-xtal (e, f). DFT-r²SCAN energies relative to graphite. Ridwan <i>et al.</i>, <i>npj Comput. Mater.</i> <b>12</b>, 64 (2026), CC BY 4.0.</figcaption>
             </figure>
             <div class="slide-body">
-              <p class="slide-label">Generative AI · <em>npj Comput. Mater.</em> 2026 · <em>MLST</em> 2026</p>
+              <p class="slide-meta"><em>npj Comput. Mater.</em> 2026 · <em>Mach. Learn.: Sci. Technol.</em> 2026</p>
               <h3>LEGO-xtal: symmetry-aware generative crystal design</h3>
-              <p>Generative models learn crystals as space-group and Wyckoff-site tables. An SO(3)-descriptor optimizer then steers each candidate toward a target local environment before energy ranking with MACE and DFT. The GPU version makes the pipeline fully differentiable and alternates refinement in direct and latent space.</p>
-              <dl class="slide-stats">
-                <div><dt>1,741</dt><dd>low-energy sp² allotropes from 25 seeds</dd></div>
-                <div><dt>4</dt><dd>new frameworks, phonon-checked</dd></div>
-                <div><dt>~5×</dt><dd>faster than the CPU workflow on GPU</dd></div>
-                <div><dt>2.5×</dt><dd>more unique low-energy structures from dual-level refinement</dd></div>
-              </dl>
+              <p>Generative models learn crystals as space-group and Wyckoff-site tables, and an SO(3)-descriptor optimizer steers each candidate toward a target local environment before ranking with MACE and DFT. A differentiable GPU version refines structures in both direct and latent space.</p>
+              <ul class="results">
+                <li><strong>1,741</strong> low-energy sp² carbon allotropes generated from 25 known seeds.</li>
+                <li><strong>Four new</strong> negative-curvature graphites; two lie below the previous lowest-energy structure, and phonons confirm dynamical stability.</li>
+                <li><strong>~5×</strong> faster on GPU than the CPU workflow, with ~2.5× more unique low-energy structures.</li>
+              </ul>
               <p class="slide-links">
                 <a href="https://doi.org/10.1038/s41524-025-01931-9" target="_blank" rel="noopener">npj paper</a>
                 <a href="https://doi.org/10.1088/2632-2153/ae6751" target="_blank" rel="noopener">MLST paper</a>
                 <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank" rel="noopener">Code</a>
-                <a href="https://github.com/MaterSim/LEGO-Xtal-GPU" target="_blank" rel="noopener">GPU code</a>
-                <a href="https://mmi.charlotte.edu/carbon_sp2" target="_blank" rel="noopener">Browse structures</a>
+                <a href="https://mmi.charlotte.edu/carbon_sp2" target="_blank" rel="noopener">Structures</a>
               </p>
             </div>
           </article>
 
           <article class="slide" role="group" aria-roledescription="slide" aria-label="2 of 4: CSPFlow">
             <figure class="slide-media">
-              <div class="flow" role="img" aria-label="CSPFlow pipeline. Phase A, machine learning: generate with MatterGen, screen with MatterSim or CHGNet, deduplicate and place on the convex hull. Phase B, first principles: filter by energy above hull, spin-polarized VASP, analyze.">
-                <p class="flow-phase">Phase A · machine learning, run to completion</p>
+              <div class="flow" role="img" aria-label="CSPFlow pipeline. Machine-learning stage: generate with MatterGen, screen with MatterSim or CHGNet, deduplicate and place on the convex hull. First-principles stage: filter by energy above hull, spin-polarized VASP, analyze.">
+                <p class="flow-phase">Machine-learning stage · run to completion</p>
                 <div class="flow-step" style="--w:100%"><b>Generate</b><span>MatterGen diffusion model</span></div>
                 <div class="flow-step" style="--w:93%"><b>Screen</b><span>MatterSim / CHGNet relaxation</span></div>
                 <div class="flow-step" style="--w:86%"><b>Deduplicate · hull</b><span>Materials Project references</span></div>
-                <p class="flow-phase">Phase B · first principles, streamed under a core cap</p>
+                <p class="flow-phase">First-principles stage · streamed under a core budget</p>
                 <div class="flow-step flow-b" style="--w:79%"><b>Filter</b><span>energy above hull</span></div>
                 <div class="flow-step flow-b" style="--w:72%"><b>DFT</b><span>spin-polarized VASP</span></div>
                 <div class="flow-step flow-b" style="--w:65%"><b>Analyze</b><span>hull · moments · report</span></div>
               </div>
-              <figcaption>The CSPFlow funnel: thousands of generated candidates are reduced to the few worth a DFT calculation. <a href="assets/fig/cspflow-workflow.webp" target="_blank" rel="noopener">View the full workflow guide</a></figcaption>
+              <figcaption>Thousands of generated candidates are reduced to the few worth a DFT calculation. <a href="assets/fig/cspflow-workflow.webp" target="_blank" rel="noopener">Full workflow guide</a></figcaption>
             </figure>
             <div class="slide-body">
-              <p class="slide-label">Automated discovery · Rare-earth magnets · DOE ARPA-E MAGNITO</p>
-              <h3>CSPFlow: automated crystal structure prediction, from AI generation to DFT</h3>
-              <p>A fully automated pipeline that generates candidates with a diffusion model, screens them with ML interatomic potentials, places the survivors on a convex hull, and streams the best through spin-polarized DFT. Built for rare-earth transition-metal magnet searches, it treats the 4f electrons in the core for reliable energetics and reconstructs saturation magnetization with Hund's rules. It runs unattended on SLURM clusters.</p>
-              <dl class="slide-stats">
-                <div><dt>3</dt><dd>entry modes: chemical space, formulas or structures</dd></div>
-                <div><dt>8</dt><dd>pipeline stages, each stoppable and resumable</dd></div>
-                <div><dt>1,200+</dt><dd>automated tests</dd></div>
-                <div><dt>13</dt><dd>chapter user guide</dd></div>
-              </dl>
+              <p class="slide-meta">Rare-earth magnets · DOE ARPA-E MAGNITO · 2026</p>
+              <h3>CSPFlow: automated crystal structure prediction from AI generation to DFT</h3>
+              <p>An end-to-end pipeline that generates candidates with a diffusion model, screens them with ML interatomic potentials, places the survivors on a convex hull against Materials Project references, and streams the best through spin-polarized DFT on SLURM clusters.</p>
+              <ul class="results">
+                <li>Rare-earth 4f electrons are kept in the core for reliable energetics, and saturation magnetization is reconstructed from Hund's rules.</li>
+                <li>Each campaign lives in one resumable database: inexpensive ML screening runs to completion, and DFT is streamed under a core budget.</li>
+                <li><strong>1,200+</strong> automated tests and a 13-chapter user guide.</li>
+              </ul>
               <p class="slide-links">
                 <a href="https://github.com/oridwan/CSPFlow" target="_blank" rel="noopener">Code</a>
                 <a href="https://github.com/oridwan/CSPFlow/tree/main/docs" target="_blank" rel="noopener">User guide</a>
@@ -579,17 +508,16 @@
           <article class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4: MMI Data Hub">
             <figure class="slide-media">
               <a href="https://mmi.charlotte.edu/" target="_blank" rel="noopener"><img src="assets/fig/mmi-data-hub.webp" alt="Screenshot of the MMI Data Hub home page with a search bar, database statistics and an interactive Y2Co17 structure showing DFT spin moments." width="1600" height="865" loading="lazy"></a>
-              <figcaption>mmi.charlotte.edu: one search across every database, with an interactive structure viewer that shows DFT spin moments.</figcaption>
+              <figcaption>mmi.charlotte.edu: one search across every database, with an interactive viewer showing DFT spin moments.</figcaption>
             </figure>
             <div class="slide-body">
-              <p class="slide-label">Open data · v1.0 released Oct 2026</p>
-              <h3>MMI Data Hub: open database of computed crystal structures</h3>
-              <p>I created and lead the lab's public data platform. It brings the group's results into one place, searchable by formula, chemical system, element or space group, with structure viewers, downloadable DFT inputs and citation metadata for archiving.</p>
-              <dl class="slide-stats">
-                <div><dt>17,596</dt><dd>structures</dd></div>
-                <div><dt>5</dt><dd>databases: carbon, magnets, electrides, energetic materials, PXRD</dd></div>
-                <div><dt>86</dt><dd>elements represented</dd></div>
-              </dl>
+              <p class="slide-meta">Open data · v1.0, October 2026</p>
+              <h3>MMI Data Hub: an open database of computed crystal structures</h3>
+              <p>I created and lead the lab's public data platform. Results are searchable by formula, chemical system, element or space group, with structure viewers, downloadable DFT inputs and citation metadata for archiving.</p>
+              <ul class="results">
+                <li><strong>17,596</strong> structures across five databases: carbon allotropes, rare-earth magnets, electrides, energetic materials and PXRD solutions.</li>
+                <li><strong>86</strong> elements represented.</li>
+              </ul>
               <p class="slide-links">
                 <a href="https://mmi.charlotte.edu/" target="_blank" rel="noopener">Visit the hub</a>
                 <a href="https://mmi.charlotte.edu/changelog" target="_blank" rel="noopener">Release notes</a>
@@ -600,16 +528,16 @@
           <article class="slide" role="group" aria-roledescription="slide" aria-label="4 of 4: Reciprocal-space representation">
             <figure class="slide-media">
               <a href="assets/fig/reciprocal-quartz.webp" target="_blank" rel="noopener"><img src="assets/fig/reciprocal-quartz.webp" alt="Power spectrum and radial distribution plots for alpha-quartz: a perturbed structure in the top row and the recovered structure, matching the reference, in the bottom row." width="1300" height="1093" loading="lazy"></a>
-              <figcaption>A perturbed α-quartz (top) is recovered (bottom) by matching its reciprocal-space power spectrum. From Ridwan <i>et al.</i>, arXiv:2601.17981.</figcaption>
+              <figcaption>A perturbed α-quartz (top) is recovered (bottom) by matching its reciprocal-space power spectrum. Ridwan <i>et al.</i>, arXiv:2601.17981.</figcaption>
             </figure>
             <div class="slide-body">
-              <p class="slide-label">Representation learning · Preprint 2026</p>
+              <p class="slide-meta">Representation learning · arXiv 2026</p>
               <h3>Crystal representation in reciprocal space</h3>
-              <p>Crystal representations used in practice are not one-to-one, which hurts structure matching and generative-model training. This work maps crystals to a 4D reciprocal space of Cartesian coordinates and scattering factors and converts it to a rotation-invariant power spectrum. The result is a continuous, symmetry-aware representation of atomic positions and lattice parameters.</p>
-              <dl class="slide-stats">
-                <div><dt>4D</dt><dd>reciprocal-space encoding with scattering factors</dd></div>
-                <div><dt>1:1</dt><dd>invariant to translation, rotation and choice of setting</dd></div>
-              </dl>
+              <p>Common crystal representations are not one-to-one, which complicates structure matching and generative-model training. This work maps crystals to a 4D reciprocal space of Cartesian coordinates and scattering factors and converts it to a rotation-invariant power spectrum.</p>
+              <ul class="results">
+                <li>Invariant to translation, rotation and choice of crystallographic setting.</li>
+                <li>Demonstrated on structure matching and reconstruction tasks.</li>
+              </ul>
               <p class="slide-links">
                 <a href="https://arxiv.org/abs/2601.17981" target="_blank" rel="noopener">arXiv</a>
               </p>
@@ -624,16 +552,68 @@
           <button aria-label="Reciprocal-space representation"><span class="fill"></span></button>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="contrib reveal">
-        <h3 class="contrib-title">Also contributed to</h3>
-        <ul class="contrib-list">
-          <li><span class="contrib-name">X-ray absorption signatures of boron nitride</span><span class="contrib-meta">with LLNL · <em>Next Materials</em> 2025 · ~200 hypothetical BN structures generated with PyXtal for first-principles XAS</span><a href="https://doi.org/10.1016/j.nxmate.2025.101271" target="_blank" rel="noopener">Paper</a></li>
-          <li><span class="contrib-name">Water-mediated mechanics of porous peptide crystals</span><span class="contrib-meta">with CUNY · <em>Matter</em> 2026 · PyXtal-DFTB pipeline for elastic constants of organic crystals</span><a href="https://doi.org/10.1016/j.matt.2026.102669" target="_blank" rel="noopener">Paper</a></li>
-          <li><span class="contrib-name">Magnetic rare-earth transition-metal alloys</span><span class="contrib-meta">arXiv 2026 · high-throughput search, data in the hub's RE-TM Magnets database</span><a href="https://arxiv.org/abs/2608.25270" target="_blank" rel="noopener">arXiv</a></li>
-          <li><span class="contrib-name">ML force fields for energetic molecular crystals</span><span class="contrib-meta">arXiv 2026 · benchmark data in the hub's 14,087-structure database</span><a href="https://arxiv.org/abs/2609.07477" target="_blank" rel="noopener">arXiv</a></li>
-          <li><span class="contrib-name">Crystal structure solution from powder X-ray diffraction</span><span class="contrib-meta">arXiv 2026 · 1,134 solver runs published in the hub</span><a href="https://arxiv.org/abs/2605.24594" target="_blank" rel="noopener">arXiv</a></li>
-        </ul>
+  <!-- EXPERTISE -->
+  <section class="section" id="expertise">
+    <div class="container">
+      <div class="section-head">
+        <h2>Expertise</h2>
+        <p class="lede">Each area is listed with the work that demonstrates it.</p>
+      </div>
+      <div class="evidence">
+        <div class="ev-row reveal">
+          <div class="ev-area">
+            <h3>First-principles simulation</h3>
+            <p>Density functional theory for thermodynamic stability, magnetism, migration barriers and phonons; DFTB for large organic crystals.</p>
+            <p class="ev-tools">VASP · DFTB+ · pymatgen · ASE</p>
+          </div>
+          <ul class="ev-proof">
+            <li><a href="https://github.com/oridwan/CSPFlow" target="_blank" rel="noopener">Spin-polarized DFT screening of rare-earth magnets</a><span>CSPFlow · DOE ARPA-E MAGNITO</span></li>
+            <li>Proton migration barriers in ceramic electrolytes by nudged elastic band<span>LLNL · 2026–27</span></li>
+            <li><a href="https://doi.org/10.1038/s41524-025-01931-9" target="_blank" rel="noopener">DFT-r²SCAN energies and phonons of new carbon frameworks</a><span><em>npj Comput. Mater.</em> 2026</span></li>
+            <li><a href="https://doi.org/10.1016/j.matt.2026.102669" target="_blank" rel="noopener">DFTB elastic constants of porous peptide crystals</a><span><em>Matter</em> 2026</span></li>
+          </ul>
+        </div>
+        <div class="ev-row reveal">
+          <div class="ev-area">
+            <h3>ML potentials &amp; molecular dynamics</h3>
+            <p>Universal machine-learning interatomic potentials for relaxation, screening and molecular dynamics, validated against DFT.</p>
+            <p class="ev-tools">MACE · UMA · MatterSim · CHGNet · TorchANI · ReaxFF · GULP</p>
+          </div>
+          <ul class="ev-proof">
+            <li>Proton transport with ML-potential molecular dynamics<span>LLNL · 2026–27</span></li>
+            <li><a href="https://arxiv.org/abs/2609.07477" target="_blank" rel="noopener">Benchmark of universal ML force fields for energetic molecular crystals</a><span>arXiv 2026</span></li>
+            <li><a href="https://doi.org/10.1038/s41524-025-01931-9" target="_blank" rel="noopener">MACE and ReaxFF validated against VASP for 140 carbon allotropes</a><span><em>npj Comput. Mater.</em> 2026</span></li>
+            <li><a href="https://github.com/oridwan/CSPFlow" target="_blank" rel="noopener">MatterSim and CHGNet pre-screening ahead of DFT</a><span>CSPFlow</span></li>
+          </ul>
+        </div>
+        <div class="ev-row reveal">
+          <div class="ev-area">
+            <h3>Generative models for structure discovery</h3>
+            <p>Symmetry-aware generative models and differentiable optimization that propose new crystal structures toward a target local environment.</p>
+            <p class="ev-tools">PyTorch · VAE · CVAE · GAN · MatterGen · PyXtal</p>
+          </div>
+          <ul class="ev-proof">
+            <li><a href="https://doi.org/10.1038/s41524-025-01931-9" target="_blank" rel="noopener">LEGO-xtal: symmetry-aware crystal generation</a><span><em>npj Comput. Mater.</em> 2026</span></li>
+            <li><a href="https://doi.org/10.1088/2632-2153/ae6751" target="_blank" rel="noopener">Differentiable, GPU-batched latent-space optimization</a><span><em>Mach. Learn.: Sci. Technol.</em> 2026</span></li>
+            <li><a href="https://arxiv.org/abs/2601.17981" target="_blank" rel="noopener">Crystal representation in reciprocal space</a><span>arXiv 2026</span></li>
+            <li><a href="https://github.com/oridwan/CSPFlow" target="_blank" rel="noopener">Diffusion-model generation for magnet discovery</a><span>CSPFlow</span></li>
+          </ul>
+        </div>
+        <div class="ev-row reveal">
+          <div class="ev-area">
+            <h3>Workflows &amp; open data</h3>
+            <p>Automated, restartable HPC pipelines and open, searchable databases of computed structures.</p>
+            <p class="ev-tools">Python · SLURM · SQLite · Git</p>
+          </div>
+          <ul class="ev-proof">
+            <li><a href="https://github.com/oridwan/CSPFlow" target="_blank" rel="noopener">CSPFlow: generation-to-DFT pipeline with 1,200+ tests</a><span>GitHub · 2026</span></li>
+            <li><a href="https://mmi.charlotte.edu/" target="_blank" rel="noopener">MMI Data Hub: 17,596 structures in five open databases</a><span>mmi.charlotte.edu · 2026</span></li>
+            <li><a href="https://github.com/MaterSim/LEGO-xtal" target="_blank" rel="noopener">LEGO-xtal open-source release</a><span>GitHub · 2025</span></li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
@@ -641,21 +621,19 @@
   <!-- PUBLICATIONS -->
   <section class="section" id="publications">
     <div class="container">
-      <header class="section-head section-head-split reveal">
+      <div class="section-head section-head-split">
         <div>
-          <p class="kicker">Publications</p>
-          <h2>Papers &amp; preprints</h2>
-          <p class="section-intro small">Synced automatically from <a href="https://scholar.google.com/citations?user=-NaiqfUAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a> · last updated <span data-stat="updated">Oct 2026</span></p>
+          <h2>Publications</h2>
+          <p class="lede">Synced automatically from <a href="https://scholar.google.com/citations?user=-NaiqfUAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>; last updated <span data-stat="updated">Oct 2026</span>.</p>
         </div>
         <dl class="scholar-stats" aria-label="Google Scholar metrics">
           <div><dt>Citations</dt><dd data-stat="citations">15</dd></div>
           <div><dt>h-index</dt><dd data-stat="h_index">2</dd></div>
           <div><dt>Papers</dt><dd data-stat="publications">9</dd></div>
-          <div><dt>Journal</dt><dd data-stat="journal">4</dd></div>
         </dl>
-      </header>
+      </div>
 
-      <div class="pub-controls reveal" role="toolbar" aria-label="Filter and sort publications">
+      <div class="pub-controls" role="toolbar" aria-label="Filter and sort publications">
         <div class="filters" role="group" aria-label="Filter">
           <button class="filter is-active" data-filter="all" aria-pressed="true">All</button>
           <button class="filter" data-filter="journal" aria-pressed="false">Journal</button>
@@ -800,20 +778,17 @@
   </section>
 
   <!-- EXPERIENCE & EDUCATION -->
-  <section class="section section-alt" id="experience">
+  <section class="section" id="experience">
     <div class="container two-col">
       <div>
-        <header class="section-head reveal">
-          <p class="kicker">Experience</p>
-          <h2>Research</h2>
-        </header>
+        <h2>Experience</h2>
         <ol class="timeline">
           <li class="reveal">
             <p class="when">Jun 2026 – Jun 2027</p>
             <h3>Lawrence Livermore National Laboratory</h3>
-            <p class="where">Graduate Intern, Computational Chemistry &amp; Materials Science (Jun – Aug 2026) · Academic Cooperation Participant (Sep 2026 – Jun 2027)</p>
+            <p class="where">Graduate Intern, Computational Chemistry &amp; Materials Science (Jun – Aug 2026); Academic Cooperation Participant (Sep 2026 – Jun 2027)</p>
             <ul class="bullets">
-              <li>Investigating proton migration pathways and energy barriers in ceramic electrolytes with nudged elastic band (NEB) calculations in VASP and machine-learning interatomic potentials, and proton transport with ML-potential molecular dynamics.</li>
+              <li>Investigating proton migration pathways and energy barriers in ceramic electrolytes with nudged elastic band calculations in VASP and machine-learning interatomic potentials, and proton transport with ML-potential molecular dynamics.</li>
               <li>Relating local atomic environments to migration barriers to identify targets for subsequent crystal generation and screening.</li>
               <li>Presented the work at the LLNL Summer Student Symposium.</li>
             </ul>
@@ -823,19 +798,16 @@
             <h3>Graduate Research Assistant</h3>
             <p class="where">University of North Carolina at Charlotte · Materials Modeling &amp; Informatics Lab</p>
             <ul class="bullets">
-              <li>Lead developer of <strong>LEGO-xtal</strong>, a symmetry-aware generative framework for crystal design, and its differentiable GPU successor (first author, <em>npj Comput. Mater.</em> 2026; <em>MLST</em> 2026).</li>
-              <li>Developing <strong>CSPFlow</strong>, an automated generation → ML screening → DFT pipeline for rare-earth magnet discovery under DOE ARPA-E MAGNITO.</li>
-              <li>Created and lead the <strong>MMI Data Hub</strong>, the lab's open database of 17,500+ computed structures.</li>
-              <li>DFTB workflows for elastic constants of peptide crystals (with CUNY); ~200 hypothetical boron nitrides for X-ray absorption analysis (with LLNL); ML force-field benchmarks for energetic molecular crystals.</li>
+              <li>Lead developer of LEGO-xtal and its differentiable GPU successor (first author, <em>npj Comput. Mater.</em> 2026; <em>MLST</em> 2026).</li>
+              <li>Developing CSPFlow for rare-earth magnet discovery under DOE ARPA-E MAGNITO.</li>
+              <li>Created and lead the MMI Data Hub, the lab's open database of computed structures.</li>
+              <li>DFTB elastic constants of peptide crystals (with CUNY); hypothetical boron nitrides for X-ray absorption analysis (with LLNL); ML force-field benchmarks for energetic molecular crystals.</li>
             </ul>
           </li>
         </ol>
       </div>
       <div>
-        <header class="section-head reveal">
-          <p class="kicker">Education</p>
-          <h2>Academic</h2>
-        </header>
+        <h2>Education</h2>
         <ol class="timeline">
           <li class="reveal">
             <p class="when">Jan 2024 – Dec 2027 (expected)</p>
@@ -852,104 +824,72 @@
           <li class="reveal">
             <p class="when">2017 – 2022</p>
             <h3>B.Sc., Naval Architecture &amp; Marine Engineering</h3>
-            <p class="where">Bangladesh University of Engineering and Technology (BUET)</p>
-            <p>Thesis: numerical computation of the thermal performance of earth-pipe cooling systems (MARTEC 2022).</p>
+            <p class="where">Bangladesh University of Engineering and Technology</p>
+            <p>Thesis on the thermal performance of earth-pipe cooling systems (MARTEC 2022).</p>
           </li>
         </ol>
       </div>
     </div>
   </section>
 
-  <!-- HONORS / SERVICE / SKILLS -->
+  <!-- HONORS & SERVICE -->
   <section class="section" id="honors">
-    <div class="container">
-      <article class="award-feature reveal">
-        <figure class="award-photo">
-          <img src="assets/fig/award-dra-2026.webp" alt="Osman Goni Ridwan holding the Graduate Student Award certificate for Distinguished Research Assistant at UNC Charlotte." width="1200" height="900" loading="lazy">
-        </figure>
-        <div class="award-body">
-          <p class="kicker">Recognition · 2026</p>
-          <h2>Distinguished Research Assistant</h2>
-          <p class="award-org">Graduate Student Award, Department of Mechanical Engineering &amp; Engineering Science, UNC Charlotte</p>
-          <p>The department's research award to a graduate student, given in its 2026 student awards, which recognize dedication and service to the department and the university.</p>
-          <p class="award-links"><a class="btn btn-sm" href="https://engineering.charlotte.edu/unc-charlotte-mees-department-student-awards/" target="_blank" rel="noopener">Read the announcement</a></p>
-          <p class="award-credit">Photo: UNC Charlotte William States Lee College of Engineering</p>
-        </div>
-      </article>
-    </div>
-    <div class="container three-col">
-      <div class="reveal">
-        <p class="kicker">Honors</p>
-        <h2 class="h2-sm">Awards &amp; talks</h2>
-        <ul class="plain-list">
-          <li><strong><a href="https://engineering.charlotte.edu/unc-charlotte-mees-department-student-awards/" target="_blank" rel="noopener">Distinguished Research Assistant</a></strong>, Graduate Student Award, UNC Charlotte, 2026.</li>
-          <li><strong>Poster Preview speaker</strong>, Gordon Research Conference, selected in 2024 and 2026.</li>
-          <li><strong>Best Poster Award</strong>, CITRANS Symposium, UNC Charlotte, 2025 — first of 26 presentations.</li>
-          <li><strong>Poster</strong>, LLNL Summer Student Symposium, 2026.</li>
-        </ul>
+    <div class="container honors-grid">
+      <div>
+        <h2>Honors &amp; service</h2>
+        <table class="honors">
+          <caption class="visually-hidden">Honors and presentations</caption>
+          <tbody>
+            <tr><th scope="row">2026</th><td><a href="https://engineering.charlotte.edu/unc-charlotte-mees-department-student-awards/" target="_blank" rel="noopener">Distinguished Research Assistant</a>, Graduate Student Award<span>Department of Mechanical Engineering &amp; Engineering Science, UNC Charlotte</span></td></tr>
+            <tr><th scope="row">2026</th><td>Poster Preview speaker<span>Gordon Research Conference</span></td></tr>
+            <tr><th scope="row">2026</th><td>Poster presentation<span>LLNL Summer Student Symposium</span></td></tr>
+            <tr><th scope="row">2025</th><td>Best Poster Award<span>CITRANS Symposium, UNC Charlotte</span></td></tr>
+            <tr><th scope="row">2024</th><td>Poster Preview speaker<span>Gordon Research Conference</span></td></tr>
+          </tbody>
+        </table>
+        <h3 class="sub">Service</h3>
+        <p class="service"><strong>Peer reviewer:</strong> <em>npj Computational Materials</em>, <em>The Journal of Chemical Physics</em>, <em>Crystal Growth &amp; Design</em>, <em>Machine Learning: Science and Technology</em>, <em>Journal of Physics: Materials</em>.</p>
+        <p class="service"><strong>Memberships:</strong> American Chemical Society; Materials Research Society.</p>
       </div>
-      <div class="reveal">
-        <p class="kicker">Service</p>
-        <h2 class="h2-sm">Professional service</h2>
-        <ul class="plain-list">
-          <li><strong>Peer reviewer</strong> for <em>npj Computational Materials</em>, <em>The Journal of Chemical Physics</em>, <em>Crystal Growth &amp; Design</em>, <em>Machine Learning: Science and Technology</em> and <em>Journal of Physics: Materials</em>.</li>
-          <li><strong>Member</strong>, American Chemical Society and Materials Research Society.</li>
-        </ul>
-      </div>
-      <div class="reveal">
-        <p class="kicker">Toolkit</p>
-        <h2 class="h2-sm">Technical skills</h2>
-        <dl class="skills">
-          <dt>First principles</dt><dd>VASP (PBE, r²SCAN, spin-polarized, frozen-4f), DFTB+, nudged elastic band, convex-hull analysis, phonons, elastic constants</dd>
-          <dt>ML potentials &amp; MD</dt><dd>MACE, UMA, MatterSim, CHGNet, TorchANI; ReaxFF, GULP; ML-potential molecular dynamics</dd>
-          <dt>Machine learning</dt><dd>PyTorch; generative models (VAE, CVAE, GAN, diffusion via MatterGen); differentiable, GPU-batched optimization</dd>
-          <dt>Workflows &amp; data</dt><dd>Python, Bash, SLURM, SQLite, ASE, PyXtal, pymatgen, Materials Project API, Git</dd>
-          <dt>Visualization</dt><dd>Matplotlib, VESTA, OVITO</dd>
-        </dl>
-      </div>
+      <figure class="award-photo reveal">
+        <img src="assets/fig/award-dra-2026.webp" alt="Osman Goni Ridwan holding the Graduate Student Award certificate for Distinguished Research Assistant at UNC Charlotte." width="1200" height="900" loading="lazy">
+        <figcaption>Receiving the Distinguished Research Assistant award, UNC Charlotte, 2026. Photo: UNC Charlotte William States Lee College of Engineering.</figcaption>
+      </figure>
     </div>
   </section>
 
   <!-- NEWS -->
-  <section class="section section-alt" id="news">
+  <section class="section" id="news">
     <div class="container">
-      <header class="section-head reveal">
-        <p class="kicker">News</p>
-        <h2>Recent updates</h2>
-      </header>
+      <div class="section-head"><h2>News</h2></div>
       <ol class="news-list" id="news-list">
-        <li class="reveal"><time datetime="2026-10">Oct 2026</time><p>Released MMI Data Hub v1.0: one search across five open databases of computed crystal structures. <a href="https://mmi.charlotte.edu/" target="_blank" rel="noopener">Visit</a></p></li>
-        <li class="reveal"><time datetime="2026-09">Sep 2026</time><p>Continuing the LLNL project as a virtual Academic Cooperation Participant through June 2027.</p></li>
-        <li class="reveal"><time datetime="2026-09">Sep 2026</time><p>Released CSPFlow, an automated pipeline from AI structure generation to DFT for magnet discovery. <a href="https://github.com/oridwan/CSPFlow" target="_blank" rel="noopener">Code</a></p></li>
-        <li class="reveal news-more"><time datetime="2026-09">Sep 2026</time><p>New preprint benchmarking universal ML force fields for crystal structure prediction of high-energy molecular systems. <a href="https://arxiv.org/abs/2609.07477" target="_blank" rel="noopener">arXiv</a></p></li>
-        <li class="reveal news-more"><time datetime="2026-08">Aug 2026</time><p>New preprint on high-throughput discovery of magnetic rare-earth transition-metal alloys. <a href="https://arxiv.org/abs/2608.25270" target="_blank" rel="noopener">arXiv</a></p></li>
-        <li class="reveal"><time datetime="2026-06">Jun 2026</time><p>Joined Lawrence Livermore National Laboratory as a graduate intern in Computational Chemistry and Materials Science.</p></li>
-        <li class="reveal"><time datetime="2026-05">May 2026</time><p>Received the Distinguished Research Assistant award from the UNC Charlotte Department of Mechanical Engineering &amp; Engineering Science. <a href="https://engineering.charlotte.edu/unc-charlotte-mees-department-student-awards/" target="_blank" rel="noopener">Announcement</a></p></li>
-        <li class="reveal news-more"><time datetime="2026-05">May 2026</time><p>The differentiable LEGO-xtal paper is published in <em>Machine Learning: Science and Technology</em>. <a href="https://doi.org/10.1088/2632-2153/ae6751" target="_blank" rel="noopener">Paper</a></p></li>
-        <li class="reveal news-more"><time datetime="2026-05">May 2026</time><p>New preprint on ab-initio crystal structure determination from powder X-ray diffraction. <a href="https://arxiv.org/abs/2605.24594" target="_blank" rel="noopener">arXiv</a></p></li>
-        <li class="reveal news-more"><time datetime="2026-03">Mar 2026</time><p>Peptide materials paper on water-mediated reconfigurable topology and mechanics published in <em>Matter</em>. <a href="https://doi.org/10.1016/j.matt.2026.102669" target="_blank" rel="noopener">Paper</a></p></li>
-        <li class="reveal news-more"><time datetime="2026-01">Jan 2026</time><p>LEGO-xtal published in <em>npj Computational Materials</em>. <a href="https://doi.org/10.1038/s41524-025-01931-9" target="_blank" rel="noopener">Paper</a></p></li>
-        <li class="reveal news-more"><time datetime="2026-01">Jan 2026</time><p>Preprint on crystal representation in reciprocal space released. <a href="https://arxiv.org/abs/2601.17981" target="_blank" rel="noopener">arXiv</a></p></li>
-        <li class="reveal news-more"><time datetime="2025-12">Dec 2025</time><p>Completed the M.S. in Mechanical Engineering with a 4.00 GPA.</p></li>
-        <li class="reveal news-more"><time datetime="2025-08">Aug 2025</time><p>Best Poster Award at the CITRANS Symposium, UNC Charlotte.</p></li>
-        <li class="reveal news-more"><time datetime="2025-07">Jul 2025</time><p>LEGO-xtal code released as open source. <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank" rel="noopener">GitHub</a></p></li>
+        <li><time datetime="2026-10">Oct 2026</time><p>Released MMI Data Hub v1.0, one search across five open databases of computed crystal structures. <a href="https://mmi.charlotte.edu/" target="_blank" rel="noopener">Visit</a></p></li>
+        <li><time datetime="2026-09">Sep 2026</time><p>Continuing the LLNL project as an Academic Cooperation Participant through June 2027.</p></li>
+        <li><time datetime="2026-09">Sep 2026</time><p>Released CSPFlow, an automated pipeline from AI structure generation to DFT for magnet discovery. <a href="https://github.com/oridwan/CSPFlow" target="_blank" rel="noopener">Code</a></p></li>
+        <li><time datetime="2026-06">Jun 2026</time><p>Joined Lawrence Livermore National Laboratory as a graduate intern in Computational Chemistry and Materials Science.</p></li>
+        <li><time datetime="2026-05">May 2026</time><p>Received the Distinguished Research Assistant award from the Department of Mechanical Engineering &amp; Engineering Science. <a href="https://engineering.charlotte.edu/unc-charlotte-mees-department-student-awards/" target="_blank" rel="noopener">Announcement</a></p></li>
+        <li class="news-more"><time datetime="2026-05">May 2026</time><p>The differentiable LEGO-xtal paper is published in <em>Machine Learning: Science and Technology</em>. <a href="https://doi.org/10.1088/2632-2153/ae6751" target="_blank" rel="noopener">Paper</a></p></li>
+        <li class="news-more"><time datetime="2026-03">Mar 2026</time><p>Peptide-materials paper on water-mediated topology and mechanics published in <em>Matter</em>. <a href="https://doi.org/10.1016/j.matt.2026.102669" target="_blank" rel="noopener">Paper</a></p></li>
+        <li class="news-more"><time datetime="2026-01">Jan 2026</time><p>LEGO-xtal published in <em>npj Computational Materials</em>. <a href="https://doi.org/10.1038/s41524-025-01931-9" target="_blank" rel="noopener">Paper</a></p></li>
+        <li class="news-more"><time datetime="2025-12">Dec 2025</time><p>Completed the M.S. in Mechanical Engineering.</p></li>
+        <li class="news-more"><time datetime="2025-08">Aug 2025</time><p>Best Poster Award at the CITRANS Symposium, UNC Charlotte.</p></li>
+        <li class="news-more"><time datetime="2025-07">Jul 2025</time><p>LEGO-xtal released as open source. <a href="https://github.com/MaterSim/LEGO-xtal" target="_blank" rel="noopener">Code</a></p></li>
       </ol>
       <button class="btn btn-sm news-toggle" id="news-toggle" aria-expanded="false" aria-controls="news-list">Show earlier updates</button>
     </div>
   </section>
 
   <!-- CONTACT -->
-  <section class="section contact" id="contact">
-    <div class="container contact-inner reveal">
+  <section class="section" id="contact">
+    <div class="container contact-grid">
       <div>
-        <p class="kicker">Contact</p>
-        <h2>Let's work together</h2>
-        <p class="section-intro">I complete my Ph.D. in December 2027 and am open to research scientist roles in industry and national laboratories, and to postdoctoral positions, in computational materials science: first-principles simulation, machine-learning potentials and molecular dynamics, and AI-driven discovery.</p>
+        <h2>Contact</h2>
+        <p class="lede">I am open to research scientist positions in industry and national laboratories, and to postdoctoral positions, in computational materials science, after I complete my Ph.D. in December 2027.</p>
       </div>
-      <div class="contact-actions">
-        <a class="btn btn-primary btn-lg" href="mailto:oridwan@charlotte.edu">oridwan@charlotte.edu</a>
-        <p class="contact-meta">Department of Mechanical Engineering &amp; Engineering Science<br>University of North Carolina at Charlotte, NC, USA</p>
-      </div>
+      <address class="contact-card">
+        <a href="mailto:oridwan@charlotte.edu">oridwan@charlotte.edu</a>
+        <span>Department of Mechanical Engineering &amp; Engineering Science<br>University of North Carolina at Charlotte<br>Charlotte, NC, USA</span>
+      </address>
     </div>
   </section>
 </main>
@@ -966,6 +906,6 @@
   </div>
 </footer>
 
-<script src="main.js" defer></script>
+<script src="main.js?v=fc43fef2" defer></script>
 </body>
 </html>
