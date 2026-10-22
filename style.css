@@ -352,6 +352,14 @@ svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1
 .footer-links a { color: var(--muted); }
 .footer-links a:hover { color: var(--accent); }
 
+.footer-legal { flex-basis: 100%; font-size: .8rem; line-height: 1.55; }
+.footer-legal a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+
+/* Copyright line on the symmetry pages (they load this stylesheet) */
+.site-copy { max-width: var(--max); margin: 56px auto 0; padding: 22px 24px 32px; border-top: 1px solid var(--line); }
+.site-copy p { margin: 0; font-size: .8rem; line-height: 1.55; color: var(--muted); }
+.site-copy a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+
 /* ---------- Reveal on scroll (subtle) ---------- */
 .js .reveal { opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; }
 .js .reveal.in { opacity: 1; transform: none; }

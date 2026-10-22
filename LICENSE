@@ -1,0 +1,29 @@
+Copyright (c) 2025-2026 Osman Goni Ridwan. All rights reserved.
+
+This repository and the website it publishes (https://oridwan.github.io),
+including its text, figures, tutorials, interactive tools, design and source
+code, are the work of Osman Goni Ridwan. No part of it may be copied,
+reproduced, republished, modified, distributed or used to create derivative
+works without prior written permission, except where the law allows (for
+example, brief quotation with attribution).
+
+Reading the site and linking to its pages are welcome. To request permission
+to reuse any material, email oridwan@charlotte.edu.
+
+Material owned by others is not covered by this notice and remains under its
+own terms:
+
+- Figures reproduced from O. G. Ridwan et al., npj Computational Materials 12,
+  64 (2026), are licensed under CC BY 4.0
+  (https://creativecommons.org/licenses/by/4.0/).
+- Figures from preprints by the author and co-authors remain the copyright of
+  their authors.
+- The award photograph is by the UNC Charlotte William States Lee College of
+  Engineering.
+- The MMI Data Hub screenshot shows a site of the Materials Modeling and
+  Informatics Lab, UNC Charlotte.
+- Space-group data follow the International Tables for Crystallography,
+  Vol. A, and are generated with PyXtal (MIT License) and spglib (BSD 3-Clause
+  License).
+- Third-party libraries loaded by the pages, such as three.js, remain under
+  their own licenses.

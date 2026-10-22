@@ -249,7 +249,7 @@ def reference_html(d: dict, idx: list[dict]) -> str:
 
 
 def head_html(d: dict) -> str:
-    return f"""<h1><span class="no">Space group {d["number"]}</span>{hm_html(d["short"])}</h1>
+    return f"""<h1><span class="no">Space group {d["number"]}</span> {hm_html(d["short"])}</h1>
       <dl class="head-facts">
         <div><dt>Full symbol</dt><dd>{hm_html(d["full"])}</dd></div>
         <div><dt>Crystal system</dt><dd>{d["system"]}</dd></div>
@@ -275,12 +275,20 @@ def meta(d: dict) -> tuple[str, str]:
     n, short_a = d["number"], hm_ascii(d["short"])
     nobar = short_a.replace("-", "")
     title = f"Space group {n} ({short_a}): Wyckoff positions and symmetry operations"
-    names = short_a + (f", {nobar}" if nobar != short_a else "")
-    desc = (f"Space group {n}, {names} (full symbol {d['full'].replace('_', '')}): {d['system']}, "
-            f"point group {d['pointGroup']}.")
-    if d["example"]:
-        desc += f" Examples: {d['example']}."
-    desc += f" Interactive 3D view of its {len(d['ops'])} symmetry operations and {len(d['wyckoff'])} Wyckoff positions."
+    names = short_a + (f" ({nobar})" if nobar != short_a else "")
+    desc = f"Space group {n}, {names}: {d['system']}, point group {d['pointGroup']}."
+    # Examples first, so they survive Google's ~160-character cut; drop clauses that don't fit.
+    shown = []
+    for clause in d["example"].split("; ") if d["example"] else []:
+        if len(desc) + len(" Examples: " + "; ".join(shown + [clause]) + ".") > 125:
+            break
+        shown.append(clause)
+    if shown:
+        desc += " Examples: " + "; ".join(shown) + "."
+    plural = lambda k, w: f"{k} {w}" + ("" if k == 1 else "s")
+    tail = f" {plural(len(d['wyckoff']), 'Wyckoff position')} and {plural(len(d['ops']), 'symmetry operation')} in 3D."
+    if len(desc) + len(tail) <= 160:
+        desc += tail
     return title, desc
 
 
@@ -293,6 +301,7 @@ def jsonld(d: dict, title: str, desc: str) -> str:
         {"@context": "https://schema.org", "@type": "LearningResource", "name": title, "description": desc, "url": url,
          "learningResourceType": "interactive resource", "educationalLevel": "university", "inLanguage": "en",
          "isAccessibleForFree": True, "author": AUTHOR,
+         "copyrightHolder": AUTHOR, "copyrightYear": 2026,
          "about": {"@type": "Thing", "name": f"Space group {hm_ascii(d['short'])}"},
          "isPartOf": {"@type": "LearningResource", "name": "Space-group symmetry", "url": BASE}},
     ]
