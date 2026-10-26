@@ -80,7 +80,9 @@
   });
   kinds.sort((a, b) => rank(a.e) - rank(b.e));
 
+  // three.js hides an object only when visible === false, so `on` must be a real boolean.
   function setElementVisible(el, on) {
+    on = !!on;
     if (!on && !el.obj) return;
     if (!el.obj) { el.obj = view.elementObject(el.e, el.geom, false); elemRoot.add(el.obj); }
     el.obj.visible = on;
