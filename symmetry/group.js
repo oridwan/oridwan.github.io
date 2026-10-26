@@ -294,7 +294,7 @@
     return D.wyckoff.map(w => `<tr data-act="wyck" data-l="${w.l}"><td class="m">${w.m}</td><td class="m"><i>${w.l}</i></td><td class="m">${siteHTML(w.site)}</td><td class="m coords">${wyckCoords(w)}</td></tr>`).join('');
   }
   function renderWyckoffTab() {
-    return `<p class="panel-lead">Select a row to move the atom onto that Wyckoff position, or drag the sliders under the model. On a special position some copies coincide, so there are fewer of them; the yellow halo marks merged copies.</p>
+    return `<p class="panel-lead">Select a row to move the atom onto that Wyckoff position, or set <i>x</i>, <i>y</i>, <i>z</i> under the model with the sliders or by typing a value (fractions such as 1/3 work). On a special position some copies coincide, so there are fewer of them; the yellow halo marks merged copies.</p>
       <div class="scroll-x"><table class="tbl wyck"><thead><tr><th>Mult.</th><th>Letter</th><th>Site symmetry</th><th>Coordinates</th></tr></thead><tbody>${wyckRows()}</tbody></table></div>
       <p class="note"><b>Reading the table.</b> Multiplicity is the number of copies per cell; the letter runs from <i>a</i> (most special) to the general position; the site symmetry lists the operations that leave the point fixed, with a dot for a direction without symmetry. More in the <a href="../#wyckoff">introduction to Wyckoff positions</a>.</p>`;
   }
@@ -335,7 +335,7 @@
   // ---------- guided tour ----------
   function renderMotif() {
     return `<h2>A general point</h2>
-      <p>Symmetry is easiest to see by following a single point. The model now shows one atom at fractional coordinates <i>(x, y, z)</i>. Each coordinate is a fraction of the corresponding cell edge, so <i>x</i> = 0.5 lies halfway along <i>a</i>. The sliders under the model move it.</p>
+      <p>Symmetry is easiest to see by following a single point. The model now shows one atom at fractional coordinates <i>(x, y, z)</i>. Each coordinate is a fraction of the corresponding cell edge, so <i>x</i> = 0.5 lies halfway along <i>a</i>. The sliders under the model move it, or type a value such as 0.25 or 1/3 into the box beside each one.</p>
       <p>A sphere looks the same after any rotation, so the atom carries three arms of different length that act as a <b>handedness marker</b>. You can read it as the atom's local environment.</p>
       <dl class="facts">
         <dt><i class="sw r"></i> Blue</dt><dd>same handedness as the starting atom</dd>
@@ -567,22 +567,61 @@
   // ======================================================================
   // Wiring
   // ======================================================================
+  // Coordinates are kept exact (no rounding), so a typed 1/3 or a Wyckoff site at 1/8 stays on
+  // its special position; the sliders only snap their own thumb to 0.01.
   function setX(x) {
-    state.x = x.map(v => (Math.round(v * 100) / 100) % 1);
-    document.querySelectorAll('.sliders input').forEach(inp => {
-      inp.value = state.x[+inp.dataset.c];
-      inp.nextElementSibling.textContent = (+inp.value).toFixed(2);
+    state.x = x.map(v => { v -= Math.floor(v); return v > 1 - 1e-9 ? 0 : v; });
+    document.querySelectorAll('.sliders input[type=range]').forEach(inp => { inp.value = state.x[+inp.dataset.c]; });
+    document.querySelectorAll('.sliders .coord').forEach(inp => {
+      inp.value = fmtCoord(state.x[+inp.dataset.c]);
+      inp.classList.remove('bad');
+      inp.removeAttribute('aria-invalid');
     });
     view.cancel();
     refresh();
   }
 
+  // "0.25", ".25", "1/3", "-1/4" or "1.25"; values outside 0-1 wrap into the cell.
+  function parseCoord(s) {
+    const m = s.trim().replace(/[−–]/g, '-').match(/^([+-]?)(\d+\.?\d*|\.\d+)(?:\/(\d+\.?\d*|\.\d+))?$/);
+    if (!m) return null;
+    const v = (m[1] === '-' ? -1 : 1) * m[2] / (m[3] ? +m[3] : 1);
+    return isFinite(v) ? v : null;
+  }
+  // Two decimals when exact (as the sliders give), otherwise a fraction such as 1/3 or 3/8.
+  function fmtCoord(v) {
+    if (Math.abs(v * 100 - Math.round(v * 100)) < 1e-6) return v.toFixed(2);
+    for (const d of [3, 6, 8, 12, 16, 24]) {
+      const n = Math.round(v * d);
+      if (Math.abs(n - v * d) < 1e-6) return `${n}/${d}`;
+    }
+    return String(+v.toFixed(4));
+  }
+  function commitCoord(inp) {
+    const v = parseCoord(inp.value);
+    if (v == null) {
+      inp.classList.add('bad');
+      inp.setAttribute('aria-invalid', 'true');
+      return;
+    }
+    const x = state.x.slice();
+    x[+inp.dataset.c] = v;
+    setX(x);
+  }
+
   function init() {
-    document.querySelectorAll('.sliders input').forEach(inp => inp.addEventListener('input', () => {
+    document.querySelectorAll('.sliders input[type=range]').forEach(inp => inp.addEventListener('input', () => {
       const x = state.x.slice();
       x[+inp.dataset.c] = +inp.value;
       setX(x);
     }));
+    document.querySelectorAll('.sliders .coord').forEach(inp => {
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') commitCoord(inp); });
+      inp.addEventListener('change', () => commitCoord(inp));
+      inp.addEventListener('input', () => { if (parseCoord(inp.value) != null) inp.classList.remove('bad'); });
+      // leaving the box with something unreadable puts the current value back
+      inp.addEventListener('blur', () => { if (parseCoord(inp.value) == null) setX(state.x); });
+    });
     $('.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
     $('#tourBtn').addEventListener('click', () => goTour(0));
     $('#tourExit').addEventListener('click', () => setTab(state.tab));
