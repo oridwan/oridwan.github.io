@@ -184,8 +184,9 @@ def summary_text(d: dict) -> str:
     if d["polar"]:
         props += ", and it is polar"
     parts.append(props + ".")
-    parts.append(f'A general point has {gen["m"]} equivalent positions per conventional cell'
-                 f'{f" ({len(d["ops"]) // (len(d["_centring"]) + 1)} for each of the {len(d["_centring"]) + 1} lattice points)" if d["_centring"] else ""}.')
+    npts = len(d["_centring"]) + 1
+    per_point = f" ({len(d['ops']) // npts} for each of the {npts} lattice points)" if npts > 1 else ""
+    parts.append(f'A general point has {gen["m"]} equivalent positions per conventional cell{per_point}.')
     if special:
         a = special[-1]
         parts.append(f'There are {len(wy)} Wyckoff positions, from {a["m"]}<i>{a["l"]}</i> '
@@ -249,15 +250,19 @@ def reference_html(d: dict, idx: list[dict]) -> str:
 
 
 def head_html(d: dict) -> str:
+    ex = f'<p class="head-ex">Examples: {html.escape(d["example"])}</p>' if d["example"] else ""
     return f"""<h1><span class="no">Space group {d["number"]}</span> {hm_html(d["short"])}</h1>
-      <dl class="head-facts">
-        <div><dt>Full symbol</dt><dd>{hm_html(d["full"])}</dd></div>
-        <div><dt>Crystal system</dt><dd>{d["system"]}</dd></div>
-        <div><dt>Point group</dt><dd>{hm_html(d["pointGroup"])}</dd></div>
-        <div><dt>Schoenflies</dt><dd>{schoenflies_html(d["schoenflies"])}</dd></div>
-        <div><dt>Operations</dt><dd>{len(d["ops"])}</dd></div>
-        <div><dt>Wyckoff positions</dt><dd>{len(d["wyckoff"])}</dd></div>
-      </dl>"""
+      <div class="head-info">
+        <ul class="head-facts">
+          <li>{d["system"].capitalize()}</li>
+          <li>point group <span class="m">{hm_html(d["pointGroup"])}</span></li>
+          <li class="m">{schoenflies_html(d["schoenflies"])}</li>
+          <li>full symbol <span class="m">{hm_html(d["full"])}</span></li>
+          <li>{len(d["ops"])} operations</li>
+          <li>{len(d["wyckoff"])} Wyckoff positions</li>
+        </ul>
+        {ex}
+      </div>"""
 
 
 def nav_html(n: int, idx: list[dict]) -> str:
@@ -342,6 +347,8 @@ def main() -> None:
         public = {k: v for k, v in d.items() if not k.startswith("_")}
         page = (template
                 .replace("{{NUMBER}}", str(n))
+                .replace("{{SYSTEM_TITLE}}", d["system"].capitalize())
+                .replace("{{SYSTEM}}", d["system"])
                 .replace("{{TITLE}}", html.escape(title))
                 .replace("{{DESCRIPTION}}", html.escape(desc, quote=True))
                 .replace("{{URL}}", f"{BASE}{n}/")

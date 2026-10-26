@@ -72,7 +72,13 @@
         const [k, t] = s.split(':');
         return `<button type="button" data-view="${k}" title="${k === 'iso' ? 'Perspective view' : 'Look along ' + k}">${k === 'iso' ? t : 'along <i>' + t + '</i>'}</button>`;
       }).join('');
-      bar.addEventListener('click', e => { const b = e.target.closest('button'); if (b) setView(b.dataset.view); });
+      if (opts.autoRotate) bar.insertAdjacentHTML('beforeend', '<button type="button" data-spin title="Turn the model slowly">rotate</button>');
+      bar.addEventListener('click', e => {
+        const b = e.target.closest('button');
+        if (!b) return;
+        if (b.hasAttribute('data-spin')) setAutoRotate(!V.autoRotate);
+        else setView(b.dataset.view);
+      });
       container.append(bar);
       V.viewBar = bar;
     }
@@ -92,7 +98,8 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.12;
     controls.enablePan = false;
-    renderer.domElement.addEventListener('pointerdown', () => { V.tween = null; markView(null); });
+    renderer.domElement.addEventListener('pointerdown', () => { V.tween = null; markView(null); setAutoRotate(false); });
+    controls.autoRotateSpeed = 0.7;
     const cellRoot = new THREE.Group();
     const root = new THREE.Group();     // everything the caller adds; cleared with clear()
     scene.add(cellRoot, root);
@@ -176,6 +183,11 @@
       camera.position.copy(V.center).addScaledVector(dir, 50);
       camera.lookAt(V.center);
     }
+    // Slow turntable, paused while an operation plays; off for reduced-motion users.
+    function setAutoRotate(on) {
+      V.autoRotate = on && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (V.viewBar) V.viewBar.querySelectorAll('[data-spin]').forEach(b => b.classList.toggle('on', V.autoRotate));
+    }
     function markView(name) {
       if (V.viewBar) V.viewBar.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.view === name));
     }
@@ -189,6 +201,7 @@
         if (t >= 1) V.tween = null;
       }
       if (V.anim) stepAnim(now);
+      controls.autoRotate = V.autoRotate && !V.anim && !V.tween;
       controls.update();
       renderer.render(scene, camera);
       placeLabels();
@@ -441,7 +454,7 @@
     }
 
     Object.assign(V, {
-      setLattice, setView, addLabel, removeLabel, makeMotif, poseMotif, elementObject, centroid, latticePoints,
+      setLattice, setView, setAutoRotate, addLabel, removeLabel, makeMotif, poseMotif, elementObject, centroid, latticePoints,
       opSegments, wrapSegment, run, cancel, caption, playOp, trailReset, clear, seg, hold, endOf
     });
     return V;

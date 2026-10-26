@@ -81,7 +81,7 @@
 <header class="sym-top">
   <div class="sym-top-in">
     <a class="brand" href="../../">Osman Goni Ridwan</a>
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><span>No. 38</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">Space groups</a><a href="../#sys-orthorhombic">Orthorhombic</a><span>No. 38</span></nav>
     <nav class="group-nav" aria-label="Neighbouring groups"><a href="../37/" rel="prev">← 37 Ccc2</a><a href="../39/" rel="next">39 Aem2 →</a></nav>
   </div>
 </header>
@@ -89,19 +89,22 @@
 <main class="group" id="main">
   <section class="group-head">
       <h1><span class="no">Space group 38</span> Amm2</h1>
-      <dl class="head-facts">
-        <div><dt>Full symbol</dt><dd>A m m 2</dd></div>
-        <div><dt>Crystal system</dt><dd>orthorhombic</dd></div>
-        <div><dt>Point group</dt><dd>mm2</dd></div>
-        <div><dt>Schoenflies</dt><dd>C<sub>2v</sub><sup>14</sup></dd></div>
-        <div><dt>Operations</dt><dd>8</dd></div>
-        <div><dt>Wyckoff positions</dt><dd>6</dd></div>
-      </dl>
+      <div class="head-info">
+        <ul class="head-facts">
+          <li>Orthorhombic</li>
+          <li>point group <span class="m">mm2</span></li>
+          <li class="m">C<sub>2v</sub><sup>14</sup></li>
+          <li>full symbol <span class="m">A m m 2</span></li>
+          <li>8 operations</li>
+          <li>6 Wyckoff positions</li>
+        </ul>
+        <p class="head-ex">Examples: orthorhombic BaTiO₃</p>
+      </div>
   </section>
 
-  <div class="group-body">
-    <section class="stage" aria-label="3D view">
-      <div id="viewer"></div>
+  <div class="workspace">
+    <section class="stage" aria-label="3D model">
+      <div id="viewer"><p class="viewer-loading">Loading the 3D model…</p></div>
       <div class="atom-panel" id="atomPanel" hidden>
         <div class="sliders">
           <label><i>x</i><input type="range" min="0" max="1" step="0.01" data-c="0" aria-label="x coordinate"><output></output></label>
@@ -110,17 +113,30 @@
         </div>
         <p class="status" id="status"></p>
       </div>
-      <p class="legend" id="legend"></p>
+      <div class="legend" id="legend"></div>
     </section>
 
-    <section class="lesson" aria-label="Step-by-step walk-through">
-      <ol class="toc-steps" id="steps"></ol>
-      <article class="step prose" id="step" tabindex="-1">
-        <noscript><p>The interactive walk-through needs JavaScript. The reference tables below work without it.</p></noscript>
+    <section class="panel" aria-label="Explore the group">
+      <div class="panel-top" id="panelTop">
+        <div class="tabs" role="tablist" aria-label="Views">
+          <button type="button" role="tab" data-tab="symmetry">Symmetry</button>
+          <button type="button" role="tab" data-tab="wyckoff">Wyckoff positions</button>
+          <button type="button" role="tab" data-tab="operations">Operations</button>
+          <button type="button" role="tab" data-tab="symbol">Symbol</button>
+        </div>
+        <button type="button" class="tour-btn" id="tourBtn">Guided tour</button>
+      </div>
+      <div class="tour-bar" id="tourBar" hidden>
+        <span class="tour-count" id="tourCount"></span>
+        <ol class="tour-dots" id="tourDots"></ol>
+        <button type="button" class="tour-exit" id="tourExit">Exit tour</button>
+      </div>
+      <article class="panel-body prose" id="step" tabindex="-1">
+        <noscript><p>The interactive model needs JavaScript. The reference tables below work without it.</p></noscript>
       </article>
-      <nav class="step-nav">
-        <button type="button" id="prev" hidden></button>
-        <button type="button" id="next" hidden></button>
+      <nav class="step-nav" id="stepNav" hidden>
+        <button type="button" id="prev"></button>
+        <button type="button" id="next"></button>
       </nav>
     </section>
   </div>
