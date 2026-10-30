@@ -1,0 +1,948 @@
+{
+  "terms": {
+    "density-functional-theory": {
+      "name": "Density functional theory (DFT)",
+      "def": "A formulation of quantum mechanics in which the ground-state energy of interacting electrons is written as a functional of the electron density \\(n(\\mathbf r)\\) instead of the many-electron wavefunction. It is exact in principle; in practice the exchange–correlation energy must be approximated.",
+      "lecture": 0
+    },
+    "electron-density": {
+      "name": "Electron density",
+      "def": "\\(n(\\mathbf r)\\), the number of electrons per unit volume at the point \\(\\mathbf r\\). Integrated over all space it gives the total number of electrons, \\(\\int n(\\mathbf r)\\,d^3r = N\\).",
+      "lecture": 0
+    },
+    "ground-state": {
+      "name": "Ground state",
+      "def": "The lowest-energy state of a system. Ordinary DFT is a theory of the ground state; excited states need extensions of the theory or other methods.",
+      "lecture": 0
+    },
+    "exchange-correlation": {
+      "name": "Exchange–correlation energy",
+      "def": "The part of the DFT energy that carries the many-electron effects of the Pauli principle (exchange), of electrons avoiding one another (correlation), and the part of the kinetic energy that the non-interacting Kohn–Sham system misses. Its exact form is unknown, so every practical calculation uses an approximation such as LDA, PBE or r²SCAN.",
+      "lecture": 0
+    },
+    "first-principles": {
+      "name": "First principles (ab initio)",
+      "def": "Starting from the laws of quantum mechanics, with only the atomic numbers and positions as input, and without fitting to experimental data on the system being studied.",
+      "lecture": 0
+    },
+    "potential-energy-surface": {
+      "name": "Potential-energy surface",
+      "def": "The energy \\(E(\\{\\mathbf R_I\\})\\) as a function of the positions of all nuclei. Its minima are stable or metastable structures; its first-order saddle points are the transition states, whose energies set the barriers between them.",
+      "lecture": 0
+    },
+    "kohn-sham-equations": {
+      "name": "Kohn–Sham equations",
+      "def": "One-electron, Schrödinger-like equations for fictitious non-interacting electrons in an effective potential, constructed so that they reproduce the density of the real interacting electrons. They are the equations VASP solves.",
+      "lecture": 0
+    },
+    "self-consistent-field": {
+      "name": "Self-consistent field (SCF)",
+      "def": "The iterative loop in which the density determines the potential, the potential determines the orbitals, and the orbitals give a new density, repeated until input and output agree.",
+      "lecture": 0
+    },
+    "plane-wave-basis": {
+      "name": "Plane-wave basis",
+      "def": "Functions \\(e^{i(\\mathbf k+\\mathbf G)\\cdot\\mathbf r}\\) used to expand the orbitals of a periodic system. The basis is truncated at a kinetic-energy cutoff, which VASP sets with ENCUT.",
+      "lecture": 0
+    },
+    "paw": {
+      "name": "Projector augmented-wave (PAW) method",
+      "def": "A method that works with smooth auxiliary orbitals, which a moderate plane-wave basis can represent, and recovers the all-electron orbitals inside spheres around the atoms by a linear transformation.",
+      "lecture": 0
+    },
+    "frozen-core": {
+      "name": "Frozen-core approximation",
+      "def": "The approximation that the core electrons keep the configuration of the isolated atom used to generate the PAW dataset.",
+      "lecture": 0
+    },
+    "k-points": {
+      "name": "k-points",
+      "def": "Wavevectors at which the electronic states of a crystal are computed. A calculation samples the Brillouin zone with a mesh of k-points.",
+      "lecture": 0
+    },
+    "self-interaction-error": {
+      "name": "Self-interaction error",
+      "def": "The spurious interaction of an electron with its own charge that remains in approximate functionals, because their exchange–correlation energy does not exactly cancel the electron's Coulomb energy with itself.",
+      "lecture": 0
+    },
+    "dispersion": {
+      "name": "Dispersion (van der Waals) interaction",
+      "def": "The weak attraction between atoms and molecules that are not chemically bonded to each other. Local and semilocal approximations miss its long-range part.",
+      "lecture": 0
+    },
+    "strong-correlation": {
+      "name": "Strongly correlated materials",
+      "def": "Materials, often containing transition-metal d or rare-earth f electrons, in which the electrons' mutual repulsion can dominate their kinetic energy. Standard local approximations often describe them poorly.",
+      "lecture": 0
+    },
+    "hartree-atomic-units": {
+      "name": "Hartree atomic units",
+      "def": "Units in which \\(\\hbar = m_e = e = 4\\pi\\varepsilon_0 = 1\\). Energy is measured in hartree, \\(E_\\mathrm{h}\\) = 27.211386245981 eV, and length in bohr, \\(a_0\\) = 0.529177210544 Å (CODATA 2022).",
+      "lecture": 0
+    },
+    "hamiltonian": {
+      "name": "Hamiltonian",
+      "def": "The operator for the total energy of a system. For a material it collects the kinetic energies of the electrons and nuclei and all their Coulomb interactions.",
+      "lecture": 1
+    },
+    "born-oppenheimer-approximation": {
+      "name": "Born–Oppenheimer approximation",
+      "def": "Treating the nuclei as fixed while solving for the electrons, justified because the nuclei are much heavier and move much more slowly. The electronic energy then depends on the nuclear positions only as parameters.",
+      "lecture": 1
+    },
+    "clamped-nuclei": {
+      "name": "Clamped-nuclei Hamiltonian",
+      "def": "The Hamiltonian of the electrons for nuclei held fixed: the full Hamiltonian without the nuclear kinetic energy, in which the nucleus–nucleus repulsion is just a constant.",
+      "lecture": 1
+    },
+    "nonadiabatic-coupling": {
+      "name": "Nonadiabatic couplings",
+      "def": "Terms, dropped in the Born–Oppenheimer approximation, through which the motion of the nuclei mixes different electronic states. They can become large where electronic states come close in energy.",
+      "lecture": 1
+    },
+    "force": {
+      "name": "Force on a nucleus",
+      "def": "\\(\\mathbf F_I = -\\partial E/\\partial \\mathbf R_I\\), the negative slope of the energy with respect to the position of nucleus \\(I\\). It points in the direction that lowers the energy fastest; VASP reports it in eV/Å.",
+      "lecture": 1
+    },
+    "structural-relaxation": {
+      "name": "Structural relaxation",
+      "def": "Moving the nuclei step by step downhill, in directions built from the forces, until every force is below a threshold. It stops at a stationary point near the starting structure, usually a local minimum.",
+      "lecture": 1
+    },
+    "local-minimum": {
+      "name": "Local minimum",
+      "def": "A point where the energy rises in every direction (apart from moving all atoms together), although a lower minimum may exist elsewhere. A relaxation usually ends in a local minimum, not necessarily the global one.",
+      "lecture": 1
+    },
+    "nuclear-quantum-effects": {
+      "name": "Nuclear quantum effects",
+      "def": "Consequences of the quantum nature of the nuclei themselves, which calculations with classical nuclei leave out. They matter most in systems containing light atoms.",
+      "lecture": 1
+    },
+    "exponential-wall": {
+      "name": "Exponential wall",
+      "def": "Kohn's name for the growth of the many-electron wavefunction with the number of electrons: describing \\(\\Psi(\\mathbf r_1, \\dots, \\mathbf r_N)\\) takes about \\(p^{3N}\\) parameters, with \\(p\\) between 3 and 10 per coordinate. In his 1998 Nobel lecture Kohn concluded that it limits traditional wavefunction methods of chemical accuracy to molecules with of order ten chemically active electrons.",
+      "lecture": 5
+    },
+    "jacobs-ladder": {
+      "name": "Jacob's ladder",
+      "def": "Perdew and Schmidt's hierarchy of exchange–correlation approximations. Each rung adds an ingredient: the local density (LDA), its gradient (GGA), the kinetic-energy density of the orbitals (meta-GGA), a fraction of exact exchange (hybrids). Accuracy generally improves, and cost rises, as one climbs.",
+      "lecture": 11
+    },
+    "wavefunction": {
+      "name": "Wavefunction",
+      "def": "The function \\(\\psi\\) that describes the state of a quantum system. It is in general complex; its squared magnitude \\(|\\psi|^2\\) is a probability density.",
+      "lecture": 2
+    },
+    "probability-density": {
+      "name": "Probability density",
+      "def": "\\(|\\psi(\\mathbf r)|^2 = \\psi^*\\psi\\): the probability per unit volume of finding the particle at \\(\\mathbf r\\). Integrated over a region, it gives the probability of finding the particle there.",
+      "lecture": 2
+    },
+    "normalization": {
+      "name": "Normalization",
+      "def": "The condition \\(\\int |\\psi|^2\\, d\\tau = 1\\): the particle is certainly somewhere.",
+      "lecture": 2
+    },
+    "operator": {
+      "name": "Operator",
+      "def": "A rule that turns one function into another, written with a hat, \\(\\hat A\\). In quantum mechanics every observable has a linear, Hermitian operator: position multiplies by \\(x\\), momentum is \\(-i\\hbar\\, d/dx\\), energy is the Hamiltonian.",
+      "lecture": 2
+    },
+    "eigenvalue-equation": {
+      "name": "Eigenvalue equation",
+      "def": "\\(\\hat A\\psi = a\\psi\\): the operator returns the same function multiplied by a number. \\(\\psi\\) is an eigenfunction (eigenstate) and \\(a\\) its eigenvalue. The Schrödinger equation \\(\\hat H\\psi = E\\psi\\) is the eigenvalue equation of the energy.",
+      "lecture": 2
+    },
+    "superposition": {
+      "name": "Superposition",
+      "def": "A sum of states, \\(\\psi = \\sum_n c_n\\psi_n\\). Measuring an observable whose eigenstates are the \\(\\psi_n\\) gives eigenvalue \\(a_n\\) with probability \\(|c_n|^2\\).",
+      "lecture": 2
+    },
+    "expectation-value": {
+      "name": "Expectation value",
+      "def": "\\(\\langle A\\rangle = \\langle\\psi|\\hat A|\\psi\\rangle = \\int\\psi^*\\hat A\\psi\\,d\\tau\\) for a normalized state: the average of many measurements, equal to \\(\\sum_n |c_n|^2 a_n\\). Only in an eigenstate is it guaranteed to be an eigenvalue, the result of every measurement.",
+      "lecture": 2
+    },
+    "hermitian-operator": {
+      "name": "Hermitian operator",
+      "def": "An operator whose expectation values are always real. Its eigenvalues are real, its eigenstates can be chosen orthonormal, and they form a complete set, so any state can be expanded in them. Observables are Hermitian.",
+      "lecture": 2
+    },
+    "orthonormal": {
+      "name": "Orthonormal",
+      "def": "A set of functions with \\(\\langle\\psi_m|\\psi_n\\rangle = \\delta_{mn}\\): each normalized, and any two different ones orthogonal (overlap zero).",
+      "lecture": 2
+    },
+    "basis-set": {
+      "name": "Basis set",
+      "def": "A set of known functions \\(\\phi_j\\) in which an unknown state is expanded, \\(\\psi = \\sum_j c_j\\phi_j\\). It turns \\(\\hat H\\psi = E\\psi\\) into a matrix problem for the coefficients; a finite basis gives an approximate answer. VASP's basis is plane waves.",
+      "lecture": 3
+    },
+    "variational-principle": {
+      "name": "Variational principle",
+      "def": "For any allowed trial function \\(\\phi\\), \\(\\langle\\phi|\\hat H|\\phi\\rangle/\\langle\\phi|\\phi\\rangle \\ge E_0\\), the exact ground-state energy; equality only for the ground state. Lowering the energy over a trial family therefore improves the estimate of the ground-state energy.",
+      "lecture": 3
+    },
+    "trial-wavefunction": {
+      "name": "Trial wavefunction",
+      "def": "An approximate wavefunction with adjustable parameters, such as a width or basis-set coefficients, chosen to minimize the energy. It must be allowed: normalizable, with the right boundary conditions and symmetry, and antisymmetric for electrons.",
+      "lecture": 3
+    },
+    "valence-electrons": {
+      "name": "Valence electrons",
+      "def": "The electrons in an atom's outermost, highest-energy orbitals, which take part in bonding. In VASP, the electrons a POTCAR treats explicitly; their number per atom is ZVAL.",
+      "lecture": 4
+    },
+    "core-electrons": {
+      "name": "Core electrons",
+      "def": "Electrons in deep, tightly bound orbitals close to the nucleus, little affected by neighbouring atoms. A PAW dataset freezes them in the configuration used to generate it.",
+      "lecture": 4
+    },
+    "semicore": {
+      "name": "Semicore states",
+      "def": "Orbitals that lie below the valence but high enough to respond to bonding, pressure or magnetism, such as titanium's 3s and 3p. VASP's _pv and _sv datasets treat them as valence.",
+      "lecture": 4
+    },
+    "spin-orbital": {
+      "name": "Spin-orbital",
+      "def": "A one-electron function of position and spin, \\(\\chi(\\mathbf x) = \\phi(\\mathbf r)\\sigma(s)\\): a spatial orbital times a spin function, α (up) or β (down).",
+      "lecture": 5
+    },
+    "slater-determinant": {
+      "name": "Slater determinant",
+      "def": "An antisymmetric many-electron wavefunction built as the determinant of N spin-orbitals, with electrons in the rows and orbitals in the columns. Swapping two electrons swaps two rows and flips the sign.",
+      "lecture": 5
+    },
+    "pauli-exclusion": {
+      "name": "Pauli exclusion principle",
+      "def": "No two electrons can occupy the same spin-orbital, so a spatial orbital holds at most two electrons, of opposite spin. It follows from the antisymmetry of the wavefunction.",
+      "lecture": 5
+    },
+    "exchange-hole": {
+      "name": "Exchange hole",
+      "def": "The region around an electron where another electron of the same spin is unlikely to be found, because the antisymmetric wavefunction vanishes when two same-spin electrons meet.",
+      "lecture": 5
+    },
+    "electron-correlation": {
+      "name": "Electron correlation",
+      "def": "The way electrons of either spin avoid each other because they repel, beyond what a single Slater determinant describes. The correlation energy is the difference between the exact and the Hartree–Fock energy.",
+      "lecture": 5
+    },
+    "hartree-fock": {
+      "name": "Hartree–Fock method",
+      "def": "The best single-determinant approximation: the orbitals that minimize the energy of one Slater determinant. Each electron moves in the mean field of the nuclei and of the average Coulomb and exchange interactions with the others; correlation is missing.",
+      "lecture": 6
+    },
+    "fock-operator": {
+      "name": "Fock operator",
+      "def": "The effective one-electron operator of Hartree–Fock theory: kinetic energy, attraction to the nuclei, and the Coulomb and exchange operators built from the occupied orbitals. In a basis it is the Fock matrix, and the equations read FC = SCε.",
+      "lecture": 6
+    },
+    "mean-field": {
+      "name": "Mean field",
+      "def": "An approximation in which each electron feels the average field of all the others rather than their instantaneous positions. Hartree–Fock and Kohn–Sham theory are both mean-field methods.",
+      "lecture": 6
+    },
+    "koopmans-theorem": {
+      "name": "Koopmans' theorem",
+      "def": "In Hartree–Fock theory, minus the energy of an occupied orbital approximates the energy needed to remove an electron from it (an ionization energy), with the other orbitals frozen.",
+      "lecture": 6
+    },
+    "correlation-energy": {
+      "name": "Correlation energy",
+      "def": "\\(E_{\\mathrm{corr}} = E_{\\mathrm{exact}} - E_{\\mathrm{HF}}\\), negative by definition: the energy of electrons avoiding each other beyond the mean field. About 1% of the total energy, but decisive for chemistry.",
+      "lecture": 6
+    }
+  },
+  "tags": {
+    "ENCUT": {
+      "def": "Cutoff energy of the plane-wave basis set, in eV. The VASP Wiki strongly recommends setting it explicitly in every INCAR, and checking the convergence of the quantity you report.",
+      "default": "the largest ENMAX among the POTCAR files",
+      "wiki": "https://www.vasp.at/wiki/ENCUT",
+      "checked": "2026-10-30",
+      "lecture": 17
+    },
+    "ISMEAR": {
+      "def": "How partial occupancies are assigned to the electronic states. ISMEAR = 0 is Gaussian smearing; ISMEAR = N &gt; 0 is Methfessel–Paxton smearing of order N, which can give erroneous results for insulators.",
+      "default": "1",
+      "wiki": "https://www.vasp.at/wiki/ISMEAR",
+      "checked": "2026-10-30",
+      "lecture": 16
+    },
+    "SIGMA": {
+      "def": "Width of the smearing, in eV. For semiconductors and insulators, the VASP Wiki's page on the default smearing method strongly recommends ISMEAR = 0 with SIGMA = 0.05.",
+      "default": "0.2",
+      "wiki": "https://www.vasp.at/wiki/SIGMA",
+      "checked": "2026-10-30",
+      "lecture": 16
+    },
+    "EDIFF": {
+      "def": "Stopping criterion of the electronic self-consistency loop, in eV. The loop stops when both the change of the free energy and the change of the band-structure energy between two steps fall below EDIFF.",
+      "default": "10<sup>−4</sup> eV",
+      "wiki": "https://www.vasp.at/wiki/EDIFF",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "NELM": {
+      "def": "Maximum number of electronic self-consistency steps.",
+      "default": "60",
+      "wiki": "https://www.vasp.at/wiki/NELM",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "NELMDL": {
+      "def": "Number of non-self-consistent steps at the start, during which the Hamiltonian built from the initial density is kept fixed while the orbitals settle. A negative value applies the delay only in the first ionic step.",
+      "default": "−12 if ISTART = 0, INIWAV = 1 and IALGO = 48 or 50; 0 if a WAVECAR is present; −5 otherwise",
+      "wiki": "https://www.vasp.at/wiki/NELMDL",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "ISTART": {
+      "def": "Whether the run starts from scratch (0) or reads the orbitals from an existing WAVECAR (1 or higher).",
+      "default": "1 if a WAVECAR file exists, otherwise 0",
+      "wiki": "https://www.vasp.at/wiki/ISTART",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "ICHARG": {
+      "def": "How the initial charge density is built: 2 takes a superposition of atomic charge densities, 1 reads CHGCAR, 0 computes it from the initial orbitals, and 11 keeps a CHGCAR density fixed to obtain band structures or densities of states.",
+      "default": "2 if ISTART = 0, otherwise 0",
+      "wiki": "https://www.vasp.at/wiki/ICHARG",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "INIWAV": {
+      "def": "How the orbitals are initialized when no WAVECAR is read. INIWAV = 1 fills them with random numbers.",
+      "default": "1",
+      "wiki": "https://www.vasp.at/wiki/INIWAV",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "NSW": {
+      "def": "Maximum number of ionic steps. With NSW = 0 the nuclei are not moved: a single-point (static) calculation.",
+      "default": "0",
+      "wiki": "https://www.vasp.at/wiki/NSW",
+      "checked": "2026-10-30",
+      "lecture": 21
+    },
+    "IBRION": {
+      "def": "How the nuclei are moved between ionic steps: −1 not at all, 0 molecular dynamics, 1 relaxation with RMM-DIIS, 2 relaxation with conjugate gradients, 3 relaxation with damped molecular dynamics.",
+      "default": "−1 if NSW = −1 or 0, otherwise 0",
+      "wiki": "https://www.vasp.at/wiki/IBRION",
+      "checked": "2026-10-30",
+      "lecture": 21
+    },
+    "EDIFFG": {
+      "def": "Stopping criterion of an ionic relaxation. A positive value stops when the total energy changes by less than EDIFFG between ionic steps; a negative value stops when the norms of all forces are below |EDIFFG|. It is not used in molecular dynamics.",
+      "default": "EDIFF × 10",
+      "wiki": "https://www.vasp.at/wiki/EDIFFG",
+      "checked": "2026-10-30",
+      "lecture": 21
+    },
+    "GGA": {
+      "def": "Selects the exchange–correlation functional of the GGA family; GGA = PE is PBE.",
+      "default": "the functional given by LEXCH in the POTCAR, if METAGGA and XC are not set either",
+      "wiki": "https://www.vasp.at/wiki/GGA",
+      "checked": "2026-10-30",
+      "lecture": 11
+    },
+    "KSPACING": {
+      "def": "Smallest allowed spacing between k-points, in Å<sup>−1</sup>. When there is no KPOINTS file, VASP builds the k-point mesh from it.",
+      "default": "0.5 (Γ-centred while KGAMMA = .TRUE., its default)",
+      "wiki": "https://www.vasp.at/wiki/KSPACING",
+      "checked": "2026-10-30",
+      "lecture": 15
+    },
+    "PSTRESS": {
+      "def": "A pressure added in relaxations that change the cell. Its unit is kB (kilobar); 1 kB = 0.1 GPa.",
+      "wiki": "https://www.vasp.at/wiki/PSTRESS",
+      "checked": "2026-10-30",
+      "lecture": 21
+    },
+    "LWAVE": {
+      "def": "Whether the orbitals are written to WAVECAR at the end of the run.",
+      "default": ".TRUE.",
+      "wiki": "https://www.vasp.at/wiki/LWAVE",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "LCHARG": {
+      "def": "Whether the charge density is written to CHGCAR at the end of the run.",
+      "default": ".TRUE. (in VASP 6.0 to 6.4.2 it is tied to LH5)",
+      "wiki": "https://www.vasp.at/wiki/LCHARG",
+      "checked": "2026-10-30",
+      "lecture": 12
+    },
+    "POTIM": {
+      "def": "In ionic relaxations (IBRION = 1, 2, 3), a scaling constant for the step widths; in molecular dynamics, the time step in fs.",
+      "default": "0.5 for IBRION = 1, 2 and 3",
+      "wiki": "https://www.vasp.at/wiki/POTIM",
+      "checked": "2026-10-30",
+      "lecture": 21
+    },
+    "ISIF": {
+      "def": "Which degrees of freedom may change and whether the stress tensor is calculated. ISIF = 2: the atoms move, the cell shape and volume stay fixed, and the stress is calculated; ISIF = 3: atoms, cell shape and volume all change.",
+      "default": "0 for molecular dynamics (IBRION = 0) or hybrid functionals (LHFCALC = .TRUE.), otherwise 2",
+      "wiki": "https://www.vasp.at/wiki/ISIF",
+      "checked": "2026-10-30",
+      "lecture": 21
+    },
+    "LSORBIT": {
+      "def": "Switches on spin–orbit coupling, which VASP leaves out by default. It requires vasp_ncl and sets LNONCOLLINEAR = .TRUE.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LSORBIT",
+      "checked": "2026-10-30",
+      "lecture": 24
+    },
+    "NBANDS": {
+      "def": "Total number of Kohn–Sham orbitals (bands) per k-point. VASP needs at least all occupied bands plus one empty one, and on several cores it raises NBANDS to a convenient multiple.",
+      "default": "max(nint(NELECT + 2)/2 + max(NIONS/2, 3), int(0.6 NELECT))",
+      "wiki": "https://www.vasp.at/wiki/NBANDS",
+      "checked": "2026-10-30",
+      "lecture": 2
+    },
+    "NELECT": {
+      "def": "Number of electrons. By default it is set from the POTCARs (ZVAL of each species times its number of atoms) for a neutral cell; set it only for a charged calculation.",
+      "default": "number of valence electrons (neutral cell)",
+      "wiki": "https://www.vasp.at/wiki/NELECT",
+      "checked": "2026-10-30",
+      "lecture": 2
+    },
+    "LORBIT": {
+      "def": "Selects a method to project the Kohn–Sham orbitals onto local quantum numbers (ℓ, m) around each atom, giving s-, p-, d- and f-resolved information in PROCAR and DOSCAR.",
+      "default": "0 (which needs RWIGS; from LORBIT = 10 on, RWIGS is ignored)",
+      "wiki": "https://www.vasp.at/wiki/LORBIT",
+      "checked": "2026-10-30",
+      "lecture": 29
+    },
+    "ISPIN": {
+      "def": "1: no spin polarization (spin-up and spin-down electrons share one density). 2: spin-polarized collinear calculation, with separate spin-up and spin-down orbitals and densities.",
+      "default": "1",
+      "wiki": "https://www.vasp.at/wiki/ISPIN",
+      "checked": "2026-10-30",
+      "lecture": 23
+    },
+    "MAGMOM": {
+      "def": "Initial magnetic moment of each atom, used when no magnetization density is present yet; it also lowers the symmetry if it breaks it.",
+      "default": "1.0 per atom for ISPIN = 2",
+      "wiki": "https://www.vasp.at/wiki/MAGMOM",
+      "checked": "2026-10-30",
+      "lecture": 23
+    },
+    "LHFCALC": {
+      "def": "Switches on a Hartree–Fock/DFT hybrid-functional calculation with exact exchange; without further tags VASP uses the PBE0 hybrid.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LHFCALC",
+      "checked": "2026-10-30",
+      "lecture": 27
+    },
+    "AEXX": {
+      "def": "Fraction of exact (Hartree–Fock) exchange in a hybrid-functional calculation. With AEXX = 1.0 VASP switches off correlation and runs a full Hartree–Fock calculation.",
+      "default": "0.25 with LHFCALC = .TRUE.; 0 otherwise",
+      "wiki": "https://www.vasp.at/wiki/AEXX",
+      "checked": "2026-10-30",
+      "lecture": 27
+    }
+  },
+  "refs": {
+    "Jones2025": {
+      "cite": "Jones 2025",
+      "text": "R. O. Jones, “Density functional theory for the sceptical”, in E. Pavarini, E. Koch, A. Lichtenstein and D. Vollhardt (eds.), <i>Understanding Correlated Materials with DMFT</i>, Modeling and Simulation Vol. 15 (Forschungszentrum Jülich, 2025), ISBN 978-3-95806-813-1.",
+      "free": "https://www.cond-mat.de/events/correl25/manuscripts/jones.pdf",
+      "freeLabel": "PDF",
+      "read": "2026-10-30"
+    },
+    "KLP2023": {
+      "cite": "Kaplan, Levy & Perdew 2023",
+      "text": "A. D. Kaplan, M. Levy and J. P. Perdew, “The predictive power of exact constraints and appropriate norms in density functional theory”, <i>Annu. Rev. Phys. Chem.</i> <b>74</b>, 193–218 (2023).",
+      "doi": "10.1146/annurev-physchem-062422-013259",
+      "free": "https://arxiv.org/abs/2207.03855",
+      "freeLabel": "arXiv:2207.03855",
+      "readNote": "Read (arXiv version): §I, §II, §III.B and §III.E (hybrids; eq. 75 and self-interaction)",
+      "read": "2026-10-30"
+    },
+    "Teale2022": {
+      "cite": "Teale et al. 2022",
+      "text": "A. M. Teale, T. Helgaker, A. Savin et al., “DFT exchange: sharing perspectives on the workhorse of quantum chemistry and materials science”, <i>Phys. Chem. Chem. Phys.</i> <b>24</b>, 28700–28781 (2022).",
+      "doi": "10.1039/D2CP02827A",
+      "readNote": "Title and abstract read",
+      "read": "2026-10-30"
+    },
+    "Kohn1999": {
+      "cite": "Kohn 1999",
+      "text": "W. Kohn, “Nobel Lecture: Electronic structure of matter—wave functions and density functionals”, <i>Rev. Mod. Phys.</i> <b>71</b>, 1253–1266 (1999).",
+      "doi": "10.1103/RevModPhys.71.1253",
+      "free": "https://www.nobelprize.org/uploads/2018/06/kohn-lecture.pdf",
+      "freeLabel": "Nobel lecture PDF",
+      "readNote": "Read: §I, §II.B, §II.C and §IV.B (RMP version; §II.B also in the Nobel lecture PDF, pp. 219–220)",
+      "read": "2026-10-30"
+    },
+    "Lejaeghere2016": {
+      "cite": "Lejaeghere et al. 2016",
+      "text": "K. Lejaeghere et al., “Reproducibility in density functional theory calculations of solids”, <i>Science</i> <b>351</b>, aad3000 (2016).",
+      "doi": "10.1126/science.aad3000",
+      "readNote": "Abstract read",
+      "read": "2026-10-30"
+    },
+    "KF1996": {
+      "cite": "Kresse & Furthmüller 1996",
+      "text": "G. Kresse and J. Furthmüller, “Efficient iterative schemes for ab initio total-energy calculations using a plane-wave basis set”, <i>Phys. Rev. B</i> <b>54</b>, 11169–11186 (1996).",
+      "doi": "10.1103/PhysRevB.54.11169",
+      "readNote": "Listed by VASP as a core method paper; full text not yet read"
+    },
+    "KJ1999": {
+      "cite": "Kresse & Joubert 1999",
+      "text": "G. Kresse and D. Joubert, “From ultrasoft pseudopotentials to the projector augmented-wave method”, <i>Phys. Rev. B</i> <b>59</b>, 1758–1775 (1999).",
+      "doi": "10.1103/PhysRevB.59.1758",
+      "readNote": "Listed by VASP as a core method paper; full text not yet read"
+    },
+    "Ridwan2026": {
+      "cite": "Ridwan et al. 2026",
+      "text": "O. G. Ridwan, S. Pitié, M. Soundar Raj, D. Dai, G. Frapper, H. Xue and Q. Zhu, “AI-assisted rapid crystal structure generation towards a target local environment”, <i>npj Comput. Mater.</i> <b>12</b>, 64 (2026).",
+      "doi": "10.1038/s41524-025-01931-9",
+      "free": "https://arxiv.org/abs/2506.08224",
+      "freeLabel": "arXiv:2506.08224",
+      "readNote": "Read (arXiv v2, Fig. 7)",
+      "read": "2026-10-30"
+    },
+    "VASPweb": {
+      "cite": "VASP website",
+      "text": "VASP Software GmbH, <i>VASP: the Vienna Ab initio Simulation Package</i>, home page, list of core method papers to cite, and licensing FAQ.",
+      "url": "https://www.vasp.at/",
+      "urlLabel": "vasp.at",
+      "links": [
+        [
+          "Papers",
+          "https://www.vasp.at/learn/papers/"
+        ],
+        [
+          "FAQ",
+          "https://www.vasp.at/info/faq/"
+        ]
+      ],
+      "read": "2026-10-30"
+    },
+    "VASPwikiFiles": {
+      "cite": "VASP Wiki: files",
+      "text": "VASP Wiki, pages on the input files INCAR, POSCAR, KPOINTS and POTCAR and the output files OSZICAR, OUTCAR, vasprun.xml, CHGCAR and WAVECAR.",
+      "links": [
+        [
+          "INCAR",
+          "https://www.vasp.at/wiki/INCAR"
+        ],
+        [
+          "POSCAR",
+          "https://www.vasp.at/wiki/POSCAR"
+        ],
+        [
+          "KPOINTS",
+          "https://www.vasp.at/wiki/KPOINTS"
+        ],
+        [
+          "POTCAR",
+          "https://www.vasp.at/wiki/POTCAR"
+        ],
+        [
+          "OSZICAR",
+          "https://www.vasp.at/wiki/OSZICAR"
+        ],
+        [
+          "OUTCAR",
+          "https://www.vasp.at/wiki/OUTCAR"
+        ],
+        [
+          "vasprun.xml",
+          "https://www.vasp.at/wiki/Vasprun.xml"
+        ],
+        [
+          "CHGCAR",
+          "https://www.vasp.at/wiki/CHGCAR"
+        ],
+        [
+          "WAVECAR",
+          "https://www.vasp.at/wiki/WAVECAR"
+        ]
+      ],
+      "read": "2026-10-30"
+    },
+    "VASPwikiPAW": {
+      "cite": "VASP Wiki: PAW",
+      "text": "VASP Wiki, “Projector-augmented-wave formalism”.",
+      "url": "https://www.vasp.at/wiki/Projector-augmented-wave_formalism",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiPot": {
+      "cite": "VASP Wiki: potentials",
+      "text": "VASP Wiki, “Available pseudopotentials” (PBE table of potpaw.64).",
+      "url": "https://www.vasp.at/wiki/Available_pseudopotentials",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiSmear": {
+      "cite": "VASP Wiki: smearing",
+      "text": "VASP Wiki, “Be careful with the default smearing method (ISMEAR=1)”.",
+      "url": "https://www.vasp.at/wiki/Be_careful_with_the_default_smearing_method_(ISMEAR=1)",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "CODATA2022": {
+      "cite": "CODATA 2022",
+      "text": "NIST, <i>The NIST Reference on Constants, Units, and Uncertainty</i>: 2022 CODATA recommended values.",
+      "url": "https://physics.nist.gov/cuu/Constants/",
+      "urlLabel": "physics.nist.gov",
+      "links": [
+        [
+          "Hartree energy in eV",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?hrev"
+        ],
+        [
+          "Rydberg energy in eV",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev"
+        ],
+        [
+          "Bohr radius",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?bohrrada0"
+        ],
+        [
+          "eV–kelvin",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?evk"
+        ],
+        [
+          "eV–inverse metre",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?evminv"
+        ],
+        [
+          "elementary charge",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?e"
+        ],
+        [
+          "Avogadro constant",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?na"
+        ],
+        [
+          "lattice parameter of silicon",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?asil"
+        ],
+        [
+          "proton–electron mass ratio",
+          "https://physics.nist.gov/cgi-bin/cuu/Value?mpsme"
+        ]
+      ],
+      "read": "2026-10-30"
+    },
+    "Sherrill2005": {
+      "cite": "Sherrill 2005",
+      "text": "C. D. Sherrill, “The Born–Oppenheimer approximation”, lecture notes, School of Chemistry and Biochemistry, Georgia Institute of Technology (March 2005).",
+      "url": "http://vergil.chemistry.gatech.edu/notes/bo/bo.pdf",
+      "urlLabel": "PDF",
+      "read": "2026-10-30"
+    },
+    "FieldL24": {
+      "cite": "Field, MIT 5.61 L24",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lecture 24: “Molecular orbital theory, matrix mechanics and variational principle”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec24/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "FieldL32": {
+      "cite": "Field, MIT 5.61 L32",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lecture 32: “Adiabatic↔diabatic: Zewail”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec32/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "BO1927": {
+      "cite": "Born & Oppenheimer 1927",
+      "text": "M. Born and R. Oppenheimer, “Zur Quantentheorie der Molekeln”, <i>Ann. Phys.</i> <b>389</b>, 457–484 (1927).",
+      "doi": "10.1002/andp.19273892002",
+      "readNote": "Original paper (in German), cited for priority; not read"
+    },
+    "Morse1929": {
+      "cite": "Morse 1929",
+      "text": "P. M. Morse, “Diatomic molecules according to the wave mechanics. II. Vibrational levels”, <i>Phys. Rev.</i> <b>34</b>, 57–64 (1929).",
+      "doi": "10.1103/PhysRev.34.57",
+      "readNote": "Cited for the functional form of the model curve; not read"
+    },
+    "Vogtenhuber2016": {
+      "cite": "Vogtenhuber 2016",
+      "text": "D. Vogtenhuber, “Basics III: Ionic relaxation, stress and cell shapes, phonons and molecular dynamics”, VASP workshop lecture (Rennes, 2016).",
+      "url": "https://www.vasp.at/wiki/images/2/25/VASP_lecture_Basics3.pdf",
+      "urlLabel": "PDF",
+      "read": "2026-10-30"
+    },
+    "VASPwikiEFOR": {
+      "cite": "VASP Wiki: EFOR",
+      "text": "VASP Wiki, “EFOR” (shows the OUTCAR force block, headed “POSITION TOTAL-FORCE (eV/Angst)”).",
+      "url": "https://www.vasp.at/wiki/EFOR",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "MarklandCeriotti2018": {
+      "cite": "Markland & Ceriotti 2018",
+      "text": "T. E. Markland and M. Ceriotti, “Nuclear quantum effects enter the mainstream”, <i>Nat. Rev. Chem.</i> <b>2</b>, 0109 (2018).",
+      "doi": "10.1038/s41570-017-0109",
+      "free": "https://arxiv.org/abs/1803.01037",
+      "freeLabel": "arXiv:1803.01037",
+      "readNote": "Abstract read (arXiv)",
+      "read": "2026-10-30"
+    },
+    "VASPwikiLBONE": {
+      "cite": "VASP Wiki: LBONE",
+      "text": "VASP Wiki, “LBONE” (states that the POTCARs used in VASP are scalar-relativistic).",
+      "url": "https://www.vasp.at/wiki/LBONE",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "Pisana2007": {
+      "cite": "Pisana et al. 2007",
+      "text": "S. Pisana, M. Lazzeri, C. Casiraghi, K. S. Novoselov, A. K. Geim, A. C. Ferrari and F. Mauri, “Breakdown of the adiabatic Born–Oppenheimer approximation in graphene”, <i>Nat. Mater.</i> <b>6</b>, 198–201 (2007).",
+      "doi": "10.1038/nmat1846",
+      "free": "https://arxiv.org/abs/cond-mat/0611714",
+      "freeLabel": "arXiv:cond-mat/0611714",
+      "readNote": "Abstract read (published Nat. Mater. version, the source of the quote; the arXiv preprint words it slightly differently)",
+      "read": "2026-10-30"
+    },
+    "FieldL5": {
+      "cite": "Field, MIT 5.61 L5",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lecture 5: “Begin quantum mechanics: free particle and particle in a 1D box”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec5/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "FieldL12": {
+      "cite": "Field, MIT 5.61 L12",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lecture 12: “Looking backward before first hour exam: postulate”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec12/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "FieldL13": {
+      "cite": "Field, MIT 5.61 L13–14",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lectures 13 and 14: “From H<sub>ij</sub> integrals to H matrices”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec13_lec14/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "VASPwikiEIGENVAL": {
+      "cite": "VASP Wiki: EIGENVAL",
+      "text": "VASP Wiki, “EIGENVAL”.",
+      "url": "https://www.vasp.at/wiki/EIGENVAL",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiNBANDS": {
+      "cite": "VASP Wiki: NBANDS",
+      "text": "VASP Wiki, “NBANDS”.",
+      "url": "https://www.vasp.at/wiki/NBANDS",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiNELECT": {
+      "cite": "VASP Wiki: NELECT",
+      "text": "VASP Wiki, “NELECT”.",
+      "url": "https://www.vasp.at/wiki/NELECT",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiFERWE": {
+      "cite": "VASP Wiki: FERWE",
+      "text": "VASP Wiki, “FERWE” (shows the OUTCAR block of band energies and occupations).",
+      "url": "https://www.vasp.at/wiki/FERWE",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "FieldL21": {
+      "cite": "Field, MIT 5.61 L21",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lecture 21: “Hydrogen atom II”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec21/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "FieldL22": {
+      "cite": "MIT 5.61 L22",
+      "text": "<i>5.61 Physical Chemistry</i>, Lecture 22: “Helium atom” (R. W. Field, Fall 2017; notes originally written by T. Van Voorhis), MIT OpenCourseWare, CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec22/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "FieldL28": {
+      "cite": "MIT 5.61 L28–29",
+      "text": "<i>5.61 Physical Chemistry</i>, Lectures 28–29: “Modern electronic structure theory: basis sets” (Fall 2017, instructor R. W. Field; notes by T. Van Voorhis, used with permission), MIT OpenCourseWare, CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec28/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "VASPwikiENCUT": {
+      "cite": "VASP Wiki: ENCUT",
+      "text": "VASP Wiki, “ENCUT”.",
+      "url": "https://www.vasp.at/wiki/ENCUT",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiCutoff": {
+      "cite": "VASP Wiki: cutoff and FFT meshes",
+      "text": "VASP Wiki, “Energy cutoff and FFT meshes”.",
+      "url": "https://www.vasp.at/wiki/Energy_cutoff_and_FFT_meshes",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiMP2": {
+      "cite": "VASP Wiki: MP2",
+      "text": "VASP Wiki, “MP2” (refers to the OUTCAR line “maximum number of plane-waves”).",
+      "url": "https://www.vasp.at/wiki/MP2",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiOSZICAR": {
+      "cite": "VASP Wiki: OSZICAR",
+      "text": "VASP Wiki, “OSZICAR” (defines the residual R = (H − εS)|φ⟩ of the trial orbitals).",
+      "url": "https://www.vasp.at/wiki/OSZICAR",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiBZint": {
+      "cite": "VASP Wiki: integrating over orbitals",
+      "text": "VASP Wiki, “Integrating over all orbitals” (Brillouin-zone integrals as weighted sums over k-points).",
+      "url": "https://www.vasp.at/wiki/Integrating_over_all_orbitals",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "FieldL20": {
+      "cite": "Field, MIT 5.61 L20",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lecture 20: “Hydrogen atom I”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec20/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "FieldL23": {
+      "cite": "Field, MIT 5.61 L23",
+      "text": "R. W. Field, <i>5.61 Physical Chemistry</i>, Lecture 23: “Many-electron atoms”, MIT OpenCourseWare (Fall 2017), CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec23/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "NISTASD": {
+      "cite": "NIST ASD",
+      "text": "A. Kramida, Yu. Ralchenko, J. Reader and NIST ASD Team, <i>NIST Atomic Spectra Database</i>, National Institute of Standards and Technology, Gaithersburg, MD: ground configurations and ionization energies of neutral atoms.",
+      "readNote": "Data retrieved",
+      "read": "2026-10-30",
+      "url": "https://doi.org/10.18434/T4W30F",
+      "urlLabel": "doi:10.18434/T4W30F (DataCite)"
+    },
+    "VASPwikiChoosing": {
+      "cite": "VASP Wiki: choosing pseudopotentials",
+      "text": "VASP Wiki, “Choosing pseudopotentials” (advice, and the table of recommended PBE potentials, potpaw.64).",
+      "url": "https://www.vasp.at/wiki/Choosing_pseudopotentials",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiLORBIT": {
+      "cite": "VASP Wiki: LORBIT",
+      "text": "VASP Wiki, “LORBIT”.",
+      "url": "https://www.vasp.at/wiki/LORBIT",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiALGO": {
+      "cite": "VASP Wiki: ALGO",
+      "text": "VASP Wiki, “ALGO” (default Normal: blocked Davidson; Exact: full diagonalization).",
+      "url": "https://www.vasp.at/wiki/ALGO",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "Slater1929": {
+      "cite": "Slater 1929",
+      "text": "J. C. Slater, “The theory of complex spectra”, <i>Phys. Rev.</i> <b>34</b>, 1293–1322 (1929).",
+      "doi": "10.1103/PhysRev.34.1293",
+      "readNote": "Cited for the determinant, as introduced in MIT 5.61 L23; original not read",
+      "read": "2026-10-30"
+    },
+    "VASPwikiISPIN": {
+      "cite": "VASP Wiki: ISPIN",
+      "text": "VASP Wiki, “ISPIN”.",
+      "url": "https://www.vasp.at/wiki/ISPIN",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiMAGMOM": {
+      "cite": "VASP Wiki: MAGMOM",
+      "text": "VASP Wiki, “MAGMOM”.",
+      "url": "https://www.vasp.at/wiki/MAGMOM",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiNi": {
+      "cite": "VASP Wiki: fcc Ni",
+      "text": "VASP Wiki, “Fcc Ni (revisited)” (shows the OSZICAR magnetization, mag=).",
+      "url": "https://www.vasp.at/wiki/Fcc_Ni_(revisited)",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiOspin": {
+      "cite": "VASP Wiki: O atom, spin-polarized",
+      "text": "VASP Wiki, “O atom spinpolarized” (shows OUTCAR occupations per spin component).",
+      "url": "https://www.vasp.at/wiki/O_atom_spinpolarized",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "MIT29": {
+      "cite": "MIT 5.61 L29",
+      "text": "<i>5.61 Physical Chemistry</i>, Lecture 29: “Modern electronic structure theory: electron correlation” (Fall 2017, instructor R. W. Field; notes by T. Van Voorhis, used with permission), MIT OpenCourseWare, CC BY-NC-SA.",
+      "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/resources/mit5_61f17_lec29/",
+      "urlLabel": "MIT OCW",
+      "read": "2026-10-30"
+    },
+    "HatanoYamamoto2020": {
+      "cite": "Hatano & Yamamoto 2020",
+      "text": "Y. Hatano and S. Yamamoto, “Atomic Hartree–Fock limit calculations using Lambda functions”, <i>J. Phys. Commun.</i> <b>4</b>, 085006 (2020).",
+      "doi": "10.1088/2399-6528/aba995",
+      "readNote": "Table 3 (He) read",
+      "read": "2026-10-30"
+    },
+    "VASPwikiNELMDL": {
+      "cite": "VASP Wiki: NELMDL",
+      "text": "VASP Wiki, “NELMDL”.",
+      "url": "https://www.vasp.at/wiki/NELMDL",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiLHFCALC": {
+      "cite": "VASP Wiki: LHFCALC",
+      "text": "VASP Wiki, “LHFCALC”.",
+      "url": "https://www.vasp.at/wiki/LHFCALC",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "VASPwikiAEXX": {
+      "cite": "VASP Wiki: AEXX",
+      "text": "VASP Wiki, “AEXX”.",
+      "url": "https://www.vasp.at/wiki/AEXX",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-10-30"
+    },
+    "Hartree1928": {
+      "cite": "Hartree 1928",
+      "text": "D. R. Hartree, “The wave mechanics of an atom with a non-Coulomb central field. Part I. Theory and methods”, <i>Proc. Camb. Phil. Soc.</i> <b>24</b>, 89–110 (1928).",
+      "doi": "10.1017/S0305004100011919",
+      "readNote": "Crossref metadata checked; original not read (history as summarized in standard accounts)",
+      "read": "2026-10-30"
+    },
+    "Fock1930": {
+      "cite": "Fock 1930",
+      "text": "V. Fock, “Näherungsmethode zur Lösung des quantenmechanischen Mehrkörperproblems”, <i>Z. Phys.</i> <b>61</b>, 126–148 (1930).",
+      "doi": "10.1007/BF01340294",
+      "readNote": "Crossref metadata checked; original not read (history as summarized in standard accounts)",
+      "read": "2026-10-30"
+    },
+    "Slater1930": {
+      "cite": "Slater 1930",
+      "text": "J. C. Slater, “Note on Hartree's method”, <i>Phys. Rev.</i> <b>35</b>, 210–211 (1930).",
+      "doi": "10.1103/PhysRev.35.210.2",
+      "readNote": "Crossref metadata checked; original not read (history as summarized in standard accounts)",
+      "read": "2026-10-30"
+    }
+  }
+}

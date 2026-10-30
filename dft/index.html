@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DFT and VASP Course: Density Functional Theory from Scratch</title>
+  <meta name="description" content="A free, interactive course on density functional theory and VASP: quantum mechanics, Kohn–Sham DFT, k-points, plane waves, PAW, and calculations you can defend.">
+  <meta name="keywords" content="DFT course, density functional theory course, density functional theory tutorial, learn DFT, DFT for beginners, VASP tutorial, VASP course, Kohn-Sham equations, exchange-correlation functional, first-principles calculations, computational materials science, plane-wave DFT, free online course">
+  <link rel="canonical" href="https://oridwan.github.io/dft/">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="DFT and VASP Course: Density Functional Theory from Scratch">
+  <meta property="og:description" content="A free, interactive course on density functional theory and VASP: quantum mechanics, Kohn–Sham DFT, k-points, plane waves, PAW, and calculations you can defend.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/dft-course.webp">
+  <meta property="og:image:alt" content="Density Functional Theory and VASP: a free interactive course by Osman Goni Ridwan, from the Schrödinger equation to calculations you can defend, with the Kohn–Sham equation.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DFT and VASP Course: Density Functional Theory from Scratch">
+  <meta name="twitter:description" content="A free, interactive course on density functional theory and VASP: quantum mechanics, Kohn–Sham DFT, k-points, plane waves, PAW, and calculations you can defend.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/dft-course.webp">
+  <meta name="twitter:image:alt" content="Density Functional Theory and VASP: a free interactive course by Osman Goni Ridwan, from the Schrödinger equation to calculations you can defend, with the Kohn–Sham equation.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "Density Functional Theory and VASP",
+  "alternateName": "DFT & VASP Course",
+  "description": "A free, interactive course on density functional theory and VASP: quantum mechanics, Kohn–Sham DFT, k-points, plane waves, PAW, and calculations you can defend.",
+  "url": "https://oridwan.github.io/dft/",
+  "image": "https://oridwan.github.io/assets/fig/dft-course.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "educationalLevel": "university",
+  "teaches": [
+    "Density functional theory",
+    "Kohn–Sham equations",
+    "Exchange–correlation functionals",
+    "Plane-wave basis sets",
+    "Projector augmented-wave method",
+    "Brillouin-zone sampling",
+    "VASP"
+  ],
+  "keywords": "DFT course, density functional theory course, density functional theory tutorial, learn DFT, DFT for beginners, VASP tutorial, VASP course, Kohn-Sham equations, exchange-correlation functional, first-principles calculations, computational materials science, plane-wave DFT, free online course",
+  "coursePrerequisites": "Calculus and introductory physics",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "provider": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "copyrightHolder": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "copyrightYear": 2026,
+  "hasPart": [
+    {
+      "@type": "LearningResource",
+      "name": "Introduction to density functional theory",
+      "url": "https://oridwan.github.io/dft/what-is-dft/",
+      "position": 0
+    },
+    {
+      "@type": "LearningResource",
+      "name": "The Born–Oppenheimer approximation",
+      "url": "https://oridwan.github.io/dft/born-oppenheimer-approximation/",
+      "position": 1
+    },
+    {
+      "@type": "LearningResource",
+      "name": "Wavefunctions, operators and eigenvalues",
+      "url": "https://oridwan.github.io/dft/wavefunctions-operators-eigenvalues/",
+      "position": 2
+    },
+    {
+      "@type": "LearningResource",
+      "name": "The variational principle and basis sets",
+      "url": "https://oridwan.github.io/dft/variational-principle-basis-sets/",
+      "position": 3
+    },
+    {
+      "@type": "LearningResource",
+      "name": "Atomic orbitals, core and valence electrons",
+      "url": "https://oridwan.github.io/dft/atomic-orbitals-core-valence-electrons/",
+      "position": 4
+    },
+    {
+      "@type": "LearningResource",
+      "name": "Pauli exclusion and Slater determinants",
+      "url": "https://oridwan.github.io/dft/pauli-exclusion-slater-determinant/",
+      "position": 5
+    },
+    {
+      "@type": "LearningResource",
+      "name": "The Hartree–Fock method",
+      "url": "https://oridwan.github.io/dft/hartree-fock-method/",
+      "position": 6
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../dft/dft.css">
+</head>
+<body class="dft dft-home">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><span>DFT &amp; VASP Course</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main">
+  <header class="home-hero">
+    <div class="home-in">
+      <p class="eyebrow">Free interactive course · 37 lectures and a capstone · 10 parts</p>
+      <h1>Density Functional Theory and VASP</h1>
+      <p class="tagline">An interactive course from the Schrödinger equation to calculations you can defend.</p>
+      <p class="home-lede">Density functional theory (DFT) is the method behind most electronic-structure calculations of real materials, and VASP is one of its most widely used codes. This course builds both from first principles: the quantum mechanics you need, the Hohenberg–Kohn and Kohn–Sham theory, exchange–correlation functionals, k-points, plane waves and PAW, and then the calculations used in research, from relaxations and magnetism to phonons, migration barriers and machine-learning potentials.</p>
+      <p class="home-cta"><a class="btn btn-primary" href="what-is-dft/">Start with Lecture 0</a> <a class="btn continue" href="what-is-dft/" hidden>Continue</a></p>
+    </div>
+  </header>
+
+  <section class="home-block thread-block" aria-labelledby="thread-h">
+    <div class="home-in">
+      <h2 id="thread-h">The thread through the course</h2>
+      <p>Each idea makes the next one necessary. Follow the chain from the Schrödinger equation to a VASP calculation.</p>
+      <ol class="thread">
+      <li><a class="pill" href="born-oppenheimer-approximation/">Born–Oppenheimer</a></li>
+      <li><a class="pill" href="wavefunctions-operators-eigenvalues/"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>H</mi><mo>^</mo></mover><mi>ψ</mi><mo>=</mo><mi>E</mi><mi>ψ</mi></mrow><annotation encoding="application/x-tex">\hat H\psi = E\psi</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:1.1412em;vertical-align:-0.1944em;"></span><span class="mord katex-accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9468em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.0813em;">H</span></span><span style="top:-3.2523em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.1944em;"><span class="mord">^</span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.0359em;">ψ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mord mathnormal" style="margin-right:0.0359em;">ψ</span></span></span></span></a></li>
+      <li><a class="pill" href="pauli-exclusion-slater-determinant/">Many electrons</a></li>
+      <li><span class="pill">Density <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo stretchy="false">(</mo><mi mathvariant="bold">r</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">n(\mathbf r)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">n</span><span class="mopen">(</span><span class="mord mathbf">r</span><span class="mclose">)</span></span></span></span></span></li>
+      <li><span class="pill">Hohenberg–Kohn</span></li>
+      <li><span class="pill">Kohn–Sham</span></li>
+      <li><span class="pill"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mrow><mi mathvariant="normal">x</mi><mi mathvariant="normal">c</mi></mrow></msub></mrow><annotation encoding="application/x-tex">E_{\mathrm{xc}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">xc</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></li>
+      <li><span class="pill">SCF</span></li>
+      <li><span class="pill">Bloch states and k-points</span></li>
+      <li><span class="pill">Plane waves</span></li>
+      <li><span class="pill">PAW</span></li>
+      <li><span class="pill">VASP</span></li>
+      <li><span class="pill">Energies and forces</span></li>
+      <li><span class="pill">Phonons, NEB, MD, ML potentials</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="home-block how" aria-labelledby="how-h">
+    <div class="home-in">
+      <h2 id="how-h">How the lectures work</h2>
+      <div class="how-grid">
+        <div><h3>Slides with the lecture underneath</h3><p>Each lecture is a set of 16:9 slides, and under each slide are the notes of what is said about it. Read the page like an article, or press <kbd>P</kbd> to present the slides full screen.</p></div>
+        <div><h3>Interactive figures</h3><p>Change a parameter and watch the physics respond. Every number in a figure is computed in your browser; model systems are labelled as models.</p></div>
+        <div><h3>Self-contained</h3><p>Every symbol is defined where it appears and the key equations are derived, with worked numbers, so you can learn without another book open. Terms and VASP tags open a short explanation in place.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="home-in syllabus">
+    <section class="part" id="part-0">
+      <h2><span class="part-no"></span>Start here</h2>
+      <ol class="cards">
+        <li class="card" data-slug="what-is-dft"><a href="what-is-dft/"><span class="card-no">Lecture 0</span>
+          <h3>Introduction to density functional theory</h3>
+          <p class="card-q">What does a DFT calculation compute, and what does VASP do when you press run?</p>
+          <p class="card-meta">About 40 minutes<span class="card-done"> · Completed</span></p></a></li>
+      </ol>
+    </section>
+
+    <section class="part" id="part-i">
+      <h2><span class="part-no">Part I · </span>Quantum mechanics you need</h2>
+      <ol class="cards">
+        <li class="card" data-slug="born-oppenheimer-approximation"><a href="born-oppenheimer-approximation/"><span class="card-no">Lecture 1</span>
+          <h3>The Born–Oppenheimer approximation</h3>
+          <p class="card-q">What physical problem is VASP solving when it relaxes a structure?</p>
+          <p class="card-meta">About 45 minutes<span class="card-done"> · Completed</span></p></a></li>
+        <li class="card" data-slug="wavefunctions-operators-eigenvalues"><a href="wavefunctions-operators-eigenvalues/"><span class="card-no">Lecture 2</span>
+          <h3>Wavefunctions, operators and eigenvalues</h3>
+          <p class="card-q">What does Ĥψ = Eψ actually mean?</p>
+          <p class="card-meta">About 45 minutes<span class="card-done"> · Completed</span></p></a></li>
+        <li class="card" data-slug="variational-principle-basis-sets"><a href="variational-principle-basis-sets/"><span class="card-no">Lecture 3</span>
+          <h3>The variational principle and basis sets</h3>
+          <p class="card-q">How does an unsolvable differential equation become a finite calculation?</p>
+          <p class="card-meta">About 50 minutes<span class="card-done"> · Completed</span></p></a></li>
+        <li class="card" data-slug="atomic-orbitals-core-valence-electrons"><a href="atomic-orbitals-core-valence-electrons/"><span class="card-no">Lecture 4</span>
+          <h3>Atomic orbitals, core and valence electrons</h3>
+          <p class="card-q">Where do s, p, d and f, and “core” versus “valence”, come from?</p>
+          <p class="card-meta">About 45 minutes<span class="card-done"> · Completed</span></p></a></li>
+        <li class="card" data-slug="pauli-exclusion-slater-determinant"><a href="pauli-exclusion-slater-determinant/"><span class="card-no">Lecture 5</span>
+          <h3>Pauli exclusion and Slater determinants</h3>
+          <p class="card-q">What makes many electrons harder than one, and what does the Pauli principle demand?</p>
+          <p class="card-meta">About 45 minutes<span class="card-done"> · Completed</span></p></a></li>
+        <li class="card" data-slug="hartree-fock-method"><a href="hartree-fock-method/"><span class="card-no">Lecture 6</span>
+          <h3>The Hartree–Fock method</h3>
+          <p class="card-q">What is the best you can do with one Slater determinant, and what does it miss?</p>
+          <p class="card-meta">About 60 minutes<span class="card-done"> · Completed</span></p></a></li>
+      </ol>
+      <p class="milestone"><b>Milestone.</b> Explain why electronic structure is a many-body problem, and what “self-consistent” means.</p>
+    </section>
+
+    <section class="part" id="part-ii">
+      <h2><span class="part-no">Part II · </span>Density functional theory</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 7</span>
+          <h3>Electron density and functionals</h3>
+          <p class="card-q">Can three coordinates replace 3N?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 8</span>
+          <h3>The Hohenberg–Kohn theorems</h3>
+          <p class="card-q">Why is the density, in principle, enough?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 9</span>
+          <h3>The Kohn–Sham equations</h3>
+          <p class="card-q">How did Kohn and Sham turn an existence theorem into a working method?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 10</span>
+          <h3>Exchange–correlation energy and the xc hole</h3>
+          <p class="card-q">What physics is hidden inside the exchange–correlation energy?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 11</span>
+          <h3>LDA, GGA and the PBE functional</h3>
+          <p class="card-q">What exactly is approximated when INCAR says GGA = PE?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 12</span>
+          <h3>Self-consistent field convergence</h3>
+          <p class="card-q">Why can't VASP solve the Kohn–Sham equations once and stop?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+      <p class="milestone"><b>Milestone.</b> Explain the chain from the Schrödinger equation through Born–Oppenheimer, the many-electron problem, the density, Hohenberg–Kohn and Kohn–Sham to the exchange–correlation energy and the SCF loop.</p>
+    </section>
+
+    <section class="part" id="part-iii">
+      <h2><span class="part-no">Part III · </span>Electrons in crystals</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 13</span>
+          <h3>The reciprocal lattice and the Brillouin zone</h3>
+          <p class="card-q">Why does a crystal lead naturally into reciprocal space?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 14</span>
+          <h3>Bloch's theorem and band structure</h3>
+          <p class="card-q">What does a k-point physically represent?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 15</span>
+          <h3>k-point sampling and Monkhorst–Pack grids</h3>
+          <p class="card-q">Why does a periodic calculation need many k-points, and how many?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 16</span>
+          <h3>Smearing: ISMEAR and SIGMA</h3>
+          <p class="card-q">Why do metals need special treatment of occupations, and what do ISMEAR and SIGMA really do?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+    </section>
+
+    <section class="part" id="part-iv">
+      <h2><span class="part-no">Part IV · </span>How VASP represents electrons</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 17</span>
+          <h3>Plane waves and the ENCUT cutoff</h3>
+          <p class="card-q">What exactly does ENCUT truncate?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 18</span>
+          <h3>PAW, pseudopotentials and the POTCAR</h3>
+          <p class="card-q">Why is choosing a POTCAR a physics decision?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 19</span>
+          <h3>VASP input files and convergence tests</h3>
+          <p class="card-q">What does each line of my inputs do, and how do I know my numbers are converged?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+      <p class="milestone"><b>Milestone.</b> Explain why VASP uses periodic cells, k-points, plane waves, ENCUT, PAW datasets and the POTCAR.</p>
+    </section>
+
+    <section class="part" id="part-v">
+      <h2><span class="part-no">Part V · </span>Energies, forces and structures</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 20</span>
+          <h3>Formation energy and the convex hull</h3>
+          <p class="card-q">What number is VASP minimizing, and when is comparing two of them meaningful?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 21</span>
+          <h3>Forces, stress and structural relaxation</h3>
+          <p class="card-q">How can an electronic calculation produce forces, and what changes when ISIF changes?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 22</span>
+          <h3>Equations of state and elastic constants</h3>
+          <p class="card-q">How do I get a reliable lattice constant, bulk modulus or elastic tensor?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+    </section>
+
+    <section class="part" id="part-vi">
+      <h2><span class="part-no">Part VI · </span>Spin, magnetism and correlated electrons</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 23</span>
+          <h3>Spin-polarized DFT and magnetism</h3>
+          <p class="card-q">What does spin-polarized DFT solve differently, and why can MAGMOM change the answer?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 24</span>
+          <h3>Spin–orbit coupling and magnetic anisotropy</h3>
+          <p class="card-q">Why does a magnet's energy depend on which way its moments point?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 25</span>
+          <h3>DFT+U and the Hubbard U</h3>
+          <p class="card-q">What does DFT+U correct, and why does the answer depend on U?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+    </section>
+
+    <section class="part" id="part-vii">
+      <h2><span class="part-no">Part VII · </span>Beyond semilocal functionals</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 26</span>
+          <h3>Meta-GGA functionals: SCAN and r²SCAN</h3>
+          <p class="card-q">What does the kinetic-energy density add, and is higher on the ladder always better?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 27</span>
+          <h3>Hybrid functionals and HSE06</h3>
+          <p class="card-q">Why is HSE so much more expensive than PBE, and what do you get for the cost?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 28</span>
+          <h3>van der Waals and dispersion corrections</h3>
+          <p class="card-q">Why does semilocal DFT miss what holds graphite layers and molecular crystals together?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+      <p class="milestone"><b>Milestone.</b> Compare PBE, DFT+U, r²SCAN, dispersion-corrected DFT and HSE by approximation, cost and typical failures.</p>
+    </section>
+
+    <section class="part" id="part-viii">
+      <h2><span class="part-no">Part VIII · </span>Reading electronic structure</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 29</span>
+          <h3>Band structure, DOS and projected DOS</h3>
+          <p class="card-q">What can, and can't, be concluded from a band structure?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 30</span>
+          <h3>Why DFT underestimates band gaps</h3>
+          <p class="card-q">Why is “PBE underestimates band gaps” an incomplete explanation?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+    </section>
+
+    <section class="part" id="part-ix">
+      <h2><span class="part-no">Part IX · </span>From energies and forces to materials properties</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 31</span>
+          <h3>Phonons and dynamical stability</h3>
+          <p class="card-q">How do second derivatives of the energy become vibrational spectra, and what does an imaginary mode mean?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 32</span>
+          <h3>The nudged elastic band method</h3>
+          <p class="card-q">How do we find the barrier for an atom, or a proton, to hop?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 33</span>
+          <h3>Ab initio molecular dynamics</h3>
+          <p class="card-q">How do DFT forces drive atoms in time, and how do I know my MD is trustworthy?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 34</span>
+          <h3>Machine-learning interatomic potentials</h3>
+          <p class="card-q">How can DFT data train a fast potential, and which DFT errors does it inherit?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+    </section>
+
+    <section class="part" id="part-x">
+      <h2><span class="part-no">Part X · </span>Doing DFT responsibly</h2>
+      <ol class="cards">
+        <li class="card soon"><span class="card-no">Lecture 35</span>
+          <h3>DFT errors: convergence versus accuracy</h3>
+          <p class="card-q">What kind of error am I reducing when I converge a calculation?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Lecture 36</span>
+          <h3>Writing a defensible DFT methods section</h3>
+          <p class="card-q">How do I choose, justify and report a methodology that survives peer review?</p>
+          <p class="card-meta">In preparation</p></li>
+        <li class="card soon"><span class="card-no">Capstone</span>
+          <h3>Audit a real VASP calculation</h3>
+          <p class="card-q">Could every choice in one of your own calculations survive a referee's questions?</p>
+          <p class="card-meta">In preparation</p></li>
+      </ol>
+      <p class="milestone"><b>Milestone.</b> Design, critique and defend a DFT methodology for a real research problem.</p>
+    </section>
+  </div>
+
+  <section class="home-block" aria-labelledby="who-h">
+    <div class="home-in two">
+      <div>
+        <h2 id="who-h">Who this course is for</h2>
+        <p>Students and researchers who want to understand what a DFT calculation does, not only how to run one. You need calculus and first-year physics; quantum mechanics is taught from the start. You need access to VASP only for the hands-on labs.</p>
+        <p>Also on this site: <a href="../symmetry/">an interactive guide to crystallographic symmetry and the 230 space groups</a>, the language behind POSCAR files and k-point meshes.</p>
+      </div>
+      <div>
+        <h2 id="checked-h">How the course is checked</h2>
+        <ul class="checked">
+          <li>Every claim is checked against primary papers, textbooks, lecture notes and the official VASP documentation before it is published. Each lecture ends with a short list of further reading.</li>
+          <li>VASP tags and defaults are checked against the VASP Wiki when a lecture is written.</li>
+          <li>Numbers in interactive figures come from code tested against exact results.</li>
+          <li>Lab results come from real VASP runs, never invented output.</li>
+          <li>Each lecture is fact-checked independently before it is published.</li>
+        </ul>
+      
+      </div>
+    </div>
+  </section>
+
+  <section class="home-block about" aria-labelledby="about-h">
+    <div class="home-in">
+      <h2 id="about-h">About the instructor</h2>
+      <p class="author-name"><a href="https://oridwan.github.io/">Osman Goni Ridwan</a></p>
+      <p>I'm a computational materials scientist and Ph.D. candidate in Mechanical Engineering at the University of North Carolina at Charlotte, and an Academic Cooperation Participant at Lawrence Livermore National Laboratory. I use DFT and VASP in my research on rare-earth permanent magnets, proton-conducting ceramics, carbon allotropes and molecular crystals, alongside machine-learning interatomic potentials and generative models.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="deck.js"></script>
+</body>
+</html>

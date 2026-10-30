@@ -1,0 +1,415 @@
+<!-- Fact-checked 2026-10-30. Sources (checked, not cited on the page):
+  Sherrill 2005 (BO notes, eqs. 2-5, 23-25, pp. 4-5): full Hamiltonian, clamped nuclei, V_NN constant,
+    expansion and nonadiabatic couplings, diagonal correction ~ (m/M) E_e.
+  Field, MIT 5.61 L24 (pp. 1-2): gnats-on-an-elephant picture, clamped-nucleus name; L32 (pp. 2-3): avoided crossings.
+  Born and Oppenheimer 1927: energy hierarchy 1 : kappa^2 : kappa^4, kappa = (m/M)^(1/4).
+  H2: vibrational fundamental 4161 cm-1 (0.52 eV), B_e 60.85 cm-1 (7.5 meV), B state ~11.4 eV.
+  Si: Raman optical phonon 520 cm-1 (64.5 meV, period 64 fs); M_Si = 51,197 m_e.
+  Pisana et al. 2007: BO breakdown in gated graphene (G-peak stiffening); BO effective in most metals.
+  Markland and Ceriotti 2018: nuclear quantum effects largest for light atoms.
+  VASP Wiki (2026-10-30): IBRION, POTIM, NSW, EDIFFG, ISIF defaults; LBONE (scalar-relativistic PAW);
+    LSORBIT; OUTCAR TOTAL-FORCE block. Vogtenhuber 2016 workshop slides: optimizers find local minima,
+    Hellmann-Feynman forces, EDIFFG < 0 rule.
+  Morse 1929: E(R) = De[(1 - exp(-a(R - re)))^2 - 1].
+  CODATA 2022: m_p/m_e = 1836.15.
+  Figure numerics checked in scripts/test_dft.mjs. -->
+<div class="notes">
+<p>Lecture 0 treated VASP as a machine that turns a structure into an energy. This lecture opens the machine one level. Which physical problem does it solve? Which approximations are already made before you choose any functional? And what actually happens, step by step, when a structure relaxes?</p>
+</div>
+
+<section class="deck-slide" id="relaxation-question">
+<h2>What is VASP computing when a structure relaxes?</h2>
+<p class="claim">Push an atom off its site and the forces push it back. Where do those forces come from?</p>
+<div class="cols wl">
+<svg class="diag" viewBox="0 0 420 250" role="img" aria-label="Schematic: two interpenetrating sublattices, the orange one shifted to the right, with red force arrows pushing the two sublattices back toward their ideal positions">
+<defs><marker id="diag-force" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="head-f" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+<g>
+<circle class="atom" cx="60" cy="40" r="11"/><circle class="atom" cx="160" cy="40" r="11"/><circle class="atom" cx="260" cy="40" r="11"/><circle class="atom" cx="360" cy="40" r="11"/>
+<circle class="atom" cx="60" cy="140" r="11"/><circle class="atom" cx="160" cy="140" r="11"/><circle class="atom" cx="260" cy="140" r="11"/><circle class="atom" cx="360" cy="140" r="11"/>
+<circle class="ghost" cx="110" cy="90" r="11"/><circle class="ghost" cx="210" cy="90" r="11"/><circle class="ghost" cx="310" cy="90" r="11"/>
+<circle class="ghost" cx="110" cy="190" r="11"/><circle class="ghost" cx="210" cy="190" r="11"/><circle class="ghost" cx="310" cy="190" r="11"/>
+<circle class="atom off" cx="128" cy="90" r="11"/><circle class="atom off" cx="228" cy="90" r="11"/><circle class="atom off" cx="328" cy="90" r="11"/>
+<circle class="atom off" cx="128" cy="190" r="11"/><circle class="atom off" cx="228" cy="190" r="11"/><circle class="atom off" cx="328" cy="190" r="11"/>
+<line class="force" x1="115" y1="90" x2="98" y2="90"/><line class="force" x1="215" y1="90" x2="198" y2="90"/><line class="force" x1="315" y1="90" x2="298" y2="90"/>
+<line class="force" x1="115" y1="190" x2="98" y2="190"/><line class="force" x1="215" y1="190" x2="198" y2="190"/><line class="force" x1="315" y1="190" x2="298" y2="190"/>
+<line class="force" x1="73" y1="40" x2="90" y2="40"/><line class="force" x1="173" y1="40" x2="190" y2="40"/><line class="force" x1="273" y1="40" x2="290" y2="40"/>
+<line class="force" x1="73" y1="140" x2="90" y2="140"/><line class="force" x1="173" y1="140" x2="190" y2="140"/><line class="force" x1="273" y1="140" x2="290" y2="140"/>
+</g>
+<text class="t m" x="210" y="238" text-anchor="middle">Schematic. Dashed circles: ideal sites. Red: forces.</text>
+</svg>
+<div>
+<p class="small muted">This lecture follows the question from the bottom up:</p>
+<ol class="flow v">
+<li><span>Particles</span></li>
+<li><span>Hamiltonian</span></li>
+<li><span>Born–Oppenheimer</span></li>
+<li><span>Energy surface</span></li>
+<li><span>Forces</span></li>
+<li><span>Relaxation</span></li>
+</ol>
+</div>
+</div>
+<div class="notes">
+<p>In Lab 1 you will take the silicon crystal of Lab 0, push one atom of the cell slightly off its site, and let VASP relax it. In a periodic calculation every copy of that atom moves with it, so in effect one set of atoms shifts against the other, as in the sketch. The forces then push the two sets back toward their ideal positions.</p>
+<p>VASP does not know that a crystal “wants” to be perfect. It computes energies and forces from a quantum-mechanical model, and a relaxation happens because it keeps asking one question: if the nuclei move a little, does the energy go down? This lecture builds that question from the bottom up, starting with the particles a material is made of.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="particles">
+<h2>What is a material made of, as far as VASP is concerned?</h2>
+<p class="claim">Nuclei and electrons, held together by electrostatic attraction and repulsion.</p>
+<div class="cols wl">
+<table class="tbl">
+<thead><tr><th>Particle</th><th>Charge</th><th>Mass</th><th>Treated as</th></tr></thead>
+<tbody>
+<tr><td>Nucleus \(I\), at \(\mathbf R_I\)</td><td>\(+Z_I e\)</td><td>\(M_I \ge 1836\, m_e\)</td><td>A point charge; in a relaxation, a classical particle</td></tr>
+<tr><td>Electron \(i\), at \(\mathbf r_i\)</td><td>\(-e\)</td><td>\(m_e\)</td><td>A quantum particle, described by a wavefunction</td></tr>
+</tbody>
+</table>
+<div>
+<p class="big">1836.15</p>
+<p class="big-cap">times the electron's mass: the lightest nucleus, a single proton. Every other nucleus is heavier still.</p>
+</div>
+</div>
+<div class="notes">
+<p>For everything in this course, a material is a collection of nuclei and electrons interacting through electrostatic (Coulomb) forces: like charges repel, opposite charges attract. Nucleus \(I\) has charge \(+Z_I e\), mass \(M_I\) and position \(\mathbf R_I\); electron \(i\) has charge \(-e\), mass \(m_e\) and position \(\mathbf r_i\). Nuclei are about \(10^{-15}\) m across, a hundred thousand times smaller than an atom, so treating them as point charges is an excellent approximation.</p>
+<p>The mass ratio is the key number of this lecture. Even a single proton is 1836.15 times heavier than an electron, and a silicon nucleus is about 51,200 times heavier. Electrons are light and behave as waves, so they need quantum mechanics: their state is a wavefunction of all their coordinates, \(\Psi(\mathbf r_1, \dots, \mathbf r_N)\), which for 100 electrons is a function of 300 spatial coordinates plus spins. For the heavy nuclei, a classical picture is often a good first approximation in ordinary DFT work; the end of this lecture says when it is not.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="hamiltonian">
+<h2>What does the full Hamiltonian contain?</h2>
+<p class="claim">Five terms: two kinetic energies and three Coulomb interactions.</p>
+<div class="eqbox eq-split">
+<div>
+\[ \hat H = \eqterm{TN}{\hat T_N} + \eqterm{Te}{\hat T_e} + \eqterm{VNN}{\hat V_{NN}} + \eqterm{Vee}{\hat V_{ee}} + \eqterm{VeN}{\hat V_{eN}} \]
+<ul class="eq-legend">
+<li data-eq="TN"><b>Nuclear kinetic energy</b>, \(-\sum_I \frac{1}{2M_I}\nabla_I^2\): the nuclei can move.</li>
+<li data-eq="Te"><b>Electronic kinetic energy</b>, \(-\sum_i \frac12\nabla_i^2\): the electrons can move.</li>
+<li data-eq="VNN"><b>Nucleus–nucleus repulsion</b>, \(\sum_{I&lt;J} \frac{Z_I Z_J}{|\mathbf R_I-\mathbf R_J|}\).</li>
+<li data-eq="Vee"><b>Electron–electron repulsion</b>, \(\sum_{i&lt;j} \frac{1}{|\mathbf r_i-\mathbf r_j|}\): makes the problem many-body.</li>
+<li data-eq="VeN"><b>Electron–nucleus attraction</b>, \(-\sum_{i,I} \frac{Z_I}{|\mathbf r_i-\mathbf R_I|}\): ties electrons to nuclei.</li>
+</ul>
+</div>
+<svg class="ham-svg" viewBox="0 0 300 215" role="img" aria-label="Two nuclei and three electrons with the five kinds of terms drawn as lines and arrows">
+<defs><marker id="ham-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ham-head" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+<g data-eq="VeN"><line x1="52" y1="48" x2="100" y2="120"/><line x1="52" y1="48" x2="210" y2="120"/><line x1="155" y1="185" x2="100" y2="120"/><line x1="155" y1="185" x2="210" y2="120"/><line x1="262" y1="52" x2="100" y2="120"/><line x1="262" y1="52" x2="210" y2="120"/></g>
+<g data-eq="Vee"><line x1="52" y1="48" x2="155" y2="185"/><line x1="155" y1="185" x2="262" y2="52"/><line x1="52" y1="48" x2="262" y2="52"/></g>
+<g data-eq="VNN"><line x1="100" y1="120" x2="210" y2="120"/></g>
+<g data-eq="TN"><path class="mv" d="M88 134 L72 150"/><path class="mv" d="M222 134 L238 150"/></g>
+<g data-eq="Te"><path class="mv" d="M43 40 L24 26"/><path class="mv" d="M146 190 L122 198"/><path class="mv" d="M271 44 L290 30"/></g>
+<circle class="nuc" cx="100" cy="120" r="18"/><text x="100" y="125" text-anchor="middle">+</text>
+<circle class="nuc" cx="210" cy="120" r="18"/><text x="210" y="125" text-anchor="middle">+</text>
+<circle class="ele" cx="52" cy="48" r="9"/><circle class="ele" cx="155" cy="185" r="9"/><circle class="ele" cx="262" cy="52" r="9"/>
+<text class="cap" x="150" y="211" text-anchor="middle">two nuclei (+), three electrons</text>
+</svg>
+<p class="eq-hint">Hartree atomic units, with \(M_I\) in electron masses. Click a term, a line of the legend, or a group in the diagram.</p>
+</div>
+<div class="notes">
+<p>The <x-term k="hamiltonian">Hamiltonian</x-term> is the operator for the total energy. In the non-relativistic picture it has five pieces: the kinetic energies of nuclei and electrons, and the three kinds of Coulomb interaction between them. The formulas are in Hartree atomic units, where \(\hbar = m_e = e = 4\pi\varepsilon_0 = 1\). In SI units the electron–electron term, for example, reads \(e^2/(4\pi\varepsilon_0 |\mathbf r_i - \mathbf r_j|)\); atomic units simply set the constants to 1, which is why the formulas look bare. \(\nabla_I^2\) differentiates with respect to the coordinates of nucleus \(I\), and \(\nabla_i^2\) with respect to those of electron \(i\).</p>
+<p>Two terms deserve attention. \(\hat V_{ee}\) depends on the distance between every pair of electrons, so the equation cannot be split into separate equations for each electron; that is what "many-body" means (<x-lec n="5"></x-lec>). \(\hat V_{eN}\) depends on electron and nuclear coordinates together, so the Hamiltonian cannot be split into a nuclear part and an electronic part either. The next slides show how the second coupling is handled.</p>
+<p>A note on relativity. The Hamiltonian on the slide is non-relativistic, but VASP's PAW datasets are not: they are built from scalar-relativistic calculations of the atom, which include the relativistic effects that matter most for core and heavy-atom electrons. What VASP leaves out by default is spin–orbit coupling, which <x-tag>LSORBIT</x-tag> = .TRUE. adds as a further term (<x-lec n="24"></x-lec>).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="too-hard">
+<h2>Why can't we solve this Hamiltonian directly?</h2>
+<p class="claim">Every particle is coupled to every other, so the problem does not split into pieces.</p>
+<div class="cols">
+<div>
+<p class="big">90 <small>coordinates</small></p>
+<p class="big-cap">in one function, for the two-atom cell of silicon: 3 × (2 nuclei + 28 electrons).</p>
+</div>
+<div class="callout key"><p class="callout-k">Keep in mind</p><p>This is not a weakness of VASP. It is the central difficulty of quantum many-body physics, and every method in this course is a way around it.</p></div>
+</div>
+<div class="notes">
+<p>The exact solution of the full problem is a single function of the \(3N\) electronic and \(3M\) nuclear coordinates, plus spins, and the Coulomb terms couple all of them. Even the two-atom primitive cell of silicon holds 2 nuclei and 28 electrons (silicon has \(Z = 14\)), which makes \(3 \times 30 = 90\) coordinates. A real crystal repeats that cell an enormous number of times. (<x-lec n="13"></x-lec> and <x-lec n="14"></x-lec> show how periodicity helps.)</p>
+<p>The first step around the difficulty is to separate the nuclei from the electrons. That still leaves \(\Psi(\mathbf r_1, \dots, \mathbf r_N)\) and the exponential wall of Lecture 0, which DFT then sidesteps.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="born-oppenheimer">
+<h2>What is the Born–Oppenheimer approximation?</h2>
+<p class="claim">The nuclei are so heavy that, to the electrons, they are almost standing still.</p>
+<div class="cols">
+<div class="eqbox">
+\[ E_{\mathrm{el}} \;:\; E_{\mathrm{vib}} \;:\; E_{\mathrm{rot}} \;\approx\; 1 \;:\; \Big(\frac{m_e}{M}\Big)^{1/2} \;:\; \frac{m_e}{M} \]
+<ul class="eq-legend">
+<li>Electronic excitations, vibrations and rotations come in separate energy ranges, each smaller than the last by about \((m_e/M)^{1/2}\).</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile acc"><span class="k">Electrons: light, fast</span>Respond within about a femtosecond. Solved quantum mechanically, for nuclei held fixed.</li>
+<li class="tile"><span class="k">Nuclei: at least 1836 times heavier, slow</span>Silicon's fastest vibration takes 64 fs. Clamped while the electrons are solved, moved afterwards.</li>
+</ul>
+</div>
+<div class="notes">
+<p>The nuclei are so much heavier than the electrons that they move much more slowly. A common picture is gnats flying around on the back of an elephant: the elephant may be walking, but from the gnats' point of view it is almost standing still. So we fix the nuclear positions, solve for the electrons alone, and only then let the nuclei move.</p>
+<p>Numbers make this concrete.</p>
+<ul>
+<li><b>Speeds.</b> At the same kinetic energy, speed scales as one over the square root of the mass. A silicon nucleus, about 51,200 electron masses, moves some 226 times more slowly than an electron.</li>
+<li><b>Times.</b> An electronic energy scale of 1 eV corresponds to a time \(\hbar/(1\ \mathrm{eV}) = 0.66\) fs. The fastest vibration of silicon, the 520 cm⁻¹ optical phonon seen in Raman spectra, has a period of 64 fs.</li>
+<li><b>Energies.</b> Born and Oppenheimer showed that the energies separate as on the slide. In the H₂ molecule, exciting the electrons takes about 11 eV, one quantum of vibration 0.52 eV, and the rotational energy scale is 7.5 meV, each smaller than the last by a factor of 20 to 70, in line with \((m_e/M)^{1/2} \approx 1/43\) for a proton.</li>
+</ul>
+<p>This is the <x-term k="born-oppenheimer-approximation">Born–Oppenheimer approximation</x-term>, published by Max Born and J. Robert Oppenheimer in 1927, and also called the clamped-nucleus approximation. It is the reason a VASP run can treat the positions in POSCAR as fixed numbers.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="clamped-nuclei">
+<h2>What problem is left once the nuclei are clamped?</h2>
+<p class="claim">Each geometry becomes its own electronic problem, with its own energy E(R).</p>
+<div class="eqbox">
+\[ \eqterm{H}{\hat H_{\mathrm{el}}(\mathbf R)}\;\eqterm{psi}{\psi_{\mathrm{el}}(\mathbf r;\mathbf R)} = \eqterm{E}{E_{\mathrm{el}}(\mathbf R)}\;\psi_{\mathrm{el}}(\mathbf r;\mathbf R), \qquad \hat H_{\mathrm{el}}(\mathbf R) = \hat T_e + \hat V_{eN} + \hat V_{ee} + \eqterm{VNN}{V_{NN}(\mathbf R)} \]
+<ul class="eq-legend">
+<li data-eq="H"><b><x-term k="clamped-nuclei">Clamped-nuclei Hamiltonian</x-term></b>: the full Hamiltonian without \(\hat T_N\), for nuclei fixed at \(\mathbf R\).</li>
+<li data-eq="psi"><b>Electronic wavefunction</b>: a function of the electron coordinates \(\mathbf r\); \(\mathbf R\) enters only as a parameter.</li>
+<li data-eq="E"><b>Electronic energy</b> for this one geometry. Change \(\mathbf R\) and you have a new problem.</li>
+<li data-eq="VNN"><b>Nucleus–nucleus repulsion</b>: for fixed nuclei a constant, which shifts the energy and leaves \(\psi\) unchanged.</li>
+</ul>
+</div>
+<div class="callout key"><p class="callout-k">The sentence that matters for VASP</p><p>A geometry goes in, an energy comes out: \(\{\mathbf R_I\} \longrightarrow E(\{\mathbf R_I\})\).</p></div>
+<div class="notes">
+<p>With the nuclei clamped, their kinetic energy drops out and their positions become numbers instead of variables. What remains is the electronic Schrödinger equation on the slide, one for every geometry. The semicolon in \(\psi_{\mathrm{el}}(\mathbf r;\mathbf R)\) is a reminder of this difference: \(\mathbf r\) are the variables, \(\mathbf R\) the parameters. The nucleus–nucleus repulsion is just a constant for fixed nuclei, so it shifts the energy without changing the wavefunction. VASP's total energy includes it.</p>
+<p>Solving at many geometries traces out the potential-energy curve, or surface, on which the nuclei then move. That surface is the subject of the next slide.</p>
+<details class="deeper"><summary>What exactly is neglected, and when does it matter?</summary>
+<p>Write the exact wavefunction of electrons and nuclei as an expansion in the clamped-nuclei states, \(\Psi(\mathbf r, \mathbf R) = \sum_k \chi_k(\mathbf R)\, \psi_k(\mathbf r; \mathbf R)\). Here \(\psi_k\) are the electronic states at geometry \(\mathbf R\), with energies \(E_k(\mathbf R)\), and \(\chi_k\) are nuclear functions to be found. Insert this into the full Schrödinger equation, multiply by \(\psi_k^*\) and integrate over the electron coordinates. The result is</p>
+\[ \big[\hat T_N + E_k(\mathbf R)\big]\chi_k + \sum_l \Lambda_{kl}\,\chi_l = E\,\chi_k , \qquad \Lambda_{kl} = -\sum_I \frac{1}{M_I}\Big(\langle\psi_k|\nabla_I\psi_l\rangle\cdot\nabla_I + \tfrac12\langle\psi_k|\nabla_I^2\psi_l\rangle\Big). \]
+<p>The terms \(\Lambda_{kl}\) appear because the nuclear kinetic energy also acts on the electronic states, which depend on \(\mathbf R\). They carry a factor \(1/M_I\). The off-diagonal ones, \(k \ne l\), are the <x-term k="nonadiabatic-coupling">nonadiabatic couplings</x-term>: they let the motion of the nuclei kick the electrons from one state into another. Dropping all of \(\Lambda\) leaves \(\big[\hat T_N + E_k(\mathbf R)\big]\chi_k = E\chi_k\): the nuclei move on the potential-energy surface \(E_k(\mathbf R)\) of a single electronic state. That is the Born–Oppenheimer approximation. The diagonal term \(\Lambda_{kk}\), the Born–Oppenheimer diagonal correction, is of relative size about \(m_e/M \sim 10^{-4}\); it is dropped too, except for very high accuracy, as in spectroscopy.</p>
+<p>When does the approximation fail? For \(k \ne l\) the coupling can be rewritten as</p>
+\[ \langle\psi_k|\nabla_I\psi_l\rangle = \frac{\langle\psi_k|(\nabla_I \hat H_{\mathrm{el}})|\psi_l\rangle}{E_l - E_k}. \]
+<p>The energy difference in the denominator means the coupling becomes large when two electronic states come close in energy, as near an avoided crossing of two potential-energy curves. That is the territory of photochemistry and of some reactions.</p>
+<p>Metals have no gap at all, yet in practice the approximation works well there for reaction energies, molecular dynamics and most phonon frequencies. Its failures in metals are subtler: in graphene whose electron density is tuned by a gate voltage, for example, it misses the measured stiffening of one Raman-active vibration, the G peak.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="pes">
+<h2>What is a potential-energy surface?</h2>
+<p class="claim">Solving at many geometries maps out the energy surface on which the nuclei move.</p>
+<figure class="fig side" data-fig="pes" data-model="morse">
+<div class="fig-body" data-snapshot="pes"></div>
+<figcaption><span class="model-label">Model</span>A Morse bond, \(E(R) = D_e\big[(1 - e^{-a(R - r_e)})^2 - 1\big]\), with \(D_e\) = 2 eV, \(r_e\) = 1.5 Å, \(a\) = 1.6 Å<sup>−1</sup>; zero energy means separated atoms. Drag the atom or use the slider; red arrows show the force.</figcaption>
+</figure>
+<div class="notes">
+<p>Solve the clamped-nuclei problem at many geometries and you trace out the <x-term k="potential-energy-surface">potential-energy surface</x-term> \(E(\mathbf R_1, \dots, \mathbf R_M)\). Its <x-term k="local-minimum">minima</x-term> are stable or metastable structures. Its first-order saddle points, maxima along one direction and minima along all others, are the transition states, whose energies set the barriers between minima (<x-lec n="32"></x-lec>).</p>
+<p>A real material has \(3M\) nuclear coordinates, so its surface lives in many dimensions; the curve in the figure is a one-dimensional slice through a model bond. The Morse form is a simple formula that behaves like a real bond: \(D_e\) is the depth of the well, the energy needed to break the bond; \(r_e\) is the equilibrium bond length; and \(a\) sets how narrow the well is. The parameters are chosen for illustration, not taken from a real molecule. Pull the atoms together and the energy rises steeply; pull them apart and it levels off at zero, the energy of separated atoms. Press <b>Relax</b> to watch the atoms slide downhill; each row of the table is one ionic step, and the slides after next explain what that step does.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="forces">
+<h2>How does an energy surface give forces on atoms?</h2>
+<p class="claim">The force on a nucleus is the downhill slope of the energy.</p>
+<div class="cols">
+<div class="eqbox">
+\[ \eqterm{F}{\mathbf F_I} = \eqterm{minus}{-}\,\eqterm{grad}{\frac{\partial E}{\partial \mathbf R_I}} \]
+<ul class="eq-legend">
+<li data-eq="F"><b>Force</b> on nucleus \(I\), in eV/Å in VASP.</li>
+<li data-eq="grad"><b>Slope</b> of the energy as nucleus \(I\) moves, in each of three directions.</li>
+<li data-eq="minus"><b>Minus sign</b>: the force points downhill.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Stationary point</span>Every force is zero: a minimum, a maximum or a saddle point.</li>
+<li class="tile"><span class="k">Minimum</span>The energy also rises in every direction, apart from moving all atoms together.</li>
+<li class="tile acc"><span class="k">In OUTCAR</span>The block headed <code>POSITION … TOTAL-FORCE (eV/Angst)</code>.</li>
+</ul>
+</div>
+<div class="notes">
+<p>The <x-term k="force">force</x-term> on a nucleus is the negative slope of the energy: it points in the direction that lowers the energy fastest, and its size says how fast. VASP prints the forces in eV/Å, in the OUTCAR block headed <code>POSITION TOTAL-FORCE (eV/Angst)</code>, one line per atom with its position and the three force components.</p>
+<p>Where the slope vanishes, every force is zero: at a minimum, a maximum or a saddle point. At a minimum the energy also rises in every direction, with one exception in a crystal: moving all atoms together costs nothing. In the bond of the previous figure, the equilibrium distance is where \(dE/dR = 0\). Pushed closer, the atoms are pushed apart; pulled further, they are pulled back.</p>
+<details class="deeper"><summary>How VASP gets forces without moving any atom</summary>
+<p>Moving each atom a little and recomputing the energy would take extra calculations for every coordinate. Instead, VASP uses the Hellmann–Feynman theorem. Differentiate \(E = \langle\psi|\hat H_{\mathrm{el}}|\psi\rangle\) with respect to \(\mathbf R_I\):</p>
+\[ \frac{\partial E}{\partial \mathbf R_I} = \Big\langle \psi \Big| \frac{\partial \hat H_{\mathrm{el}}}{\partial \mathbf R_I} \Big| \psi \Big\rangle + 2\,\mathrm{Re}\Big\langle \frac{\partial \psi}{\partial \mathbf R_I} \Big| \hat H_{\mathrm{el}} \Big| \psi \Big\rangle . \]
+<p>Because \(\psi\) is an eigenstate, \(\hat H_{\mathrm{el}}\psi = E\psi\), the second term equals \(E\,\partial\langle\psi|\psi\rangle/\partial\mathbf R_I\), which is zero because \(\psi\) stays normalized. Only the first term remains, and only \(\hat V_{eN}\) and \(V_{NN}\) depend on \(\mathbf R_I\). The result has a classical reading: the force on a nucleus is its charge times the electric field at its position, created by the electron density \(n(\mathbf r)\) and by the other nuclei,</p>
+\[ \mathbf F_I = Z_I\Big[\sum_{J\ne I} Z_J\,\frac{\mathbf R_I - \mathbf R_J}{|\mathbf R_I - \mathbf R_J|^3} - \int n(\mathbf r)\,\frac{\mathbf R_I - \mathbf r}{|\mathbf R_I - \mathbf r|^3}\,d\mathbf r\Big]. \]
+<p>The first term pushes nucleus \(I\) away from the other nuclei; the second pulls it towards the electron cloud. So once the density is known, the forces cost almost nothing extra. In practice the PAW method adds terms from the atom-centred functions that move with each atom, and an SCF loop that is not fully converged adds a small error; <x-lec n="21"></x-lec> covers both.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="relaxation">
+<h2>What is a structural relaxation?</h2>
+<p class="claim">A loop: solve the electrons, compute the forces, move the nuclei downhill, repeat.</p>
+<svg class="diag" viewBox="0 0 760 250" role="img" aria-label="Flow chart of a relaxation: positions, solve the electrons, energy and forces, check the forces; if not converged, move the nuclei and repeat; if converged, stop">
+<defs><marker id="diag-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+<g class="node"><rect x="10" y="30" width="150" height="62" rx="8"/><text class="t b" x="85" y="57" text-anchor="middle">Positions R</text><text class="t m" x="85" y="78" text-anchor="middle">POSCAR, then each step</text></g>
+<g class="step"><path class="arr" d="M160 61 H198"/><g class="node acc"><rect x="200" y="30" width="160" height="62" rx="8"/><text class="t b" x="280" y="57" text-anchor="middle">Solve the electrons</text><text class="tag" x="280" y="78" text-anchor="middle">SCF loop · EDIFF</text></g></g>
+<g class="step"><path class="arr" d="M360 61 H398"/><g class="node"><rect x="400" y="30" width="150" height="62" rx="8"/><text class="t b" x="475" y="57" text-anchor="middle">Energy, forces</text><text class="t m" x="475" y="78" text-anchor="middle">OSZICAR, OUTCAR</text></g></g>
+<g class="step"><path class="arr" d="M550 61 H588"/><g class="node"><rect x="590" y="30" width="160" height="62" rx="8"/><text class="t b" x="670" y="57" text-anchor="middle">All |F| &lt; |EDIFFG|?</text><text class="tag" x="670" y="78" text-anchor="middle">EDIFFG &lt; 0</text></g></g>
+<g class="step"><path class="arr" d="M630 92 C630 150, 520 199, 452 199"/><text class="t" x="560" y="130">no</text><g class="node"><rect x="200" y="168" width="250" height="62" rx="8"/><text class="t b" x="325" y="195" text-anchor="middle">Move the nuclei downhill</text><text class="tag" x="325" y="216" text-anchor="middle">IBRION · POTIM</text></g><path class="arr" d="M200 199 H85 V94"/><text class="t m" x="95" y="140">at most NSW ionic steps in all</text></g>
+<g class="step"><path class="arr" d="M670 92 V166"/><text class="t" x="680" y="135">yes</text><g class="node ok"><rect x="590" y="168" width="160" height="62" rx="8"/><text class="t b" x="670" y="195" text-anchor="middle">Stop</text><text class="t m" x="670" y="216" text-anchor="middle">final positions: CONTCAR</text></g></g>
+</svg>
+<div class="notes">
+<p>A <x-term k="structural-relaxation">structural relaxation</x-term> moves the nuclei downhill on the potential-energy surface, solving the whole electronic problem again at every step:</p>
+<ol>
+<li>Start from the positions in POSCAR and hold the nuclei fixed.</li>
+<li>Solve the electronic problem: the SCF loop of Lecture 0.</li>
+<li>Compute the energy and the forces.</li>
+<li>If every force is below the threshold, stop. Otherwise move the nuclei downhill, in a direction the optimizer builds from the forces, and go back to step 2.</li>
+</ol>
+<p>Every ionic step contains a full electronic calculation, so a relaxation that takes 30 ionic steps solves the electronic problem 30 times. That is why relaxations cost far more than single-point runs. (Each new SCF starts from the previous step's orbitals, so it needs fewer iterations than the first.) OSZICAR gets a line per electronic step and a summary line (<code>F=</code>, <code>E0=</code>) per ionic step; OUTCAR gets a force block per ionic step; CONTCAR holds the positions of the last step.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="relaxation-tags">
+<h2>Which INCAR tags control a relaxation?</h2>
+<p class="claim">Five tags decide how the nuclei move, how far, how many times, and when to stop.</p>
+<table class="tbl">
+<thead><tr><th>Tag</th><th>Controls</th><th>Default</th><th>For a relaxation</th></tr></thead>
+<tbody>
+<tr><td><x-tag>IBRION</x-tag></td><td>How the nuclei move</td><td>−1 if NSW = 0; otherwise 0, molecular dynamics</td><td>1 (RMM-DIIS), 2 (conjugate gradient) or 3 (damped MD)</td></tr>
+<tr><td><x-tag>POTIM</x-tag></td><td>Scaling of the step width</td><td>0.5 for IBRION = 1, 2, 3</td><td>The default suits IBRION = 2; 1 and 3 are sensitive to it</td></tr>
+<tr><td><x-tag>NSW</x-tag></td><td>Maximum number of ionic steps</td><td>0: nuclei never move</td><td>Enough steps to converge</td></tr>
+<tr><td><x-tag>EDIFFG</x-tag></td><td>When to stop</td><td>EDIFF × 10, an energy criterion</td><td>Negative: a force threshold in eV/Å</td></tr>
+<tr><td><x-tag>ISIF</x-tag></td><td>What may change</td><td>2, except for MD and hybrid functionals</td><td>2: atoms move, the cell is fixed</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>These are the tags of Lab 1.</p>
+<ul>
+<li><x-tag>IBRION</x-tag> chooses the algorithm. Its default is a trap: setting only NSW selects molecular dynamics (IBRION = 0), not a relaxation. For a relaxation, IBRION = 2 (conjugate gradient) is the robust choice far from the minimum; IBRION = 1, a quasi-Newton method, is faster close to it; IBRION = 3 follows damped molecular dynamics.</li>
+<li><x-tag>POTIM</x-tag> scales the step the optimizer takes. Conjugate gradient finds the step length by itself, so the default is fine there; the other two use POTIM directly and can stall or overshoot if it is badly chosen.</li>
+<li><x-tag>EDIFFG</x-tag> sets the stopping rule. A positive value stops when the energy changes by less than EDIFFG between ionic steps. A negative value stops when the force on every atom is below |EDIFFG|, so <code>EDIFFG = -0.02</code> asks for forces below 0.02 eV/Å. A force criterion is the more direct test that a structure is at a minimum; the right threshold depends on the research question.</li>
+<li><x-tag>ISIF</x-tag> = 2 moves the atoms and keeps the cell fixed. Relaxing the cell shape and volume comes in <x-lec n="22"></x-lec>.</li>
+</ul>
+</div>
+</section>
+
+<section class="deck-slide" id="local-minimum">
+<h2>Does a relaxation find the most stable structure?</h2>
+<p class="claim">No: it stops at the nearest point where the forces vanish, usually a local minimum.</p>
+<figure class="fig side" data-fig="pes" data-model="double" data-starts="0.35,-0.3,0.06">
+<div class="fig-body" data-snapshot="pesDouble"></div>
+<figcaption><span class="model-label">Model</span>A curve with a deep minimum on the left and a shallow one on the right. Relax from each starting point.</figcaption>
+</figure>
+<div class="notes">
+<p>Try the three starting points. From 0.35 Å the relaxation stops in the shallow minimum on the right, although the deeper one is on the left. From −0.30 Å it finds the deep one. From 0.06 Å it stops at once: the force there is already below 0.01 eV/Å, on top of the barrier.</p>
+<p>An optimizer only ever follows the local slope, so it cannot know what lies beyond the next hill. A relaxation therefore stops at a stationary point near where it starts, usually a local minimum. If symmetry keeps the forces exactly at zero, it can also stop on a saddle point; a phonon calculation tells the two apart (<x-lec n="31"></x-lec>). Whether a lower structure exists elsewhere is a different question, the subject of crystal structure prediction, which is how the carbon frameworks of Lecture 0 were found.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="approximations">
+<h2>Which approximations have we already made?</h2>
+<p class="claim">At least three physical approximations come before any choice of exchange–correlation functional.</p>
+<table class="tbl">
+<thead><tr><th>Approximation</th><th>What it assumes</th><th>When it can fail</th></tr></thead>
+<tbody>
+<tr><td>No spin–orbit coupling</td><td>Scalar-relativistic PAW datasets; spin–orbit off unless <x-tag>LSORBIT</x-tag> = .TRUE.</td><td>Heavy elements, magnetic anisotropy (<x-lec n="24"></x-lec>)</td></tr>
+<tr><td>Born–Oppenheimer</td><td>Electrons follow the nuclei instantly; nonadiabatic couplings dropped</td><td>Near crossings of electronic states; very high-accuracy spectroscopy</td></tr>
+<tr><td>Classical nuclei</td><td>Nuclei are points that move downhill: no zero-point motion, no temperature</td><td><x-term k="nuclear-quantum-effects">Nuclear quantum effects</x-term>, largest with light atoms</td></tr>
+</tbody>
+</table>
+<p class="small muted">The Born–Oppenheimer approximation is not the exchange–correlation approximation. PBE, SCAN, DFT+U and HSE are later choices.</p>
+<div class="notes">
+<p>Before you choose any functional, a VASP relaxation already rests on at least three physical approximations. The third is easy to forget. A relaxed structure is the static one: the nuclei sit at the bottom of the energy surface, without thermal motion and without the zero-point motion that quantum mechanics requires even at absolute zero.</p>
+<p>How big is the zero-point energy? Each vibrational mode of frequency \(\omega\) carries at least \(\tfrac12\hbar\omega\). In silicon every vibrational quantum is at most 64.5 meV, so each mode contributes at most 32 meV. An O–H bond stretch has a quantum of about 0.46 eV, so its zero-point energy is about 0.23 eV, enough to shift reaction energies and barriers that involve hydrogen. That is why nuclear quantum effects are largest for light atoms. Most simulations still treat the nuclei classically; phonon calculations add the zero-point energy back afterwards (<x-lec n="31"></x-lec>).</p>
+<div class="callout caution"><p class="callout-k">Keep them apart</p><p>PBE, SCAN, DFT+U and HSE are choices made inside the electronic problem (<x-lec n="11"></x-lec>, <x-lec n="25"></x-lec>, <x-lec n="26"></x-lec>, <x-lec n="27"></x-lec>). The approximations in this table come before all of them.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="in-vasp">
+<h2>Where does each part of the problem live in VASP?</h2>
+<p class="claim">POSCAR holds the clamped positions; INCAR decides whether and how they move.</p>
+<table class="tbl">
+<thead><tr><th>File</th><th>Its role in this lecture</th></tr></thead>
+<tbody>
+<tr><td><code>POSCAR</code></td><td>The nuclear positions \(\{\mathbf R_I\}\) and the cell: the parameters of the clamped-nuclei problem</td></tr>
+<tr><td><code>POTCAR</code></td><td>The electron–nucleus interaction for each species, and which electrons are treated explicitly (<x-lec n="18"></x-lec>)</td></tr>
+<tr><td><code>INCAR</code></td><td>The approximations and settings, and whether and how the nuclei move (<x-tag>NSW</x-tag>, <x-tag>IBRION</x-tag>, <x-tag>EDIFFG</x-tag>)</td></tr>
+<tr><td><code>KPOINTS</code></td><td>The Brillouin-zone sampling for the periodic electrons (<x-lec n="15"></x-lec>)</td></tr>
+<tr><td><code>OSZICAR</code></td><td>Energies at every electronic step, and a summary at every ionic step</td></tr>
+<tr><td><code>OUTCAR</code></td><td>Full output, including the forces at every ionic step</td></tr>
+<tr><td><code>CONTCAR</code></td><td>The positions of the last step, in POSCAR format</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>So the better mental model of a relaxation is not “minimizing a geometry” but this loop: \(\{\mathbf R_I\} \to\) electronic problem \(\to E,\ \{\mathbf F_I\} \to\) new \(\{\mathbf R_I\}\). Each file in the table holds one piece of it.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-relax">
+<h2>Lab 1: what will you run?</h2>
+<p class="claim">Lab 0's silicon, with one atom pushed about 0.08 Å off its site.</p>
+<div class="cols top fit">
+<div><p class="file-k">INCAR</p>
+<pre class="code"><x-tag>ENCUT</x-tag>  = 300
+<x-tag>ISMEAR</x-tag> = 0
+<x-tag>SIGMA</x-tag>  = 0.05
+<x-tag>EDIFF</x-tag>  = 1E-6
+<x-tag>IBRION</x-tag> = 2       <span class="c"># conjugate gradient</span>
+<x-tag>ISIF</x-tag>   = 2       <span class="c"># atoms move, cell fixed</span>
+<x-tag>NSW</x-tag>    = 20      <span class="c"># at most 20 ionic steps</span>
+<x-tag>EDIFFG</x-tag> = -0.01   <span class="c"># forces below 0.01 eV/Å</span></pre></div>
+<div><p class="file-k">POSCAR</p>
+<pre class="code">Si, diamond, one atom displaced
+5.431
+  0.0  0.5  0.5
+  0.5  0.0  0.5
+  0.5  0.5  0.0
+Si
+2
+Direct
+  0.00  0.00  0.00
+  0.27  0.25  0.25</pre>
+<p class="small">KPOINTS and POTCAR: as in Lab 0.</p></div>
+</div>
+<div class="notes">
+<p>The cell is Lab 0's, with the first fractional coordinate of the second atom moved from 0.25 to 0.27. That is a step of 0.02 along the first lattice vector, which is 5.431 × √0.5 = 3.840 Å long, so about 0.08 Å. The first four INCAR lines are Lab 0's; the last four turn the static run into a relaxation.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-relax-predict">
+<h2>Lab 1: what should you see?</h2>
+<p class="claim">Predict before you run: the forces shrink, and each atom moves half the way back.</p>
+<div class="cols top">
+<ol>
+<li><b>OUTCAR</b>: the largest force in the first and the last <code>TOTAL-FORCE</code> block.</li>
+<li><b>OSZICAR</b>: the number of ionic steps (lines with <code>F=</code>) and electronic steps in each.</li>
+<li><b>CONTCAR</b>: atoms near (0.01, 0, 0) and (0.26, 0.25, 0.25); their difference back to (0.25, 0.25, 0.25).</li>
+<li><b>Why it stopped</b>: forces below |EDIFFG|, or all NSW steps used?</li>
+</ol>
+<div class="callout vasp"><p class="callout-k">Bring back</p><p>OSZICAR, OUTCAR, CONTCAR. Compare your final <code>E0</code> with Lab 0's: should they agree? We discuss your numbers in <x-lec n="21"></x-lec>.</p></div>
+</div>
+<div class="notes">
+<p>Why “half the way back”? The forces on the two atoms are equal and opposite, so the optimizer moves each one by the same amount in opposite directions and the midpoint between them stays put. The difference between the two positions returns to (0.25, 0.25, 0.25), to within the force tolerance, but the atoms themselves end near (0.01, 0, 0) and (0.26, 0.25, 0.25). Moving both atoms together costs no energy, so nothing pulls the pair back to the origin.</p>
+<p>Why are the two forces equal and opposite? Moving both atoms together leaves the energy unchanged, so the sum of the slopes, \(\partial E/\partial\mathbf R_1 + \partial E/\partial\mathbf R_2\), must be zero: the forces cancel. In any calculation without external fields, the forces on all atoms add up to zero, which is a quick check on your OUTCAR.</p>
+<details class="deeper"><summary>Already have a relaxation of your own?</summary>
+<p>Open it and find the initial geometry (POSCAR), the final geometry (CONTCAR), the number of ionic steps, the final energy, the largest final force, the EDIFFG value, and whether it stopped because the forces were small or because NSW was reached. Then write one paragraph answering: what physical problem was VASP repeatedly solving during this relaxation?</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="misconceptions">
+<h2>Which misconceptions should you drop now?</h2>
+<p class="claim">Five beliefs about relaxations that this lecture should replace. Click a card to turn it over.</p>
+<div class="flips myths" style="--n: 3">
+<div class="flip"><p class="q">“The atoms know where to go.”</p><p class="a">VASP computes forces from the energy model; the optimizer uses them to update the positions. Nothing more.</p></div>
+<div class="flip"><p class="q">“Relaxed means globally stable.”</p><p class="a">A relaxation stops near where it starts, usually in a local minimum, sometimes on a saddle point held by symmetry.</p></div>
+<div class="flip"><p class="q">“Small forces mean the calculation is correct.”</p><p class="a">Small forces mean the structure is stationary for the chosen model and settings. The model itself can still be wrong.</p></div>
+<div class="flip"><p class="q">“The functional is the first approximation.”</p><p class="a">Before any functional: no spin–orbit coupling, Born–Oppenheimer, and classical nuclei.</p></div>
+<div class="flip"><p class="q">“If VASP converged, the physics is solved.”</p><p class="a">Convergence means the stopping criteria were met. It does not mean the result is physically right.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="check">
+<h2>Check yourself</h2>
+<p class="claim">One question per outcome. Answer aloud, then click to compare.</p>
+<div class="flips checks">
+<div class="flip"><p class="q" data-k="Outcome 1">Which particles and interactions does the full Hamiltonian contain?</p><p class="a">Nuclei and electrons. Two kinetic energies, plus nucleus–nucleus and electron–electron repulsion and electron–nucleus attraction.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 2">Why can the nuclei be clamped, and what does that neglect?</p><p class="a">They are at least 1836 times heavier, so they move slowly. It neglects nonadiabatic couplings, small unless electronic states come close in energy.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 3">Why does a relaxation solve the electrons again at every step?</p><p class="a">Moving the nuclei changes the clamped-nuclei Hamiltonian, so the ground state, energy and forces must be recomputed. The forces, −∂E/∂R, set the next move.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 4">Which approximations come before any functional?</p><p class="a">No spin–orbit coupling (scalar-relativistic potentials), Born–Oppenheimer, and classical nuclei without zero-point motion.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="summary">
+<h2>What should you remember?</h2>
+<p class="claim">A relaxation asks one question again and again: does moving the nuclei lower the energy?</p>
+<ul>
+<li>A material is nuclei and electrons; the Hamiltonian has two kinetic terms and three Coulomb terms, and electron–electron repulsion makes it many-body.</li>
+<li>Born–Oppenheimer: nuclei at least 1836 times heavier can be clamped, so a geometry maps to an energy, \(\{\mathbf R_I\} \to E(\{\mathbf R_I\})\).</li>
+<li>Forces are \(\mathbf F_I = -\partial E/\partial \mathbf R_I\). A relaxation follows them to the nearest stationary point, solving the electrons again at every step.</li>
+<li>No spin–orbit coupling, Born–Oppenheimer and classical nuclei come before any choice of functional.</li>
+</ul>
+<p class="next">Next: <x-lec n="2">Lecture 2</x-lec> slows down to ask what \(\hat H\psi = E\psi\) really means.</p>
+</section>

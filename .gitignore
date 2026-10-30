@@ -1,2 +1,7 @@
 __pycache__/
 .DS_Store
+node_modules/
+# local framework demo for the DFT course (built with: node scripts/build_dft.mjs --demo)
+dft/_demo/
+dft/_src/_demo*
+dft/figs/_demo.js

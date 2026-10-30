@@ -1,0 +1,259 @@
+<!-- Fact-checked 2026-10-30. Sources (checked, not cited on the page):
+  Field, MIT 5.61 F17 L22 (notes originally by T. Van Voorhis), pp. 2-7: helium without repulsion -Z^2 Ha
+    = -108.8 eV; IEs 24.6 and 54.4 eV, -79.0 eV; 30 eV off; covalent bond ~5 eV; +5Z/8 Ha average
+    repulsion, -74.8 eV; separable Hamiltonian; invented spin coordinate; identical particles;
+    spin-statistics as a postulate; antisymmetrizing He ground state does not change the energy.
+  Field L23 (pp. 1-6): permutation eigenfunctions, Slater determinants, equal columns vanish, Pauli and aufbau,
+    He 1s2s M_S = 0 states need two determinants.
+  Slater 1929 (Phys. Rev. 34, 1293): determinant construction.
+  1s potential of a hydrogen-like density: V(r) = 1/r - (zeta + 1/r) exp(-2 zeta r); J = 5 zeta / 8.
+  O-H bond dissociation energy in water ~497 kJ/mol = 5.1 eV. Stern-Gerlach 1922 (silver atoms).
+  Kohn 1999 sec. II.B-C: exponential wall, ~10 active electrons.
+  VASP Wiki (2026-10-30): ISPIN, MAGMOM default 1.0 per atom, OSZICAR mag= in spin-polarized runs (Ni
+    example), occupations in OUTCAR (FERWE), WAVECAR and CHGCAR contents.
+  Helium numbers, pair probabilities (0.200, 0.0159, 0.385) and the 10^24 storage count are checked in
+    scripts/test_dft.mjs. -->
+<div class="notes">
+<p>Lectures 2 to 4 were mostly about one electron at a time. Real atoms, molecules and solids have many, and they repel each other and obey a rule that has no classical counterpart: two electrons can never be in the same spin-orbital. This lecture shows how much the repulsion matters, where the Pauli principle comes from, how a Slater determinant builds it in, and why nobody stores the full many-electron wavefunction of a solid.</p>
+</div>
+
+<section class="deck-slide" id="helium-energy">
+<h2>How much does electron repulsion matter?</h2>
+<p class="claim">Ignore it and helium's energy is 30 eV wrong. A covalent bond is worth about 5 eV.</p>
+<figure class="fig">
+<div class="fig-body" data-snapshot="helium"></div>
+<figcaption>Helium's ground-state energy three ways: without repulsion, with the repulsion added as an average, and measured.</figcaption>
+</figure>
+<div class="notes">
+<p>Helium has two electrons and a nucleus of charge \(Z = 2\). Drop the repulsion between the electrons and the Hamiltonian splits into two hydrogen-like problems. Each electron sits in a 1s orbital with energy \(-Z^2/2\) hartree, so the total is \(-Z^2 = -4\) hartree, or \(-108.8\) eV.</p>
+<p>Experiment says otherwise. The first electron takes 24.6 eV to remove and the second 54.4 eV, so the true ground-state energy is \(-79.0\) eV. The non-interacting picture is off by 30 eV. For scale, breaking one O–H bond in water takes about 5.1 eV, and a typical strong covalent bond is worth about 5 eV: the error is six bonds' worth.</p>
+<p>Adding the repulsion back as an average over the non-interacting wavefunction costs \(+\tfrac{5Z}{8}\) hartree \(= +34\) eV and gives \(-74.8\) eV, only 4 eV off. Those last 4 eV are still close to a whole covalent bond's worth, and closing that gap is what the rest of Part I is about.</p>
+<details class="deeper"><summary>Where 5Z/8 comes from</summary>
+<p>The average repulsion is the Coulomb integral \(J = \iint n_1(\mathbf r_1)\, n_1(\mathbf r_2)/|\mathbf r_1 - \mathbf r_2|\, d\mathbf r_1 d\mathbf r_2\) of two 1s charge clouds, each \(n_1(r) = (Z^3/\pi)\, e^{-2Zr}\). Do it in two steps. First, the electrostatic potential that one cloud creates at distance \(r\) from the nucleus, by Gauss's law (the charge inside \(r\) acts as a point charge, each shell outside contributes a constant):</p>
+\[ v(r) = \frac{1}{r} - \Big(Z + \frac{1}{r}\Big)e^{-2Zr}. \]
+<p>Far away this is \(1/r\), the potential of one electron's charge; near the nucleus it is finite, \(Z\), because the charge is spread out. Second, the energy of the other cloud in this potential, \(J = \int n_1(r)\, v(r)\, 4\pi r^2\, dr\), is an elementary integral of exponentials, and it gives \(J = 5Z/8\) hartree: for helium, 1.25 Ha = 34 eV.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="independent-electrons">
+<h2>What if electrons did not interact?</h2>
+<p class="claim">Then the Hamiltonian splits into one-electron pieces, and the wavefunction is a product of orbitals.</p>
+<div class="eqbox">
+\[ \eqterm{H}{\hat H_{\mathrm{ind}} = \hat h(1) + \hat h(2)} \quad\Longrightarrow\quad \eqterm{psi}{\Psi(\mathbf r_1, \mathbf r_2) = \phi_a(\mathbf r_1)\,\phi_b(\mathbf r_2)}, \qquad \eqterm{E}{E = \varepsilon_a + \varepsilon_b} \]
+<ul class="eq-legend">
+<li data-eq="H"><b>Separable Hamiltonian</b>: each electron feels only the nucleus; \(1/|\mathbf r_1 - \mathbf r_2|\) is dropped.</li>
+<li data-eq="psi"><b>Product wavefunction</b>: electron 1 in orbital a, electron 2 in orbital b, independently.</li>
+<li data-eq="E"><b>Energies add</b>: for helium, \(2 \times (-2\) Ha\() = -4\) Ha.</li>
+</ul>
+</div>
+<div class="notes">
+<p>Without the electron–electron term, the Hamiltonian is a sum of one-electron Hamiltonians, \(\hat h(1)\) acting only on electron 1 and \(\hat h(2)\) only on electron 2. Try a product \(\Psi = \phi_a(\mathbf r_1)\phi_b(\mathbf r_2)\), where \(\hat h\phi_a = \varepsilon_a\phi_a\) and \(\hat h\phi_b = \varepsilon_b\phi_b\):</p>
+\[ \hat H_{\mathrm{ind}}\Psi = \big[\hat h(1)\phi_a(\mathbf r_1)\big]\phi_b(\mathbf r_2) + \phi_a(\mathbf r_1)\big[\hat h(2)\phi_b(\mathbf r_2)\big] = (\varepsilon_a + \varepsilon_b)\,\Psi . \]
+<p>So the total wavefunction is a product of orbitals and the total energy a sum of orbital energies. This is the picture behind every orbital diagram you have drawn. In a product, the probability density factorizes, \(|\Psi|^2 = |\phi_a(\mathbf r_1)|^2|\phi_b(\mathbf r_2)|^2\): where electron 1 is tells you nothing about where electron 2 is.</p>
+<p>The electron–electron repulsion \(1/|\mathbf r_1 - \mathbf r_2|\) depends on both positions at once, so with it the Hamiltonian no longer separates, and the exact \(\Psi\) is not a product: where one electron is depends on where the other is. Before dealing with that, the product picture has a second problem, which has nothing to do with energy.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="spin">
+<h2>What is electron spin?</h2>
+<p class="claim">A fourth coordinate with two values, up or down; an orbital times a spin is a spin-orbital.</p>
+<div class="cols">
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Two values</span>\(m_s = +\tfrac12\) (α, “up”) or \(m_s = -\tfrac12\) (β, “down”).</li>
+<li class="tile acc"><span class="k">Spin-orbital</span>\(\chi(\mathbf x) = \phi(\mathbf r)\,\sigma(s)\): a space part times a spin part.</li>
+<li class="tile"><span class="k">Coordinates</span>Each electron: \(\mathbf x_i = (\mathbf r_i, s_i)\), position plus spin.</li>
+</ul>
+<div class="eqbox">
+\[ \chi_{1s\alpha}(\mathbf x) = \phi_{1s}(\mathbf r)\, \alpha(s) \qquad \chi_{1s\beta}(\mathbf x) = \phi_{1s}(\mathbf r)\, \beta(s) \]
+<ul class="eq-legend">
+<li>One spatial orbital, two spin-orbitals.</li>
+</ul>
+</div>
+</div>
+<div class="notes">
+<p>Electrons carry an intrinsic angular momentum, spin, whose component along any chosen axis takes only two values, \(m_s = \pm\tfrac12\) (in units of \(\hbar\)). It shows up in experiment: in 1922 Stern and Gerlach sent a beam of silver atoms through an inhomogeneous magnetic field and saw it split in two, a splitting later understood as the spin of the atom's one unpaired electron.</p>
+<p>To include spin in a wavefunction, give each electron a fourth coordinate \(s\) that takes two values, and write \(\mathbf x = (\mathbf r, s)\) for position plus spin. The two spin functions, \(\alpha(s)\) for up and \(\beta(s)\) for down, are orthonormal: summing over the two values of \(s\), \(\langle\alpha|\alpha\rangle = \langle\beta|\beta\rangle = 1\) and \(\langle\alpha|\beta\rangle = 0\). A product of a spatial orbital and a spin function is a <x-term k="spin-orbital">spin-orbital</x-term>, and two spin-orbitals with different spins are orthogonal even if their spatial parts are the same.</p>
+<p>The Hamiltonian of Lecture 1 does not act on spin at all; spin enters only through the symmetry rule on the next slides. (Spin–orbit coupling, which does act on it, is the subject of <x-lec n="24"></x-lec>.)</p>
+</div>
+</section>
+
+<section class="deck-slide" id="identical-particles">
+<h2>What does “identical” mean for electrons?</h2>
+<p class="claim">Swapping the labels of two electrons cannot change any measurement, so Ψ can at most change sign.</p>
+<div class="eqbox">
+\[ |\Psi(\mathbf x_2, \mathbf x_1)|^2 = |\Psi(\mathbf x_1, \mathbf x_2)|^2 \quad\Longrightarrow\quad \Psi(\mathbf x_2, \mathbf x_1) = \eqterm{pm}{\pm}\, \Psi(\mathbf x_1, \mathbf x_2) \]
+<ul class="eq-legend">
+<li data-eq="pm"><b>The sign</b>: swapping twice must give back Ψ, so the factor squares to 1. Nature fixes it: \(+\) for bosons (photons), \(-\) for fermions (electrons).</li>
+</ul>
+</div>
+<div class="notes">
+<p>Two electrons cannot be told apart. There is no “electron 1” and “electron 2” in nature, only labels we attach for bookkeeping, and swapping the labels cannot change the outcome of any measurement. So every probability must be unchanged by the swap, which means the wavefunction can change at most by a factor of magnitude one.</p>
+<p>Write \(\hat P_{12}\) for the operator that swaps the labels, \(\hat P_{12}\Psi(\mathbf x_1, \mathbf x_2) = \Psi(\mathbf x_2, \mathbf x_1)\). Swapping twice restores the original, \(\hat P_{12}^2 = 1\), so the eigenvalues of \(\hat P_{12}\) are \(+1\) and \(-1\): an acceptable wavefunction is either symmetric or antisymmetric under the swap. The Hamiltonian treats all electrons alike, so it commutes with \(\hat P_{12}\), and a state keeps its symmetry forever. Which sign electrons take is not a choice we make; the next slide gives nature's answer.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="antisymmetry">
+<h2>Which sign do electrons take?</h2>
+<p class="claim">The minus sign: electron wavefunctions are antisymmetric, and same-spin electrons never meet.</p>
+<figure class="fig" data-fig="pair">
+<div class="fig-body" data-snapshot="pair"></div>
+<figcaption><span class="model-label">Model</span>Two electrons in a one-dimensional box, in orbitals ψ₁ and ψ₂ of Lecture 2, with their repulsion ignored.</figcaption>
+</figure>
+<div class="notes">
+<p>Particles with half-integer spin, fermions such as electrons, protons and neutrons, have antisymmetric wavefunctions; particles with integer spin, bosons such as photons, have symmetric ones. This is the spin–statistics theorem. Its proof belongs to relativistic quantum field theory, so in this course we take it as a postulate.</p>
+<p>The simple product of spin-orbitals fails the test, because swapping the labels gives a different function. The fix is to subtract the swapped product:</p>
+\[ \Psi = \tfrac{1}{\sqrt2}\big[\chi_a(\mathbf x_1)\chi_b(\mathbf x_2) - \chi_b(\mathbf x_1)\chi_a(\mathbf x_2)\big]. \]
+<p>Swapping 1 and 2 turns the bracket into its negative, as required. When the two spin-orbitals have the same spin, the spin factor \(\alpha(s_1)\alpha(s_2)\) comes out, and the spatial part is \([\phi_a(\mathbf r_1)\phi_b(\mathbf r_2) - \phi_b(\mathbf r_1)\phi_a(\mathbf r_2)]/\sqrt2\). That is what the figure shows, with \(\phi_a\) and \(\phi_b\) the box states \(\psi_1\) and \(\psi_2\).</p>
+<p>On the diagonal \(x_1 = x_2\) the two terms cancel, so the antisymmetric \(|\Psi|^2\) vanishes there: two electrons of the same spin are never found at the same place. The probability of finding them within a tenth of the box of each other is 0.016, against 0.200 for the plain product, more than ten times smaller. That region of reduced probability around each electron is the <x-term k="exchange-hole">exchange hole</x-term>. The symmetric combination does the opposite and piles the electrons up (0.385).</p>
+<p>A general rule follows for two electrons. The total wavefunction is a spatial part times a spin part, and the product must be antisymmetric. So either the spatial part is antisymmetric and the spin part symmetric (the three triplet states, which include both spins up), or the spatial part is symmetric and the spin part antisymmetric (the singlet, \([\alpha(1)\beta(2) - \beta(1)\alpha(2)]/\sqrt2\)). Helium's ground state is the singlet: both electrons in 1s with opposite spins, spatial part \(1s(\mathbf r_1)\,1s(\mathbf r_2)\), the same product as before. That is why antisymmetry does not change helium's estimates on the first slide; exchange acts between electrons of the same spin, and its effects show up as soon as two electrons share one.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="slater-determinant">
+<h2>How do you build an antisymmetric wavefunction?</h2>
+<p class="claim">Write the spin-orbitals as a determinant: swapping two electrons swaps two rows and flips the sign.</p>
+<div class="eqbox">
+\[ \Psi(\mathbf x_1, \dots, \mathbf x_N) = \eqterm{norm}{\frac{1}{\sqrt{N!}}} \eqterm{det}{\begin{vmatrix} \chi_1(\mathbf x_1) & \chi_2(\mathbf x_1) & \cdots & \chi_N(\mathbf x_1) \\ \chi_1(\mathbf x_2) & \chi_2(\mathbf x_2) & \cdots & \chi_N(\mathbf x_2) \\ \vdots & & \ddots & \vdots \\ \chi_1(\mathbf x_N) & \chi_2(\mathbf x_N) & \cdots & \chi_N(\mathbf x_N) \end{vmatrix}} \]
+<ul class="eq-legend">
+<li data-eq="det"><b>Rows are electrons, columns are spin-orbitals.</b> Swapping two electrons swaps two rows, which flips the sign of any determinant.</li>
+<li data-eq="norm"><b>Normalization</b> for orthonormal spin-orbitals; for \(N = 2\), the \(1/\sqrt2\) of the previous slide.</li>
+</ul>
+</div>
+<div class="notes">
+<p>For more than two electrons, writing out all the signed products by hand quickly becomes impossible: three electrons already need six terms, ten electrons over three million. In 1929 John Slater found a compact solution in the properties of determinants. Put the spin-orbitals in the columns and the electrons in the rows. For two electrons,</p>
+\[ \frac{1}{\sqrt2}\begin{vmatrix} \chi_a(\mathbf x_1) & \chi_b(\mathbf x_1) \\ \chi_a(\mathbf x_2) & \chi_b(\mathbf x_2) \end{vmatrix} = \frac{1}{\sqrt2}\big[\chi_a(\mathbf x_1)\chi_b(\mathbf x_2) - \chi_b(\mathbf x_1)\chi_a(\mathbf x_2)\big], \]
+<p>exactly the wavefunction of the previous slide. For N electrons, expanding the determinant produces all \(N!\) assignments of electrons to orbitals, each with the sign of its permutation. Two properties of determinants then do all the work: swapping two rows flips the sign, which is antisymmetry; and two equal columns give zero, which is the next slide.</p>
+<p>A <x-term k="slater-determinant">Slater determinant</x-term> is the simplest antisymmetric many-electron wavefunction. Each electron is still in its own orbital, but the electrons can no longer be told which. It is the starting point of Hartree–Fock theory (<x-lec n="6"></x-lec>) and of the Kohn–Sham construction (<x-lec n="9"></x-lec>).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="pauli-principle">
+<h2>Where does the Pauli exclusion principle come from?</h2>
+<p class="claim">A determinant with two equal columns is zero: no two electrons can occupy the same spin-orbital.</p>
+<div class="cols">
+<div class="eqbox">
+\[ \begin{vmatrix} \chi_a(\mathbf x_1) & \chi_a(\mathbf x_1) \\ \chi_a(\mathbf x_2) & \chi_a(\mathbf x_2) \end{vmatrix} = 0 \]
+<ul class="eq-legend">
+<li>Two electrons in the same spin-orbital: the wavefunction vanishes everywhere.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile acc"><span class="k">Pauli exclusion</span>At most one electron per spin-orbital, so at most two per spatial orbital, with opposite spins.</li>
+<li class="tile"><span class="k">Consequence</span>Shells fill in order: the aufbau rule of Lecture 4.</li>
+<li class="tile"><span class="k">In VASP</span>Occupation 2 per band without spin polarization; 1 per band per spin with it.</li>
+</ul>
+</div>
+<div class="notes">
+<p>A determinant with two identical columns is zero. Two identical columns would mean two electrons in the same spin-orbital, so such a wavefunction does not exist: this is the <x-term k="pauli-exclusion">Pauli exclusion principle</x-term>. Pauli proposed it in 1925 as a rule to explain atomic spectra; antisymmetry shows that it is not a separate law but a consequence of electrons being identical fermions. From it the aufbau filling order of Lecture 4 follows.</p>
+<p>Since spin-orbitals with different spins are different, each spatial orbital can hold two electrons, one with each spin. That is why VASP's OUTCAR shows occupations of 2 for the filled bands of Lab 0, and why a spin-polarized run (<x-tag>ISPIN</x-tag> = 2), which treats up and down electrons in separate channels, shows occupations of 1 in each channel.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="correlation">
+<h2>Is one Slater determinant the exact answer?</h2>
+<p class="claim">No. It enforces antisymmetry, but electrons also avoid each other because they repel: correlation.</p>
+<div class="cols">
+<ul class="tiles" style="--n: 1">
+<li class="tile acc"><span class="k">Built in by a determinant</span>Exchange: same-spin electrons keep apart.</li>
+<li class="tile warn"><span class="k">Missing from one determinant</span>Correlation: all electrons, of either spin, avoiding each other because of \(1/|\mathbf r_i - \mathbf r_j|\).</li>
+</ul>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Helium</span>First estimate −74.8 eV, measured −79.0 eV. Letting the orbital relax (Lecture 6) gives −77.9 eV; the last 1.1 eV is correlation.</li>
+<li class="tile"><span class="k">Next lecture</span>The best single determinant (Hartree–Fock), and what it still misses: the correlation energy.</li>
+</ul>
+</div>
+<div class="notes">
+<p>A Slater determinant makes the wavefunction antisymmetric, and with it same-spin electrons avoid each other. But a determinant is still built from independent orbitals: for an electron of the other spin, where it is remains uncorrelated with where you are. Real electrons repel, so all of them avoid each other more than a single determinant allows. The missing piece is called <x-term k="electron-correlation">correlation</x-term>.</p>
+<p>Some states cannot even be written as a single determinant. Helium's excited configuration 1s2s with one electron up and one down is an example: its singlet state is \([1s(1)2s(2) + 2s(1)1s(2)]\) times the singlet spin function, and expanding that product gives two determinants, not one. <x-lec n="6"></x-lec> finds the best single determinant, the Hartree–Fock wavefunction, and defines the correlation energy as what it leaves out: for helium, the last 1.1 eV.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="storage">
+<h2>Why does no code store the many-electron Ψ of a solid?</h2>
+<p class="claim">On a grid of g points per coordinate, Ψ needs g³ᴺ numbers; the density needs g³, whatever N is.</p>
+<figure class="fig side" data-fig="storage">
+<div class="fig-body" data-snapshot="storage"></div>
+<figcaption>Storing a function on a grid of g points along each coordinate. Eight electrons is the valence count of Lab 0's silicon cell.</figcaption>
+</figure>
+<div class="notes">
+<p>Lecture 0 met the exponential wall as a count of parameters. Here is the same wall as storage. Put each coordinate on a grid of only \(g = 10\) points. One electron's orbital then takes \(10^3\) numbers. The many-electron wavefunction of the 8 valence electrons in Lab 0's two-atom silicon cell is one function of 24 coordinates: \(10^{24}\) numbers, about \(1.6 \times 10^{25}\) bytes as complex numbers, before spin is even counted. That is more than all the data storage on Earth. The density of the same electrons is a function of 3 coordinates: \(10^3\) real numbers, 8 kB.</p>
+<p>Ten points per coordinate is far too coarse for real accuracy, which only widens the gap. And the same exponential governs the work of computing \(\Psi\), not just storing it, which is why wavefunction methods of chemical accuracy remain limited to systems with about ten chemically active electrons, unless they use clever approximations. Change N and the grid to see how fast the wall rises.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="what-codes-store">
+<h2>What do DFT codes store instead?</h2>
+<p class="claim">One-electron orbitals and the density: N functions of three coordinates, not one function of 3N.</p>
+<ul class="tiles" style="--n: 3">
+<li class="tile warn"><span class="k">Exact Ψ</span>One function of 3N coordinates (plus spins). Grows exponentially with N.</li>
+<li class="tile"><span class="k">Kohn–Sham orbitals</span>One-electron orbitals (about N/2 occupied per k-point, two electrons each), each a function of 3 coordinates: WAVECAR.</li>
+<li class="tile acc"><span class="k">Density</span>One function of 3 coordinates: CHGCAR.</li>
+</ul>
+<div class="notes">
+<p>Kohn–Sham DFT (<x-lec n="9"></x-lec>) never needs the interacting \(\Psi\). It works with a fictitious system of non-interacting electrons whose wavefunction is a single Slater determinant of one-electron orbitals, constructed to have the same density as the real electrons. A determinant is fully specified by its N orbitals, so storing it costs N functions of three coordinates, a cost that grows only in proportion to N. The orbitals, one per band at each k-point, are what VASP keeps in WAVECAR, and the density is what it writes to CHGCAR.</p>
+<p>The two effects of this lecture, exchange and correlation, do not disappear. In Kohn–Sham DFT their energies are collected, together with a kinetic-energy correction, into the exchange–correlation energy of Lecture 0, the one piece that must be approximated. That is why its name combines them.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-spin">
+<h2>Lab 5: does silicon want to be magnetic?</h2>
+<p class="claim">Rerun Lab 0 with ISPIN = 2. Predict: no magnetization, the same energy, occupations of 1.</p>
+<div class="cols top">
+<div>
+<p class="file-k">INCAR: add one line to Lab 0</p>
+<pre class="code"><x-tag>ISPIN</x-tag>  = 2   <span class="c"># spin-polarized</span>
+<span class="c"># MAGMOM defaults to 1.0 per atom</span></pre>
+<p class="small">Same POSCAR, KPOINTS and POTCAR, in a fresh directory (no WAVECAR or CHGCAR from Lab 0).</p>
+</div>
+<div>
+<p class="file-k">Predict, then check</p>
+<ol>
+<li>OSZICAR, last line: <code>mag=</code> is near 0, although MAGMOM started the run at 2 μB.</li>
+<li>E0 agrees with Lab 0 to within about the SCF tolerance.</li>
+<li>OUTCAR: two spin components, filled bands with occupation 1.</li>
+</ol>
+</div>
+</div>
+<div class="notes">
+<p><x-tag>ISPIN</x-tag> = 2 treats spin-up and spin-down electrons separately, so each spin channel can develop its own density and occupations. For a nonmagnetic system it is unnecessary and roughly doubles the cost. Without a <x-tag>MAGMOM</x-tag> line, each atom starts with a moment of 1.0 μB, so the run starts magnetic, 2 μB for the cell.</p>
+<p>Silicon's electrons are all paired in filled bands, so the prediction is that the magnetization dies away during the SCF loop and the energy returns to Lab 0's. In a spin-polarized run, OSZICAR adds the total magnetization, <code>mag=</code>, to each ionic line. If your magnetization does not go to zero, that is worth bringing to the next session.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="misconceptions">
+<h2>Which misconceptions should you drop now?</h2>
+<p class="claim">Five beliefs about many electrons. Click a card to turn it over.</p>
+<div class="flips myths" style="--n: 3">
+<div class="flip"><p class="q">“The Pauli principle is a repulsive force.”</p><p class="a">It is a symmetry requirement on Ψ. No force term in the Hamiltonian produces it.</p></div>
+<div class="flip"><p class="q">“Antisymmetry is just bookkeeping.”</p><p class="a">It changes where electrons can be: same-spin electrons never meet, and shells fill in order.</p></div>
+<div class="flip"><p class="q">“A Slater determinant is the exact many-electron wavefunction.”</p><p class="a">It includes exchange but misses correlation; some states need several determinants.</p></div>
+<div class="flip"><p class="q">“Two electrons per orbital is a rule of thumb.”</p><p class="a">It follows from antisymmetry: one per spin-orbital, two spins per spatial orbital.</p></div>
+<div class="flip"><p class="q">“VASP stores the many-electron wavefunction.”</p><p class="a">It stores one-electron orbitals (WAVECAR) and the density (CHGCAR).</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="check">
+<h2>Check yourself</h2>
+<p class="claim">One question per outcome. Answer aloud, then click to compare.</p>
+<div class="flips checks" style="--n: 3">
+<div class="flip"><p class="q" data-k="Outcome 1">Why does dropping electron repulsion make the problem easy, and how wrong is it for helium?</p><p class="a">The Hamiltonian separates into one-electron pieces. For helium it gives −108.8 eV instead of −79.0 eV: 30 eV off.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 2">What is a spin-orbital?</p><p class="a">A spatial orbital times a spin function, α or β: χ(x) = φ(r)σ(s).</p></div>
+<div class="flip"><p class="q" data-k="Outcome 3">Why is a Slater determinant antisymmetric?</p><p class="a">Swapping two electrons swaps two rows, and swapping two rows of a determinant flips its sign.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 4">Why can't two electrons share a spin-orbital?</p><p class="a">The determinant would have two equal columns and vanish: no such state exists.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 5">Why does VASP store orbitals rather than Ψ?</p><p class="a">Ψ of N electrons needs about g³ᴺ numbers on a grid; about N/2 doubly occupied orbitals need (N/2) × g³.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="summary">
+<h2>What should you remember?</h2>
+<p class="claim">Electrons repel and are indistinguishable fermions: that is what makes many of them hard.</p>
+<ul>
+<li>Without repulsion the problem separates; for helium that is 30 eV wrong, six bonds' worth.</li>
+<li>Electrons have spin; a spin-orbital is a spatial orbital times α or β.</li>
+<li>Electron wavefunctions are antisymmetric; a Slater determinant builds that in.</li>
+<li>Antisymmetry gives Pauli exclusion and the exchange hole; it does not give correlation.</li>
+<li>Ψ of a solid cannot be stored; codes store one-electron orbitals and the density.</li>
+</ul>
+<p class="next">Next: <x-lec n="6">Lecture 6</x-lec> finds the best single determinant, Hartree–Fock, and measures what it misses.</p>
+</section>

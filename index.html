@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Osman Goni Ridwan — Computational Materials Scientist</title>
   <meta name="description" content="Osman Goni Ridwan, computational materials scientist at UNC Charlotte and LLNL: DFT, ML potentials, molecular dynamics and generative AI for materials discovery.">
-  <meta name="keywords" content="Osman Goni Ridwan, OG Ridwan, Osman Ridwan, LEGO-xtal, CSPFlow, MMI Data Hub, crystal structure prediction, materials discovery, generative AI, machine learning interatomic potentials, DFT, magnetic materials, UNC Charlotte">
+  <meta name="keywords" content="Osman Goni Ridwan, OG Ridwan, Osman Ridwan, LEGO-xtal, CSPFlow, MMI Data Hub, crystal structure prediction, materials discovery, generative AI, machine learning interatomic potentials, DFT, DFT course, density functional theory tutorial, VASP tutorial, crystallographic symmetry, space groups, magnetic materials, UNC Charlotte">
   <meta name="author" content="Osman Goni Ridwan">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -391,7 +391,7 @@
         <div class="nav-dd-menu" id="learn-menu">
           <a href="symmetry/"><span class="dd-title">Crystallographic symmetry</span><span class="dd-note">Interactive tutorial</span></a>
           <a href="symmetry/#groups"><span class="dd-title">The 230 space groups</span><span class="dd-note">A 3D page for each group</span></a>
-          <span class="dd-item is-soon"><span class="dd-title">DFT fundamentals and VASP</span><span class="dd-note">In progress</span></span>
+          <a href="dft/"><span class="dd-title">DFT and VASP course</span><span class="dd-note">Interactive course, Lectures 0–6</span></a>
           <a class="dd-all" href="#learn">Overview of the tutorials</a>
         </div>
       </div>
@@ -663,25 +663,26 @@
           </div>
         </article>
         <article class="learn-card reveal">
-          <div class="learn-ks" aria-hidden="true">
-            <p>[ −½∇² + <i>v</i><sub>eff</sub>(<b>r</b>) ] <i>ψ</i><sub><i>i</i></sub>(<b>r</b>) = <i>ε</i><sub><i>i</i></sub> <i>ψ</i><sub><i>i</i></sub>(<b>r</b>)</p>
-            <small>The Kohn–Sham equations</small>
-          </div>
+          <a class="learn-media" href="dft/"><img src="assets/fig/learn-dft.webp" alt="Slide from Lecture 6 of the DFT course: a Hartree–Fock calculation of the helium atom, run in the browser, converges in seven self-consistent-field iterations, next to a table of the energy at each step." width="1200" height="776" loading="lazy"></a>
           <div class="learn-body">
-            <p class="learn-status">In Progress</p>
-            <h3>DFT fundamentals and VASP</h3>
-            <p>A practical guide to density functional theory with VASP, from the Kohn–Sham equations to the calculations used in research.</p>
-            <p class="learn-label">Planned chapters</p>
-            <ol class="learn-outline">
-              <li>Kohn–Sham DFT in practice</li>
-              <li>Exchange–correlation functionals: PBE, r²SCAN, DFT+U</li>
-              <li>PAW potentials and POTCAR choices, including frozen-4f</li>
-              <li>Convergence: cutoff energy, k-points, smearing</li>
-              <li>Structure relaxation and equations of state</li>
-              <li>Magnetism and spin-polarized calculations</li>
-              <li>Phonons and dynamical stability</li>
-              <li>Migration barriers with the nudged elastic band</li>
+            <p class="learn-status is-ready">Part I available</p>
+            <h3>Density functional theory and VASP</h3>
+            <p>A free course from the Schrödinger equation to calculations you can defend: 16:9 slides with the full lecture underneath, interactive figures computed in your browser, and a VASP lab in every lecture.</p>
+            <p class="learn-label">Lectures online</p>
+            <ol class="learn-outline" start="0">
+              <li><a href="dft/what-is-dft/">Introduction to DFT</a></li>
+              <li><a href="dft/born-oppenheimer-approximation/">The Born–Oppenheimer approximation</a></li>
+              <li><a href="dft/wavefunctions-operators-eigenvalues/">Wavefunctions, operators and eigenvalues</a></li>
+              <li><a href="dft/variational-principle-basis-sets/">The variational principle and basis sets</a></li>
+              <li><a href="dft/atomic-orbitals-core-valence-electrons/">Atomic orbitals, core and valence</a></li>
+              <li><a href="dft/pauli-exclusion-slater-determinant/">Pauli exclusion and Slater determinants</a></li>
+              <li><a href="dft/hartree-fock-method/">The Hartree–Fock method</a></li>
             </ol>
+            <p class="learn-note">Part II, Kohn–Sham DFT, comes next. The full syllabus has 37 lectures and a capstone in ten parts, through k-points, plane waves, PAW, magnetism, hybrid functionals, phonons and barriers.</p>
+            <p class="learn-actions">
+              <a class="btn btn-primary btn-sm" href="dft/">Start the course</a>
+              <a href="dft/what-is-dft/">Lecture 0: What is DFT?</a>
+            </p>
           </div>
         </article>
       </div>

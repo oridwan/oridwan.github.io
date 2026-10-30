@@ -1,0 +1,259 @@
+<!-- Fact-checked 2026-10-30. Sources (checked, not cited on the page):
+  Field, MIT 5.61 F17 L20 (pp. 3, 5): separation, quantum numbers, no radial nodes for 1s 2p 3d.
+  L21 (pp. 2-4): n, l, m ranges; E_n = -hcR Z^2/n^2 degenerate in l, m; <r> = (3n^2 - l(l+1))/2 a0.
+  L23 (pp. 4, 9-10): aufbau, shielding and penetration, E_ns < E_np, 4s before 3d in K and Ca,
+    4s ionizes first in Sc and later transition metals; 3d shields the nucleus from 4s.
+  NIST ASD: H ionization energy 13.598 eV; ground configurations of Si, K, Sc, Ti, Cr, Cu.
+  CODATA 2022: rydberg 13.605693 eV.
+  VASP Wiki (2026-10-30), "Available PAW potentials"/choosing page: Ti 4/178.330, Ti_pv 10/222.335,
+    Ti_sv 12/274.610 (recommended), O 6/400.0; semicore advice for bonding, magnetism, hybrids;
+    Ti, V, Cr "with uttermost care"; recommended Ti_sv, V_sv, Cr_pv; frozen semicore often fine;
+    f elements hard due to self-interaction. PAW frozen core. NELECT, ENCUT default, LORBIT.
+  Jones 2025 sec. 5.3.2: strongly correlated d/f systems, Hubbard U.
+  Hydrogen <r>, nodes and Ti shell counts checked in scripts/test_dft.mjs. -->
+<div class="notes">
+<p>Every POTCAR you choose makes a statement about atoms: which electrons take part in bonding, and which are frozen in a core. To read that statement you need the language of atomic orbitals: n, ℓ and m, s, p, d and f, shells, shielding and the filling order. This lecture builds that language from the one atom we can solve exactly, hydrogen, and ends with the choice between Ti, Ti_pv and Ti_sv.</p>
+</div>
+
+<section class="deck-slide" id="which-potcar">
+<h2>Which titanium POTCAR should you use?</h2>
+<p class="claim">Ti, Ti_pv or Ti_sv: 4, 10 or 12 valence electrons. The difference is which shells count as core.</p>
+<table class="tbl">
+<thead><tr><th>Dataset</th><th>Valence electrons</th><th>Valence configuration</th><th>ENMAX (eV)</th></tr></thead>
+<tbody>
+<tr><td><code>Ti</code></td><td>4</td><td>3d³ 4s¹</td><td>178.330</td></tr>
+<tr><td><code>Ti_pv</code></td><td>10</td><td>3p⁶ 3d³ 4s¹</td><td>222.335</td></tr>
+<tr><td><code>Ti_sv</code> <span class="small muted">(recommended)</span></td><td>12</td><td>3s² 3p⁶ 3d³ 4s¹</td><td>274.610</td></tr>
+</tbody>
+</table>
+<p class="small muted">Standard PBE datasets of the potpaw.64 release.</p>
+<div class="notes">
+<p>VASP provides three standard PBE datasets for titanium and recommends <code>Ti_sv</code>. They differ in which electrons are treated explicitly: "pv" adds the 3p shell to the valence, and "sv" adds the 3s shell as well. Each choice changes the number of electrons VASP handles and the cutoff it needs. To understand what is being chosen, and why it matters, we need to know what 3s, 3p, 3d and 4s are. That starts with hydrogen.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="hydrogen-quantum-numbers">
+<h2>What labels the hydrogen atom's states?</h2>
+<p class="claim">Three quantum numbers, n, ℓ and m; the energy depends on n alone.</p>
+<div class="cols wl">
+<div class="eqbox">
+\[ \psi_{n\ell m}(r,\theta,\phi) = \eqterm{R}{R_{n\ell}(r)}\; \eqterm{Y}{Y_{\ell m}(\theta,\phi)}, \qquad \eqterm{E}{E_n = -\frac{13.6\ \text{eV}}{n^2}} \]
+<ul class="eq-legend">
+<li data-eq="R"><b>Radial part</b>: set by \(n = 1, 2, 3, \dots\) and \(\ell\).</li>
+<li data-eq="Y"><b>Angular part</b>: \(\ell = 0, \dots, n-1\) (s, p, d, f) and \(m = -\ell, \dots, \ell\).</li>
+<li data-eq="E"><b>Energy</b>: \(-1\) rydberg \(/\,n^2\); all \(n^2\) states with the same \(n\) share it.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">s, p, d, f</span>\(\ell = 0, 1, 2, 3\): 1, 3, 5, 7 orbitals each (\(2\ell + 1\) values of m).</li>
+<li class="tile acc"><span class="k">A shell</span>All orbitals with the same n: 1s; 2s 2p; 3s 3p 3d; …</li>
+</ul>
+</div>
+<div class="notes">
+<p>The hydrogen atom is the one atom whose Schrödinger equation can be solved exactly. Because the potential \(-1/r\) depends only on the distance from the nucleus, not on the direction, the wavefunction separates into a radial part \(R_{n\ell}(r)\) and an angular part \(Y_{\ell m}(\theta, \phi)\), the spherical harmonics. Three whole numbers label the solutions:</p>
+<ul>
+<li>the principal quantum number \(n = 1, 2, 3, \dots\), which sets the energy and the overall size;</li>
+<li>the angular-momentum quantum number \(\ell = 0, 1, \dots, n-1\), which sets the shape; the letters s, p, d, f stand for \(\ell = 0, 1, 2, 3\);</li>
+<li>the magnetic quantum number \(m = -\ell, \dots, \ell\), which sets the orientation.</li>
+</ul>
+<p>The energy is \(E_n = -Z^2\,\mathrm{Ry}/n^2\), and for a given \(n\) all values of \(\ell\) and \(m\) have the same energy: \(n^2\) states per shell, \(2n^2\) with spin. This degeneracy in \(\ell\) is special to the pure \(1/r\) potential, and the next slides show how it breaks in other atoms. With an infinitely heavy nucleus the constant is one rydberg, 13.606 eV, half a hartree. The measured ionization energy of hydrogen is 13.598 eV; the small difference comes mostly from the finite mass of the proton, which multiplies the energy by \(1/(1 + m_e/m_p)\).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="orbital-shapes">
+<h2>What do s, p and d orbitals look like?</h2>
+<p class="claim">ℓ (with m) fixes the shape and the ℓ angular nodes; n − ℓ − 1 counts the radial nodes.</p>
+<figure class="fig side" data-fig="orbital">
+<div class="fig-body" data-snapshot="orbital"></div>
+<figcaption><span class="model-label">Exact</span>Hydrogen orbitals with m = 0. Left: the probability of finding the electron at distance r. Right: the angular shape in the xz plane.</figcaption>
+</figure>
+<div class="notes">
+<p>An orbital \(\psi_{n\ell m}\) has \(n - 1\) nodes in all: \(n - 1 - \ell\) radial nodes, spheres where \(R_{n\ell}\) changes sign, and \(\ell\) angular nodes, planes or cones where \(Y_{\ell m}\) does. So 1s, 2p, 3d and 4f, the first orbital of each \(\ell\), have no radial node at all. Try 3s, 3p and 3d in the figure: the 3s orbital has two inner lobes before its main one, while 3d has none and sits further in on average (\(\langle r\rangle\) = 10.5 bohr, against 13.5 for 3s).</p>
+<p>The left panel plots the radial probability \(r^2R_{n\ell}^2\), the probability of finding the electron at distance \(r\) in any direction. The factor \(r^2\) counts the area of a sphere of radius \(r\); it is why the 1s probability is zero at the nucleus even though \(|\psi_{1s}|^2\) is largest there.</p>
+<p>The figure shows \(m = 0\) only. Combining \(+m\) and \(-m\) gives real orbitals: \(p_x\) and \(p_y\) have the same shape as \(p_z\), pointed along x and y; for d they give four-leaf shapes (\(d_{xz}\), \(d_{yz}\), \(d_{xy}\), \(d_{x^2-y^2}\)) that differ from the \(m = 0\) orbital, \(d_{z^2}\). These real orbitals are the ones VASP's projections use.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="shielding">
+<h2>What changes when an atom has many electrons?</h2>
+<p class="claim">Inner electrons shield the nucleus, so orbitals with the same n no longer share one energy.</p>
+<ul class="tiles" style="--n: 3">
+<li class="tile"><span class="k">Shielding</span>Electrons in inner orbitals screen the nuclear charge seen by outer ones.</li>
+<li class="tile acc"><span class="k">Penetration</span>s orbitals reach the nucleus, so they feel more of its charge and drop lowest.</li>
+<li class="tile"><span class="k">Centrifugal barrier</span>High-ℓ orbitals are kept away from the nucleus and see less of it.</li>
+</ul>
+<p class="small muted">Result: within a shell, E(ns) &lt; E(np) &lt; E(nd). The hydrogen degeneracy is lifted.</p>
+<div class="notes">
+<p>With more than one electron, the equation can no longer be solved exactly (Lecture 3), but the qualitative picture is clear. Think of one electron moving in the average field of the nucleus and all the other electrons. That field is still spherical, so the orbitals keep their s, p, d shapes, but the radial equation now feels an effective potential</p>
+\[ V_{\mathrm{eff}}(r) = -\frac{Z_{\mathrm{eff}}(r)}{r} + \frac{\ell(\ell+1)}{2r^2}. \]
+<p>The first term is the nuclear attraction, screened by the electrons inside radius \(r\): close to the nucleus the electron feels nearly the full charge \(Z\), far outside the other electrons only a net charge of about 1. The second term, the centrifugal barrier, comes from the angular motion and pushes electrons with larger \(\ell\) away from the nucleus. Near the nucleus a radial function behaves as \(r^\ell\), so s orbitals have amplitude right at the nucleus, p orbitals start linearly, and d orbitals more slowly still.</p>
+<p>So s electrons <b>penetrate</b> under the inner shells and feel more of the nuclear charge, and their energy drops furthest; p electrons less so, d electrons least. The degeneracy of hydrogen is lifted, \(E_{ns} < E_{np} < E_{nd}\). Lecture 6 makes the screening quantitative for helium: each electron sees an effective charge of 27/16 ≈ 1.69 instead of 2. Computing this shielding from the electrons' mutual repulsion, in a mean field, is the job of the Hartree–Fock method (<x-lec n="6"></x-lec>).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="filling-order">
+<h2>In what order do atoms fill their orbitals?</h2>
+<p class="claim">Mostly in the aufbau order, 1s 2s 2p 3s 3p 4s 3d, with exceptions such as Cr and Cu.</p>
+<div class="cols wl">
+<table class="tbl">
+<thead><tr><th>Atom</th><th>Z</th><th>Ground configuration</th></tr></thead>
+<tbody>
+<tr><td>Silicon</td><td>14</td><td>[Ne] 3s² 3p²</td></tr>
+<tr><td>Potassium</td><td>19</td><td>[Ar] 4s</td></tr>
+<tr><td>Scandium</td><td>21</td><td>[Ar] 3d 4s²</td></tr>
+<tr><td>Titanium</td><td>22</td><td>[Ar] 3d² 4s²</td></tr>
+<tr><td>Chromium</td><td>24</td><td>[Ar] 3d⁵ 4s <span class="small muted">(not 3d⁴ 4s²)</span></td></tr>
+<tr><td>Copper</td><td>29</td><td>[Ar] 3d¹⁰ 4s <span class="small muted">(not 3d⁹ 4s²)</span></td></tr>
+</tbody>
+</table>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Why 4s before 3d</span>In potassium, the 4s orbital penetrates the argon core more than 3d does.</li>
+<li class="tile warn"><span class="k">A surprise</span>In the transition metals, the electron removed first is 4s, not 3d.</li>
+</ul>
+</div>
+<div class="notes">
+<p>Combine the ordering \(E_{ns} < E_{np} < E_{nd}\) with the Pauli exclusion principle, at most two electrons per orbital (<x-lec n="5"></x-lec>), and fill the orbitals from the bottom: that is the aufbau, or building-up, rule. [Ne] and [Ar] abbreviate the filled shells of neon and argon.</p>
+<p>Penetration explains the most famous oddity. In potassium, the 4s orbital has three inner lobes that reach through the argon core towards the nucleus. The nodeless 3d orbital lies almost entirely outside the core, where the nuclear charge is screened by all 18 core electrons. So 4s lies lower, potassium's last electron goes into 4s, and calcium is 4s². The configurations in the table are the measured ground states. Chromium and copper break the simple rule, taking only one 4s electron. The 3d and 4s energies are so close that the details of the repulsion between electrons decide the order, and here they favour a half-filled or filled d shell.</p>
+<p>The order also does not survive ionization. Once the 3d shell starts to fill, the 3d electrons, sitting largely inside the 4s, shield the nucleus from the 4s electrons, and in scandium and the transition metals after it the electron removed first is 4s, not 3d. The lesson for calculations is that 3d and 4s lie close in energy, so their relative occupation responds to the chemical environment.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="core-and-valence">
+<h2>What are core and valence electrons?</h2>
+<p class="claim">Valence electrons make bonds; core electrons sit deep and barely change. Semicore lie in between.</p>
+<figure class="fig" data-fig="shells">
+<div class="fig-body" data-snapshot="shells"></div>
+<figcaption>Titanium's shells from the inside out, in its ground configuration. Choose a dataset to see which shells it treats as valence and which it freezes in the core.</figcaption>
+</figure>
+<div class="notes">
+<p>The <x-term k="valence-electrons">valence electrons</x-term> occupy the outermost, highest-energy orbitals and take part in bonding. The <x-term k="core-electrons">core electrons</x-term> are tightly bound close to the nucleus, with binding energies of hundreds or thousands of eV, and hardly notice the neighbouring atoms. Between them, <x-term k="semicore">semicore</x-term> states such as titanium's 3s and 3p lie deep enough to be core-like, tens of eV below the valence, but high enough to respond to short bonds, pressure or magnetism.</p>
+<p>VASP's PAW datasets freeze the core: the core electrons keep the configuration they had in the atomic calculation that generated the dataset (the <x-term k="frozen-core">frozen-core approximation</x-term>, Lecture 0). In the figure, <code>Ti</code> freezes 18 electrons, <code>Ti_pv</code> 12 and <code>Ti_sv</code> 10. The configuration listed for a dataset need not be the free atom's: <code>Ti</code> is listed as 3d³ 4s¹, while the atom's ground state is 3d² 4s². In the solid the valence electrons are redistributed self-consistently anyway; what the dataset fixes is how many there are and which shells are frozen.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="when-semicore-matters">
+<h2>When should semicore electrons be valence?</h2>
+<p class="claim">When bonding, magnetism or the method can disturb them.</p>
+<div class="cols">
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Bonding</span>Short bonds or high pressure push neighbouring atoms into the semicore region.</li>
+<li class="tile"><span class="k">Magnetism</span>Spin polarization of the valence can polarize the semicore shells too.</li>
+<li class="tile"><span class="k">Hybrid functionals</span>Exact exchange couples valence and semicore states: use _pv or _sv whenever possible.</li>
+</ul>
+<ul class="tiles" style="--n: 1">
+<li class="tile warn"><span class="k">The price, titanium</span>NELECT up to 3 times larger (4 → 12 per atom) and ENMAX from 178 to 275 eV.</li>
+<li class="tile acc"><span class="k">The rule</span>Start from the recommended dataset; test another if your property depends on it.</li>
+</ul>
+</div>
+<div class="notes">
+<p>A frozen core is exact only if the core really does not change. Three situations disturb semicore states:</p>
+<ul>
+<li><b>Bonding.</b> When atoms come close, under pressure or in short bonds, the neighbours' orbitals overlap the semicore shells, which then take part in the bonding.</li>
+<li><b>Magnetism.</b> A spin-polarized valence shell exerts a different exchange field on up and down semicore electrons, and frozen semicore shells cannot respond.</li>
+<li><b>Hybrid functionals.</b> Exact exchange (Lecture 6) couples every occupied orbital to every other, including the semicore ones, so freezing them is a worse approximation; VASP strongly recommends the _pv and _sv datasets for hybrids.</li>
+</ul>
+<p>For the early 3d metals, VASP's recommended datasets are Ti_sv, V_sv and Cr_pv; the plain Ti, V and Cr datasets can give reasonable results but should be used with great care. In most cases, though, freezing the semicore makes little difference, and testing is the way to know.</p>
+<p>Semicore electrons cost. More electrons means more bands to compute, and the deeper, more compact orbitals need more plane waves, which shows up as a larger ENMAX. In a compound the default cutoff is the largest ENMAX of all species, so the price depends on the partners: with oxygen (ENMAX 400 eV), the cutoff does not change between Ti and Ti_sv; only the number of electrons does.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="compact-d-and-f">
+<h2>Why are 3d and 4f electrons special?</h2>
+<p class="claim">They are the first d and f shells: no radial node, so they stay compact even as valence electrons.</p>
+<div class="cols">
+<ul class="tiles" style="--n: 1">
+<li class="tile acc"><span class="k">No radial node</span>1s, 2p, 3d, 4f are the first orbitals of their ℓ, and nodeless in r.</li>
+<li class="tile"><span class="k">Compact</span>In hydrogen, ⟨r⟩ = 10.5 bohr for 3d against 13.5 for 3s; in titanium, the 3d shields the 4s from the nucleus.</li>
+<li class="tile warn"><span class="k">Consequence</span>Compounds with partly filled d and f shells include the strongly correlated materials that common functionals often describe poorly.</li>
+</ul>
+<div class="eqbox">
+\[ \langle r \rangle_{n\ell} = \frac{3n^2 - \ell(\ell+1)}{2}\ a_0 \]
+<ul class="eq-legend">
+<li>Mean distance from the nucleus for hydrogen; smaller for larger \(\ell\) at the same \(n\).</li>
+</ul>
+</div>
+</div>
+<div class="notes">
+<p>Why does a radial node matter? Orbitals with the same \(\ell\) must be orthogonal to each other. The 2s orbital must be orthogonal to 1s, which forces it to change sign once, a node, and pushes its main lobe outward; 3s must be orthogonal to both 1s and 2s, and so on. But 3d is the first d orbital: there is no lower d orbital to be orthogonal to, so it has no node and is free to stay compact. The same holds for 2p and 4f.</p>
+<p>The formula on the slide, exact for hydrogen, puts numbers on it: at \(n = 3\), \(\langle r\rangle\) is 13.5 bohr for 3s, 12.5 for 3p and 10.5 for 3d. In a transition metal the 3d shell lies largely inside the 4s, with which it shares the valence, and it shields the nucleus from the 4s, which is why 4s ionizes first.</p>
+<p>This has two consequences you will meet in VASP. First, compact, nodeless orbitals have sharp features that need many plane waves: oxygen's nodeless 2p is why its ENMAX is 400 eV, more than twice titanium's. Second, compact d and f orbitals keep their electrons close together, so the repulsion between them is strong. Many compounds with partly filled d or f shells are "strongly correlated", and LDA and GGA functionals often describe them poorly; f elements are especially hard, because self-interaction errors are largest in strongly localized orbitals. A common fix is an on-site Hubbard U (<x-lec n="25"></x-lec>).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="in-vasp">
+<h2>Where do orbitals and shells appear in VASP?</h2>
+<p class="claim">The POTCAR fixes the valence (ZVAL) and the cutoff (ENMAX); LORBIT projects bands onto s, p, d.</p>
+<table class="tbl">
+<thead><tr><th>Concept</th><th>In VASP</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>Valence electrons per atom</td><td>ZVAL of each dataset; their total is <x-tag>NELECT</x-tag></td><td>POTCAR header, OUTCAR</td></tr>
+<tr><td>Frozen core</td><td>Fixed when the dataset was generated</td><td>Choice of POTCAR (<x-lec n="18"></x-lec>)</td></tr>
+<tr><td>How compact the orbitals are</td><td>ENMAX, the suggested cutoff; the largest one is the default <x-tag>ENCUT</x-tag></td><td>POTCAR header</td></tr>
+<tr><td>s, p, d character of a band</td><td><x-tag>LORBIT</x-tag> projects orbitals onto local \(\ell, m\)</td><td>PROCAR, DOSCAR (<x-lec n="29"></x-lec>)</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>NELECT is set from the POTCARs for a neutral cell: ZVAL times the number of atoms of each species. ENMAX is each dataset's suggested cutoff, and the default ENCUT is the largest ENMAX among the POTCARs.</p>
+<p><x-tag>LORBIT</x-tag> asks VASP to project every Kohn–Sham orbital onto spherical harmonics around each atom, giving its s, p, d and f contributions there. There is no unique way to divide an orbital among atoms, so the numbers are qualitative, but they are usually a good guide to the character of a band. That is how a band structure gets labelled "Ti 3d" or "O 2p" in <x-lec n="29"></x-lec>.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-potcars">
+<h2>Lab 4: what do your POTCARs say?</h2>
+<p class="claim">Read ZVAL and ENMAX from three titanium datasets, then predict NELECT for a TiO₂ cell.</p>
+<div class="cols top">
+<div>
+<p class="file-k">Read (no run)</p>
+<ol>
+<li>In your licensed potpaw directory, for <code>Si</code>, <code>Ti</code>, <code>Ti_pv</code>, <code>Ti_sv</code> and <code>O</code>: <code>grep -E "ZVAL|ENMAX" POTCAR</code>.</li>
+<li>Check Lab 0's OUTCAR: is NELECT = 2 × ZVAL(Si)?</li>
+</ol>
+</div>
+<div>
+<p class="file-k">Predict</p>
+<ol>
+<li>ZVAL 4, 10, 12 for Ti, Ti_pv, Ti_sv; 6 for O.</li>
+<li>A cell with 2 Ti and 4 O: NELECT = 32 with <code>Ti</code>, 48 with <code>Ti_sv</code>.</li>
+<li>Default ENCUT (default PREC): 400 eV either way, set by oxygen.</li>
+</ol>
+</div>
+</div>
+<div class="notes">
+<p>The predictions use the standard potpaw.64 values: Ti, Ti_pv and Ti_sv have 4, 10 and 12 valence electrons and ENMAX 178.330, 222.335 and 274.610 eV; O has 6 and 400.0 eV. With 2 titanium and 4 oxygen atoms, as in a rutile cell, NELECT is \(2 \times 4 + 4 \times 6 = 32\) with Ti and \(2 \times 12 + 24 = 48\) with Ti_sv, and the default cutoff is the largest ENMAX, 400 eV, in both cases. If your POTCARs come from a different release, the numbers may differ slightly: record the first line of each, as in Lab 0. This site never shows POTCAR contents.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="misconceptions">
+<h2>Which misconceptions should you drop now?</h2>
+<p class="claim">Five beliefs about orbitals and POTCARs. Click a card to turn it over.</p>
+<div class="flips myths" style="--n: 3">
+<div class="flip"><p class="q">“All orbitals of a shell have the same energy.”</p><p class="a">Only in hydrogen and other one-electron ions. In many-electron atoms shielding puts ns below np below nd.</p></div>
+<div class="flip"><p class="q">“4s fills before 3d, so it must also empty last.”</p><p class="a">4s fills first in K and Ca, but in transition metals 4s electrons are removed first.</p></div>
+<div class="flip"><p class="q">“The aufbau rule always gives the ground state.”</p><p class="a">Cr is 3d⁵ 4s and Cu 3d¹⁰ 4s: the simple rule fails for them.</p></div>
+<div class="flip"><p class="q">“More valence electrons is always better.”</p><p class="a">It costs electrons and cutoff. Use the recommended dataset and test when the property depends on it.</p></div>
+<div class="flip"><p class="q">“The POTCAR configuration is the atom's ground state.”</p><p class="a">Ti is listed as 3d³ 4s¹; the free atom is 3d² 4s². The dataset fixes the count, not the occupations.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="check">
+<h2>Check yourself</h2>
+<p class="claim">One question per outcome. Answer aloud, then click to compare.</p>
+<div class="flips checks">
+<div class="flip"><p class="q" data-k="Outcome 1">How many radial and angular nodes does a 4d orbital have?</p><p class="a">Angular: ℓ = 2. Radial: n − ℓ − 1 = 1. Three nodes in all, n − 1.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 2">Why does potassium's last electron go into 4s, not 3d?</p><p class="a">4s penetrates the argon core and feels more of the nuclear charge, so it lies lower than 3d there.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 3">What makes titanium's 3s and 3p semicore?</p><p class="a">They lie deep, below the 3d and 4s valence, but are disturbed enough by bonding or magnetism that VASP recommends treating them as valence.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 4">What changes in a calculation when you switch from Ti to Ti_sv?</p><p class="a">8 more valence electrons per Ti (ZVAL 4 → 12), more bands, and a higher ENMAX; the frozen core shrinks from 18 to 10 electrons.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="summary">
+<h2>What should you remember?</h2>
+<p class="claim">Atoms are hydrogen's orbitals, reordered by shielding and split into core and valence.</p>
+<ul>
+<li>n, ℓ, m label hydrogen's states; ℓ gives s, p, d, f; there are n − ℓ − 1 radial and ℓ angular nodes.</li>
+<li>Shielding and penetration put ns below np below nd; aufbau gives the filling order, with exceptions such as Cr and Cu.</li>
+<li>Core electrons are frozen; valence electrons bond; semicore states sit between and can matter.</li>
+<li>A POTCAR fixes ZVAL and ENMAX: Ti, Ti_pv, Ti_sv have 4, 10, 12 valence electrons.</li>
+</ul>
+<p class="next">Next: <x-lec n="5">Lecture 5</x-lec> asks why many electrons are so much harder than one, and meets the Pauli principle properly.</p>
+</section>

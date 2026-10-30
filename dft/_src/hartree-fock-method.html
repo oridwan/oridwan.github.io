@@ -1,0 +1,445 @@
+<!-- Fact-checked 2026-10-30. Sources (checked, not cited on the page):
+  MIT 5.61 F17 Lecture 29 notes (T. Van Voorhis): determinant energy, J and K, Fock operator, mean field,
+    SCF iterations, Koopmans, correlation energy, link to DFT.
+  Hatano and Yamamoto 2020, Table 3: He Hartree-Fock limit -2.86167999561 Ha, eps_1s -0.917955 Ha.
+  Exact nonrelativistic clamped-nucleus He: -2.903724377 Ha (Hylleraas-type calculations, Drake).
+  NIST ASD (doi:10.18434/T4W30F): He I 24.587389011 eV (measured), He II 54.4177655282 eV (calculated).
+  F2: Hartree-Fock puts F2 above two F atoms (De about -1.4 eV); experiment De 1.66 eV (web search 2026-10-30).
+  Kaplan, Levy and Perdew 2023, sec. III.E: HF has no one-electron self-interaction; hybrids.
+  VASP Wiki: NELMDL, LHFCALC, AEXX, OSZICAR; OUTCAR energy block keys EBANDS, DENC, XCENC.
+  Hartree 1928; Fock 1930; Slater 1930; Koopmans 1934 (Physica 1, 104); Roothaan 1951; Hall 1951.
+  Every number on the page is computed or checked in scripts/test_dft.mjs. -->
+<div class="notes">
+<p>Lecture 5 ended with the Slater determinant, the simplest many-electron wavefunction that obeys the Pauli principle. This lecture asks which determinant is the best one, and answers with the Hartree–Fock method.</p>
+<p>A DFT user needs Hartree–Fock for three reasons. Its self-consistent field is the loop that every VASP run performs. Its exchange term is the "exact exchange" that hybrid functionals mix in. And what it misses, the correlation energy, is exactly what a density functional has to supply. Helium is the worked example throughout: two electrons and one orbital, so every number can be computed by hand or in your browser. Energies are in hartree (Ha), the atomic unit of energy: 1 Ha = 27.211 eV.</p>
+</div>
+
+<section class="deck-slide" id="scf-origin">
+<h2>Where does VASP's SCF loop come from?</h2>
+<p class="claim">From Hartree–Fock: the orbitals must produce the very field they move in.</p>
+<svg class="diag" viewBox="0 0 760 250" role="img" aria-label="Flow chart of the self-consistent field method: guess, build the Fock matrix, solve, occupy, check; repeat with the new orbitals until they no longer change">
+<defs><marker id="diag-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+<g class="node"><rect x="10" y="30" width="140" height="62" rx="8"/><text class="t b" x="80" y="57" text-anchor="middle">Guess orbitals</text><text class="t m" x="80" y="78" text-anchor="middle">e.g. no repulsion</text></g>
+<g class="node acc"><rect x="190" y="30" width="160" height="62" rx="8"/><text class="t b" x="270" y="57" text-anchor="middle">Build the field</text><text class="t m" x="270" y="78" text-anchor="middle">Fock matrix F[c]</text></g>
+<g class="node"><rect x="390" y="30" width="150" height="62" rx="8"/><text class="t b" x="465" y="57" text-anchor="middle">Solve FC = SCε</text><text class="t m" x="465" y="78" text-anchor="middle">new orbitals</text></g>
+<g class="node"><rect x="580" y="30" width="170" height="62" rx="8"/><text class="t b" x="665" y="57" text-anchor="middle">Same as before?</text><text class="t m" x="665" y="78" text-anchor="middle">energy change small</text></g>
+<g class="node ok"><rect x="580" y="168" width="170" height="62" rx="8"/><text class="t b" x="665" y="195" text-anchor="middle">Self-consistent</text><text class="t m" x="665" y="216" text-anchor="middle">energy, orbitals</text></g>
+<path class="arr" d="M150 61 H188"/><path class="arr" d="M350 61 H388"/><path class="arr" d="M540 61 H578"/>
+<path class="arr" d="M665 92 V166"/><text class="t" x="675" y="135">yes</text>
+<path class="arr" d="M610 92 C560 170, 330 170, 280 94"/><text class="t" x="440" y="168" text-anchor="middle">no: use the new orbitals</text>
+</svg>
+<div class="notes">
+<p>Every SCF loop solves the same chicken-and-egg problem. An electron's orbital depends on the field it moves in. That field depends on where the other electrons are, that is, on their orbitals. So you cannot compute the orbitals before you know the field, or the field before you know the orbitals.</p>
+<p>The way out is the loop on the slide. Guess the orbitals; a common start is the orbitals of the bare nuclei, with the repulsion between electrons switched off. Build the field that the guess produces. Solve for the orbitals in that field. If the new orbitals differ from the guess, use them as the next guess and go around again. When input and output agree, the orbitals are <x-term k="self-consistent-field">self-consistent</x-term>: they produce exactly the field in which they are the solutions.</p>
+<p>Douglas Hartree introduced this self-consistent field in 1928 to compute atoms. In 1930 Vladimir Fock and John Slater made the wavefunction a Slater determinant, which adds the exchange term derived in this lecture; the result is Hartree–Fock theory. Kohn–Sham DFT keeps the loop and changes what goes into the second box. In VASP, each pass around the loop is one line of the OSZICAR file.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="best-determinant">
+<h2>What is the best single Slater determinant?</h2>
+<p class="claim">The one with the lowest energy: Hartree–Fock applies the variational principle to the orbitals themselves.</p>
+<div class="eqbox">
+\[ E_{\mathrm{HF}} = \min_{\{\chi_a\}} \Big[\ \sum_{a} \eqterm{h}{h_a} \;+\; \sum_{a<b} \big(\eqterm{J}{J_{ab}} - \eqterm{K}{K_{ab}}\big) \Big] \]
+<ul class="eq-legend">
+<li data-eq="h"><b>One-electron energy</b> of spin-orbital \(a\): its kinetic energy plus its attraction to the nuclei.</li>
+<li data-eq="J"><b>Coulomb integral</b>: the classical repulsion between the charge clouds of orbitals \(a\) and \(b\).</li>
+<li data-eq="K"><b>Exchange integral</b>: a consequence of antisymmetry; nonzero only if \(a\) and \(b\) have the same spin.</li>
+</ul>
+</div>
+<div class="notes">
+<p>Lecture 5 built the many-electron wavefunction as one Slater determinant of <x-term k="spin-orbital">spin-orbitals</x-term> \(\chi_a(\mathbf x) = \phi_a(\mathbf r)\sigma_a\), a spatial orbital times a spin function. Any such determinant is antisymmetric and normalized, so it is a legitimate trial wavefunction. By the <x-term k="variational-principle">variational principle</x-term> of Lecture 3 its energy therefore lies at or above the exact ground-state energy, and the best determinant is the one with the lowest energy. What is new compared with Lecture 3 is what you vary: not a few numbers, but the orbitals themselves.</p>
+<p>The energy of one determinant has the form on the slide. (The repulsion between the clamped nuclei is a constant and is left out.) Its three ingredients are</p>
+\[ h_a = \int \phi_a^*(\mathbf r)\Big[-\tfrac12\nabla^2 - \sum_A \frac{Z_A}{|\mathbf r - \mathbf R_A|}\Big]\phi_a(\mathbf r)\, d\mathbf r, \]
+\[ J_{ab} = \iint \frac{|\phi_a(\mathbf r_1)|^2\, |\phi_b(\mathbf r_2)|^2}{|\mathbf r_1 - \mathbf r_2|}\, d\mathbf r_1\, d\mathbf r_2, \qquad K_{ab} = \delta_{\sigma_a\sigma_b} \iint \frac{\phi_a^*(\mathbf r_1)\phi_b(\mathbf r_1)\; \phi_b^*(\mathbf r_2)\phi_a(\mathbf r_2)}{|\mathbf r_1 - \mathbf r_2|}\, d\mathbf r_1\, d\mathbf r_2 . \]
+<p>\(J_{ab}\) is what you would write down classically: the charge density \(|\phi_a|^2\) repelling the charge density \(|\phi_b|^2\). \(K_{ab}\) has no classical counterpart; the next slide shows where it comes from. Both are positive, so exchange lowers the energy. The factor \(\delta_{\sigma_a\sigma_b}\) is 1 for equal spins and 0 otherwise, so only pairs of the same spin have an exchange term.</p>
+<p>Minimizing this energy shapes the orbitals. Because each electron now feels the repulsion of the others, the best orbitals are more spread out than those of the bare nucleus. The shielding of Lecture 4 comes out of the minimization rather than being put in by hand, as the helium example will show.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="exchange-origin">
+<h2>Where does the exchange term come from?</h2>
+<p class="claim">From antisymmetry: the determinant lets two electrons trade orbitals, which adds a second integral, and it survives only for equal spins.</p>
+<div class="eqbox">
+\[ \Phi(\mathbf x_1, \mathbf x_2) = \tfrac{1}{\sqrt 2}\big[\chi_1(\mathbf x_1)\chi_2(\mathbf x_2) - \chi_2(\mathbf x_1)\chi_1(\mathbf x_2)\big] \]
+\[ \Big\langle \Phi \Big|\, \frac{1}{r_{12}} \,\Big| \Phi \Big\rangle = \eqterm{J}{\big\langle \chi_1\chi_2 \big|\, r_{12}^{-1} \big| \chi_1\chi_2 \big\rangle} \;-\; \eqterm{K}{\big\langle \chi_1\chi_2 \big|\, r_{12}^{-1} \big| \chi_2\chi_1 \big\rangle} \]
+<ul class="eq-legend">
+<li data-eq="J"><b>Direct term</b> \(J_{12}\): each electron stays in its own orbital on both sides.</li>
+<li data-eq="K"><b>Exchange term</b> \(K_{12}\): the electrons have traded orbitals on the right. The spin sum gives 1 for equal spins, 0 for opposite.</li>
+</ul>
+</div>
+<div class="notes">
+<p>Take two electrons in orthonormal spin-orbitals \(\chi_1\) and \(\chi_2\), with the Hamiltonian \(\hat h(1) + \hat h(2) + 1/r_{12}\). Here \(\hat h\) is the one-electron part (kinetic energy and nuclear attraction) and \(r_{12} = |\mathbf r_1 - \mathbf r_2|\). Write</p>
+\[ \langle ab|cd\rangle = \iint \chi_a^*(\mathbf x_1)\chi_b^*(\mathbf x_2)\, \frac{1}{r_{12}}\, \chi_c(\mathbf x_1)\chi_d(\mathbf x_2)\, d\mathbf x_1\, d\mathbf x_2 , \]
+<p>where \(\int d\mathbf x\) means integrating over position and summing over spin.</p>
+<p><b>The repulsion.</b> Inserting the determinant gives four terms, with a prefactor \(\tfrac12\) from the normalization:</p>
+\[ \Big\langle \Phi \Big| \frac{1}{r_{12}} \Big| \Phi \Big\rangle = \tfrac12\Big[\langle 12|12\rangle + \langle 21|21\rangle - \langle 12|21\rangle - \langle 21|12\rangle\Big]. \]
+<p>Renaming the integration variables \(\mathbf x_1 \leftrightarrow \mathbf x_2\) shows that \(\langle 21|21\rangle = \langle 12|12\rangle\) and \(\langle 21|12\rangle = \langle 12|21\rangle\). The bracket is therefore twice \(\langle 12|12\rangle - \langle 12|21\rangle\), and the \(\tfrac12\) cancels. In the first integral each electron is in the same orbital on both sides: that is the Coulomb integral \(J_{12}\). In the second, the two electrons have swapped orbitals between the left and the right side. Such a term exists only because the wavefunction contains both orderings, and it is the exchange integral \(K_{12}\).</p>
+<p><b>The spin.</b> Write \(\chi_a = \phi_a(\mathbf r)\sigma_a\). In \(\langle 12|21\rangle\), electron 1 carries spin \(\sigma_1\) on the left and \(\sigma_2\) on the right, so its spin sum gives \(\langle\sigma_1|\sigma_2\rangle\); the same holds for electron 2. That product is 1 when the spins are equal and 0 when they are opposite. Two electrons of opposite spin therefore have no exchange term, and their repulsion is the classical \(J_{12}\) alone.</p>
+<p><b>The rest.</b> The one-electron part gives \(\langle\Phi|\hat h(1) + \hat h(2)|\Phi\rangle = h_1 + h_2\), because its cross terms contain the overlap \(\langle\chi_1|\chi_2\rangle = 0\). The total is \(E = h_1 + h_2 + J_{12} - K_{12}\). For N electrons the same algebra applies to each pair separately, which gives the sum over pairs on the previous slide.</p>
+<p>The minus sign has a physical meaning. Two electrons of the same spin repel each other less than the classical estimate, because antisymmetry makes their joint wavefunction vanish wherever they meet (the exchange hole of Lecture 5). On average they stay farther apart.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="mean-field">
+<h2>What field does each electron move in?</h2>
+<p class="claim">The nuclei plus the average Coulomb and exchange interaction with all the electrons: a mean field.</p>
+<div class="eqbox">
+\[ \hat f = \eqterm{h}{\hat h} + \sum_{b} \big( \eqterm{J}{\hat J_b} - \eqterm{K}{\hat K_b} \big), \qquad \hat f\, \chi_a = \eqterm{eps}{\varepsilon_a}\, \chi_a \]
+<ul class="eq-legend">
+<li data-eq="h"><b>One-electron part</b>: kinetic energy and attraction to the nuclei.</li>
+<li data-eq="J"><b>Coulomb operator</b>: multiplies by the electrostatic potential of orbital \(b\)'s charge cloud.</li>
+<li data-eq="K"><b>Exchange operator</b>: nonlocal, and only between orbitals of the same spin.</li>
+<li data-eq="eps"><b>Orbital energy</b>: the energy of one electron in orbital \(a\) in this field.</li>
+</ul>
+</div>
+<div class="notes">
+<p>Minimizing the determinant energy over the orbitals, while keeping them orthonormal, leads to one-electron equations: the Hartree–Fock equations on the slide. The effective operator \(\hat f\) is the <x-term k="fock-operator">Fock operator</x-term>. Its two new pieces act on an orbital \(\chi\) as follows:</p>
+\[ \hat J_b\,\chi(\mathbf x_1) = \Big[\int \frac{|\chi_b(\mathbf x_2)|^2}{r_{12}}\, d\mathbf x_2\Big]\chi(\mathbf x_1), \qquad \hat K_b\,\chi(\mathbf x_1) = \Big[\int \frac{\chi_b^*(\mathbf x_2)\,\chi(\mathbf x_2)}{r_{12}}\, d\mathbf x_2\Big]\chi_b(\mathbf x_1). \]
+<p>\(\hat J_b\) is an ordinary potential: it multiplies \(\chi\) by the electrostatic potential that the charge cloud of orbital b creates at \(\mathbf r_1\). \(\hat K_b\) is different in two ways. To evaluate \(\hat K_b\chi\) at one point you need \(\chi\) at every point, because \(\chi\) sits inside the integral; an operator like this is called nonlocal. And the result is proportional to \(\chi_b\), not to \(\chi\). Nonlocality is what makes exact exchange expensive in a plane-wave code (<x-lec n="27"></x-lec>).</p>
+<p>The picture is a <x-term k="mean-field">mean field</x-term>. Each electron feels the nuclei and the average charge distribution of the electrons, plus exchange, but not where the other electrons happen to be at a given instant. The orbital energy</p>
+\[ \varepsilon_a = \langle\chi_a|\hat f|\chi_a\rangle = h_a + \sum_b \big(J_{ab} - K_{ab}\big) \]
+<p>is the energy of one electron in this field, including its repulsion with every other electron.</p>
+<p>The sum runs over all occupied orbitals, including \(b = a\). Acting on \(\chi_a\) itself, \(\hat J_a\chi_a = \hat K_a\chi_a\), so the self-term contributes nothing (next slide). Including it makes \(\hat f\) the same operator for every orbital. The occupied orbitals are then eigenfunctions of one Hermitian operator, and so automatically orthogonal.</p>
+<details class="deeper"><summary>How minimizing the energy gives the Hartree–Fock equations</summary>
+<p>Write the energy as \(E = \sum_a \langle a|\hat h|a\rangle + \tfrac12\sum_{a,b}\big(\langle ab|ab\rangle - \langle ab|ba\rangle\big)\); the terms with \(a = b\) cancel, so this is the pair sum of the determinant energy. Change one orbital by a small amount, \(\chi_a \to \chi_a + \delta\chi_a\). Orbital a appears in both slots of the pair sum, which cancels the \(\tfrac12\), and to first order</p>
+\[ \delta E = \langle \delta\chi_a|\hat f|\chi_a\rangle + \text{complex conjugate}. \]
+<p>The orbitals must stay orthonormal, so add the constraints with Lagrange multipliers \(\lambda_{ba}\) and minimize \(E - \sum_{a,b}\lambda_{ba}\big(\langle\chi_a|\chi_b\rangle - \delta_{ab}\big)\). Setting the change to zero for every \(\delta\chi_a\) gives \(\hat f\chi_a = \sum_b \lambda_{ba}\chi_b\), with a Hermitian matrix \(\lambda\).</p>
+<p>Now use a freedom of the determinant. Replacing the occupied orbitals by any unitary combination of themselves multiplies the determinant by a phase and leaves the density, \(\hat f\) and E unchanged. Choose the combination that diagonalizes \(\lambda\). In that basis \(\hat f\chi_a = \varepsilon_a\chi_a\): the canonical Hartree–Fock equations on the slide, with the eigenvalues of \(\lambda\) as orbital energies.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="self-interaction">
+<h2>Does an electron repel itself in Hartree–Fock?</h2>
+<p class="claim">No: for every electron, the exchange term cancels its repulsion with its own charge exactly.</p>
+<div class="cols">
+<div class="eqbox">
+\[ J_{aa} - K_{aa} = 0 \]
+<ul class="eq-legend">
+<li>Same orbital, same spin: the Coulomb and exchange integrals become the same integral.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Helium, Hartree energy of the total density</span>\(2J = 2.05\) Ha: as if each electron also repelled itself.</li>
+<li class="tile acc"><span class="k">Exchange</span>\(-J = -1.03\) Ha, about −28 eV: removes the self-repulsion.</li>
+<li class="tile warn"><span class="k">Approximate DFT</span>The cancellation is incomplete: the self-interaction error.</li>
+</ul>
+</div>
+<div class="notes">
+<p>There are two ways to book-keep the repulsion between electrons, and comparing them shows what exchange does.</p>
+<p>The pair sum in the determinant energy, \(\sum_{a<b}(J_{ab} - K_{ab})\), counts each pair of different electrons once and never an electron with itself. DFT books it differently. It starts from the classical electrostatic energy of the total density \(n(\mathbf r) = \sum_a |\chi_a(\mathbf r)|^2\), the Hartree energy</p>
+\[ U = \frac12 \iint \frac{n(\mathbf r_1)\, n(\mathbf r_2)}{r_{12}}\, d\mathbf r_1\, d\mathbf r_2 = \frac12\sum_{a,b} J_{ab}. \]
+<p>This double sum includes the terms \(a = b\): every electron repelling its own charge cloud. The Hartree–Fock exchange energy is \(E_x = -\tfrac12\sum_{a,b}K_{ab}\), again including \(a = b\). Set \(b = a\) in the definitions of \(J_{ab}\) and \(K_{ab}\), and they become the same integral, \(K_{aa} = J_{aa}\). The self-terms cancel one by one, and \(U + E_x\) equals the pair sum exactly.</p>
+<p>Helium makes this concrete. Both electrons occupy the same spatial orbital \(\phi_{1s}\), with opposite spins, and their repulsion is \(J = J_{1s,1s} = 1.026\) Ha (27.9 eV) in the converged calculation of the coming slides. The density is \(n = 2|\phi_{1s}|^2\), so the Hartree energy is \(U = \tfrac12 \cdot 2 \cdot 2 \cdot J = 2J\). But helium has a single pair of electrons, whose repulsion is \(J\). The extra \(J\) is self-interaction. The exchange energy is \(-\tfrac12(K_{1s\uparrow,1s\uparrow} + K_{1s\downarrow,1s\downarrow}) = -J\), which removes it exactly. The two electrons, having opposite spins, have no exchange term with each other.</p>
+<p>Approximate exchange–correlation functionals replace \(E_x\) by an approximation that cancels the self-repulsion only partly. What remains is the <x-term k="self-interaction-error">self-interaction error</x-term>, one of the weaknesses of DFT listed in Lecture 0 and treated in <x-lec n="10"></x-lec>.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="helium-by-hand">
+<h2>What does Hartree–Fock give for helium, by hand?</h2>
+<p class="claim">One orbital and two formulas: E = 2h + J and ε = h + J. Each freedom given to the orbital lowers the energy.</p>
+<div class="cols">
+<div class="eqbox">
+\[ E = 2\,\eqterm{h}{h} + \eqterm{J}{J}, \qquad \varepsilon = h + J \]
+<ul class="eq-legend">
+<li data-eq="h"><b>One-electron energy</b> of the 1s orbital: kinetic energy plus attraction to the nucleus.</li>
+<li data-eq="J"><b>Repulsion</b> between the two 1s charge clouds. No exchange: the spins are opposite.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Bare-nucleus orbital \(e^{-2r}\)</span>\(E = -2.750\) Ha</li>
+<li class="tile"><span class="k">Best \(e^{-\zeta r}\): \(\zeta = 27/16\)</span>\(E = -2.848\) Ha</li>
+<li class="tile acc"><span class="k">Best orbital of any shape</span>\(E = -2.862\) Ha, the Hartree–Fock limit</li>
+</ul>
+</div>
+<div class="notes">
+<p>Helium's ground state puts both electrons in one spatial orbital \(\phi\), one with spin up and one with spin down. The determinant energy then has two equal one-electron terms and a single pair, of opposite spins and so without exchange: \(E = 2h + J\), with \(h = \langle\phi|-\tfrac12\nabla^2 - 2/r|\phi\rangle\) and \(J = J_{1s,1s}\). The Fock operator acting on \(\phi\) contains the repulsion with the other electron only, since the self-terms cancel, so \(\varepsilon = h + J\).</p>
+<p>Now apply the variational principle by hand. Try the hydrogen-like orbital \(\phi \propto e^{-\zeta r}\) with an adjustable exponent \(\zeta\). For this function \(h = \zeta^2/2 - Z\zeta\) and \(J = 5\zeta/8\), so</p>
+\[ E(\zeta) = \zeta^2 - 2Z\zeta + \tfrac58\,\zeta, \qquad Z = 2. \]
+<ul>
+<li>With \(\zeta = Z = 2\), the orbital of the bare nucleus, \(E = 4 - 8 + 1.25 = -2.750\) Ha. This is Lecture 5's estimate, with the repulsion added as an average.</li>
+<li>Setting \(dE/d\zeta = 0\) gives \(\zeta = Z - 5/16 = 27/16 = 1.6875\) and \(E = -(27/16)^2 = -2.848\) Ha. Each electron behaves as if the nuclear charge were 1.69 instead of 2, because the other electron shields part of it. This is the shielding of Lecture 4, now derived rather than assumed.</li>
+<li>Allowing the orbital any shape lowers the energy further, to the Hartree–Fock limit, −2.862 Ha. There \(h = -1.944\) Ha and \(J = 1.026\) Ha.</li>
+</ul>
+<p>Each trial contains the previous one as a special case, so the energy can only go down; and none can go below the exact energy, −2.904 Ha. The next two slides show how a computer finds the best shape.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="roothaan-hall">
+<h2>How does a computer solve the Hartree–Fock equations?</h2>
+<p class="claim">Expand the orbital in basis functions: the equation becomes a matrix problem, FC = SCε, in which F depends on C.</p>
+<div class="eqbox">
+\[ \phi(\mathbf r) = \sum_{j=1}^{M} c_j\, \eqterm{g}{g_j(\mathbf r)} \quad\Longrightarrow\quad \eqterm{F}{\mathbf F(\mathbf c)}\,\mathbf c = \varepsilon\, \eqterm{S}{\mathbf S}\,\mathbf c \]
+\[ \text{helium:}\quad F_{ij} = h_{ij} + \sum_{k,l} c_k c_l \big[\, 2\,(ij|kl) - (ik|jl) \,\big] \]
+<ul class="eq-legend">
+<li data-eq="g"><b>Basis functions</b>, here Gaussians \(e^{-\alpha_j r^2}\), whose integrals are known in closed form.</li>
+<li data-eq="F"><b>Fock matrix</b> \(F_{ij} = \langle g_i|\hat f|g_j\rangle\), built from the very coefficients it is meant to produce.</li>
+<li data-eq="S"><b>Overlap matrix</b> \(S_{ij} = \langle g_i|g_j\rangle\), not the identity, because Gaussians overlap.</li>
+</ul>
+</div>
+<div class="notes">
+<p>A computer cannot store a function, only numbers. As in Lecture 3, expand the orbital in M fixed <x-term k="basis-set">basis functions</x-term> \(g_j\) and let the coefficients \(c_j\) carry the shape. Insert the expansion into \(\hat f\phi = \varepsilon\phi\), multiply by \(g_i^*\) and integrate, once for each i. The result is a matrix equation, the Roothaan–Hall equations, derived independently by Clemens Roothaan and George Hall in 1951.</p>
+<p>It differs from an ordinary eigenvalue problem in two ways.</p>
+<ul>
+<li><b>The overlap matrix.</b> The basis functions are not orthogonal, so \(\mathbf S\) appears on the right: a generalized eigenvalue problem, the same form VASP solves for its own basis. To solve it, change to an orthonormal basis with \(\mathbf X = \mathbf S^{-1/2}\). Then \(\mathbf F' = \mathbf X^{\mathsf T}\mathbf F\mathbf X\) is an ordinary symmetric matrix; diagonalize it and transform the eigenvectors back with \(\mathbf c = \mathbf X\mathbf c'\).</li>
+<li><b>The dependence on c.</b> \(\mathbf F\) contains the Coulomb and exchange operators of the occupied orbital, so it depends on \(\mathbf c\). That is why the next slide iterates.</li>
+</ul>
+<p>For helium, with one doubly occupied orbital, the Fock matrix is the formula on the slide. In it, \(h_{ij} = \langle g_i|-\tfrac12\nabla^2 - 2/r|g_j\rangle\), and</p>
+\[ (ij|kl) = \iint \frac{g_i(\mathbf r_1)g_j(\mathbf r_1)\; g_k(\mathbf r_2)g_l(\mathbf r_2)}{r_{12}}\, d\mathbf r_1\, d\mathbf r_2 \]
+<p>is a two-electron integral: the repulsion between the charge distributions \(g_ig_j\) and \(g_kg_l\). The term \(2(ij|kl)\) is the Coulomb repulsion of both electrons. The term \(-(ik|jl)\) is exchange; acting on the occupied orbital it cancels half of the Coulomb term, the self-repulsion, which leaves the \(\varepsilon = h + J\) of the previous slide. The energy is \(E = \sum_{ij} c_ic_j\,(h_{ij} + F_{ij})\), which equals \(2h + J\).</p>
+<p>Diagonalizing an \(M \times M\) matrix gives M orbitals. The lowest is occupied by both electrons; the others are empty, or virtual, orbitals. The bottleneck is the two-electron integrals: there are about \(M^4/8\) distinct ones. That is why the cost of Hartree–Fock is usually said to grow as the fourth power of the basis size.</p>
+<details class="deeper"><summary>Every formula behind the helium figure</summary>
+<p>The figure uses M unnormalized s-type Gaussians \(g_j = e^{-\alpha_j r^2}\), with exponents from the even-tempered sequence \(\alpha_k = 0.1 \times 2.6^k\), \(k = 0, \dots, 11\). With \(p = \alpha_i + \alpha_j\) and \(q = \alpha_k + \alpha_l\), all integrals have closed forms:</p>
+\[ S_{ij} = \Big(\frac{\pi}{p}\Big)^{3/2}, \quad T_{ij} = \frac{3\alpha_i\alpha_j}{p}\Big(\frac{\pi}{p}\Big)^{3/2}, \quad V_{ij} = -\frac{2\pi Z}{p}, \quad (ij|kl) = \frac{2\pi^{5/2}}{pq\sqrt{p+q}}, \]
+<p>and \(h_{ij} = T_{ij} + V_{ij}\), the kinetic and nuclear-attraction parts. One iteration then has four steps:</p>
+<ol>
+<li>Build \(\mathbf F\) from the current \(\mathbf c\). The first iteration has no orbital yet and uses \(\mathbf F = \mathbf h\), the bare nucleus.</li>
+<li>Solve \(\mathbf F\mathbf c = \varepsilon\mathbf S\mathbf c\) through \(\mathbf S^{-1/2}\), as above.</li>
+<li>Keep the lowest eigenvector; it comes out normalized, \(\mathbf c^{\mathsf T}\mathbf S\mathbf c = 1\).</li>
+<li>Evaluate E, and stop when it no longer changes.</li>
+</ol>
+<p>That is the whole method; the solver is a few dozen lines of JavaScript, in <a href="../figs/hartree-fock-method.js">the figure's source file</a>.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="self-consistency">
+<h2>Why must the equations be iterated?</h2>
+<p class="claim">The Fock matrix depends on its own solutions, so iterate until the orbitals going in and coming out agree.</p>
+<figure class="fig side" data-fig="scf">
+<div class="fig-body" data-snapshot="scf"></div>
+<figcaption><span class="model-label">Computed</span>Restricted Hartree–Fock for the helium atom, solved in your browser in M Gaussian basis functions, starting from the bare-nucleus orbital.</figcaption>
+</figure>
+<div class="notes">
+<p>If \(\mathbf F\) did not depend on \(\mathbf c\), one diagonalization would finish the job. Because it does, the eigenvector that comes out differs from the one used to build \(\mathbf F\), and you have to iterate. Press <b>One iteration</b> repeatedly, with the default M = 10, and watch the table.</p>
+<ul>
+<li><b>Iteration 1</b> uses \(\mathbf F = \mathbf h\), so its orbital is that of the bare nucleus, with \(\varepsilon = -2.000\) Ha \((-Z^2/2)\). Its energy is −2.750 Ha, the \(\zeta = 2\) value of the previous slide but one.</li>
+<li><b>Iteration 2</b> builds the field of that orbital. The orbital expands in response, and the energy drops to −2.8602 Ha, already close to the final value.</li>
+<li><b>From then on</b> each change is about 20 to 40 times smaller than the one before: −1.3 × 10⁻³, −3.3 × 10⁻⁵, −1.2 × 10⁻⁶ Ha, and so on. By iteration 7 the energy changes by less than 10⁻⁸ Ha. The orbital now reproduces the field that produced it, and \(\varepsilon\) has settled at −0.918 Ha.</li>
+</ul>
+<p>A steady shrinking of the changes by a roughly constant factor is the signature of a healthy SCF loop, and it is what you want to see in VASP's OSZICAR too. Helium is an easy case. In metals and large cells, a naive loop can overshoot and oscillate, with charge sloshing back and forth between iterations. Codes then mix the old and new densities instead of taking the new one outright (<x-lec n="12"></x-lec>).</p>
+<p>The slider changes the basis size M. More Gaussians give a lower converged energy, approaching the Hartree–Fock limit, −2.86168 Ha, from above, as the variational principle requires: −2.791 Ha with 4 functions, −2.8604 Ha with 8, −2.86167 Ha with 12. Keep the two kinds of convergence apart. Iterating to self-consistency removes the error of stopping too early; only a bigger basis removes the error of the basis.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="helium-result">
+<h2>How good is Hartree–Fock for helium?</h2>
+<p class="claim">It gets 98.6% of the energy. The missing 1.14 eV, the correlation energy, is about a quarter of a covalent bond.</p>
+<ul class="tiles" style="--n: 3">
+<li class="tile"><span class="k">Hartree–Fock limit</span><span class="big">−2.8617 <small>Ha</small></span><span class="big-cap">−77.87 eV: the best single determinant</span></li>
+<li class="tile"><span class="k">Exact, same Hamiltonian</span><span class="big">−2.9037 <small>Ha</small></span><span class="big-cap">−79.01 eV; measurement agrees to 0.01%</span></li>
+<li class="tile warn"><span class="k">Correlation energy</span><span class="big">−0.0420 <small>Ha</small></span><span class="big-cap">−1.14 eV: beyond any single determinant</span></li>
+</ul>
+<div class="notes">
+<p>The Hartree–Fock limit for helium, the energy of the best single determinant in a complete basis, is −2.861680 Ha. The exact ground-state energy of the same Hamiltonian (two electrons around a fixed nucleus, without relativity) is −2.903724 Ha. It is known to many more digits from calculations with wavefunctions that depend explicitly on the distance between the two electrons.</p>
+<p>The measured value is −2.903386 Ha. It is the sum of the measured first ionization energy, 24.587 eV, and the second, 54.418 eV, which for the one-electron ion He⁺ is calculated more accurately than it can be measured. It differs from the exact value by 0.01%, because of physics outside our Hamiltonian: mainly the finite mass of the nucleus, and small relativistic effects.</p>
+<p>Hartree–Fock therefore recovers 98.6% of the energy and misses 0.042 Ha, or 1.14 eV. As a fraction that is small. But chemistry is about energy differences, and a typical covalent bond is worth only a few eV (about 5 eV in Lecture 5's estimate). Fluorine is a striking example. In the Hartree–Fock approximation the F₂ molecule lies higher in energy than two separate fluorine atoms, by more than 1 eV, so it should fall apart. The real molecule is bound by about 1.6 eV. All of its binding comes from correlation.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="koopmans">
+<h2>Do Hartree–Fock orbital energies mean anything?</h2>
+<p class="claim">Yes, approximately: minus an occupied orbital energy is the energy to remove that electron if no other orbital changes (Koopmans' theorem).</p>
+<div class="cols">
+<div class="eqbox">
+\[ \mathrm{IE} \approx \eqterm{fz}{E_{\mathrm{He^+}}^{\,\mathrm{frozen}}} - E_{\mathrm{He}} = h - (2h + J) = -\varepsilon \]
+<ul class="eq-legend">
+<li data-eq="fz"><b>Frozen ion</b>: one electron removed, the other left in the unchanged orbital \(\phi\). Its energy is just \(h\).</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile acc"><span class="k">Koopmans: \(-\varepsilon_{1s}\)</span>24.98 eV</li>
+<li class="tile"><span class="k">Ion recomputed, orbital relaxed</span>23.45 eV</li>
+<li class="tile"><span class="k">Exact, and measured</span>24.59 eV</li>
+</ul>
+</div>
+<div class="notes">
+<p>Orbital energies are by-products of the calculation, but in Hartree–Fock they have a physical meaning. Take one electron out of helium and leave the remaining orbital exactly as it was. The ion's energy is then just the one-electron energy \(h\), so the energy needed to remove the electron is \(h - (2h + J) = -(h + J) = -\varepsilon\). The same algebra works for any occupied orbital of any atom, molecule or solid: \(-\varepsilon_a\) is the ionization energy from orbital a when all other orbitals are frozen. This is <x-term k="koopmans-theorem">Koopmans' theorem</x-term>, published in 1934 by Tjalling Koopmans, who later shared the 1975 Nobel Memorial Prize in economics.</p>
+<p>For helium, \(-\varepsilon_{1s} = 0.918\) Ha = 24.98 eV, against the exact 24.59 eV: 0.39 eV too high. That small error hides two larger ones.</p>
+<ul>
+<li><b>Freezing the orbital</b> overestimates the cost. In the real ion the remaining electron no longer feels the other's repulsion and contracts towards the nucleus, lowering the ion's energy. Recomputing the ion with a relaxed orbital (He⁺ has one electron, so its energy is exactly −2 Ha) gives −2 − (−2.8617) = 0.8617 Ha = 23.45 eV, 1.53 eV lower.</li>
+<li><b>Missing correlation</b> works the other way. Neutral helium has a correlation energy of −1.14 eV that the one-electron ion lacks, so the relaxed value is 1.14 eV too low.</li>
+</ul>
+<p>Koopmans' estimate is good because these two errors, +1.53 eV and −1.14 eV, mostly cancel. The same idea gives electron affinities from empty orbitals, but there the two errors add rather than cancel, and the estimate is poor. Kohn–Sham orbital energies are different again. Apart from the highest occupied one, which equals minus the ionization energy for the exact functional, they have no such general meaning (Lecture 2).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="double-counting">
+<h2>Is the total energy the sum of the orbital energies?</h2>
+<p class="claim">No. Each orbital energy contains the repulsion with every other electron, so the sum counts each pair twice.</p>
+<div class="eqbox">
+\[ E_{\mathrm{HF}} = \sum_a \varepsilon_a \;-\; \eqterm{dc}{\sum_{a<b}\big(J_{ab} - K_{ab}\big)} \]
+<ul class="eq-legend">
+<li data-eq="dc"><b>Double counting</b>: each pair's repulsion is in both \(\varepsilon_a\) and \(\varepsilon_b\); subtract it once.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 4">
+<li class="tile"><span class="k">Helium: \(2\varepsilon_{1s}\)</span><span class="big">−1.836 <small>Ha</small></span><span class="big-cap">sum of orbital energies</span></li>
+<li class="tile"><span class="k">Counted twice</span><span class="big">1.026 <small>Ha</small></span><span class="big-cap">\(J\), subtract it once</span></li>
+<li class="tile acc"><span class="k">Total energy</span><span class="big">−2.862 <small>Ha</small></span><span class="big-cap">\(E = 2\varepsilon - J\)</span></li>
+<li class="tile key"><span class="k">In VASP's OUTCAR</span>Band-energy sum EBANDS, then the corrections DENC and XCENC</li>
+</ul>
+<div class="notes">
+<p>For electrons that do not interact, the total energy is the sum of the orbital energies. It is tempting to add them up here too, but it does not work once the electrons interact. The orbital energy \(\varepsilon_a = h_a + \sum_b (J_{ab} - K_{ab})\) contains the repulsion of electron a with every other electron. Summing over a counts the repulsion of each pair twice, once from each side:</p>
+\[ \sum_a \varepsilon_a = \sum_a h_a + 2\sum_{a<b}\big(J_{ab} - K_{ab}\big), \]
+<p>while the determinant energy contains it once. Subtracting the excess gives the formula on the slide. For helium, \(2\varepsilon = -1.836\) Ha, and subtracting \(J = 1.026\) Ha gives \(E = -2.862\) Ha. The naive sum is off by 28 eV.</p>
+<p>Kohn–Sham DFT has the same structure, and VASP shows it to you. Each energy block of the OUTCAR, under "Free energy of the ion-electron system", has a line EBANDS, the sum of the occupied band energies. It is followed by correction lines, DENC for the Hartree energy and XCENC for exchange and correlation, that remove what the band-energy sum counts twice. Find them in your Lab 0 OUTCAR.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="correlation-energy">
+<h2>What is the correlation energy?</h2>
+<p class="claim">The exact energy minus the Hartree–Fock energy: what a mean field cannot capture.</p>
+<div class="cols">
+<div class="eqbox">
+\[ E_{\mathrm{corr}} = E_{\mathrm{exact}} - E_{\mathrm{HF}} \;\le\; 0 \]
+<ul class="eq-legend">
+<li>Never positive, by the variational principle; negative for two or more electrons.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Physical origin</span>Electrons avoid each other at every instant, not just on average.</li>
+<li class="tile"><span class="k">Size</span>About 1% of the total energy, yet decisive for bond energies.</li>
+<li class="tile warn"><span class="k">Correlated wavefunction methods</span>Add more determinants: accurate, but their cost climbs steeply with size.</li>
+</ul>
+</div>
+<div class="notes">
+<p>The <x-term k="correlation-energy">correlation energy</x-term> is the difference between the exact energy and the Hartree–Fock energy for the same Hamiltonian. The Hartree–Fock determinant is a trial wavefunction, so \(E_{\mathrm{HF}} \ge E_{\mathrm{exact}}\), and \(E_{\mathrm{corr}}\) is never positive. For helium it is −0.042 Ha.</p>
+<p>What does a single determinant miss? Helium's Hartree–Fock wavefunction is \(\phi(\mathbf r_1)\phi(\mathbf r_2)\) times a spin function. The probability of finding electron 2 at a point does not depend on where electron 1 is: the two move independently, each in the average field of the other. Real electrons do not. When one is close to the nucleus, the other tends to be farther out (radial correlation), and the two prefer opposite sides of the nucleus (angular correlation). Exchange already keeps electrons of the same spin apart. <x-term k="electron-correlation">Correlation</x-term> is the further avoidance, for both spins, driven by the repulsion itself. Because they avoid each other better, real electrons repel each other less, and the energy is lower.</p>
+<p>Wavefunction methods recover correlation by going beyond one determinant. They mix in determinants in which electrons are promoted to empty orbitals, which lets the wavefunction depend on where the other electrons are. The exact answer in a given basis, full configuration interaction, uses all such determinants. Their number grows exponentially with the number of electrons: the exponential wall of Lecture 0. Practical methods truncate the expansion, at a cost that still grows steeply with system size, as the fifth power for MP2 and the seventh for CCSD(T), the "gold standard" of quantum chemistry. That limits them to molecules and small cells. DFT instead approximates correlation by a functional of the density, at the cost of a mean-field calculation.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="hartree-fock-and-dft">
+<h2>How is Kohn–Sham DFT related to Hartree–Fock?</h2>
+<p class="claim">Same machinery, orbitals in a determinant solved self-consistently, but with exchange and correlation from a density functional.</p>
+<table class="tbl">
+<thead><tr><th></th><th>Hartree–Fock</th><th>Kohn–Sham DFT</th></tr></thead>
+<tbody>
+<tr><td>Orbitals</td><td>One determinant, the one with the lowest energy</td><td>One determinant of an auxiliary system with the true density</td></tr>
+<tr><td>Exchange</td><td>Exact, nonlocal</td><td>Approximated in \(E_{xc}[n]\); hybrids mix in a fraction of exact exchange</td></tr>
+<tr><td>Correlation</td><td>None</td><td>Approximated in \(E_{xc}[n]\)</td></tr>
+<tr><td>Self-interaction</td><td>Cancels exactly</td><td>Cancels only partly with common approximations</td></tr>
+<tr><td>Solved by</td><td>SCF iterations</td><td>SCF iterations</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>From the outside, Hartree–Fock and Kohn–Sham DFT look alike. Both describe the electrons by orbitals in a single determinant, both solve one-electron equations with an effective operator, and both iterate to self-consistency. They differ in what goes into the effective operator, and in what the determinant means.</p>
+<p>In Hartree–Fock the determinant is the approximation to the true wavefunction; exchange is treated exactly, and correlation is missing. In Kohn–Sham theory the determinant belongs to an auxiliary system of non-interacting electrons, constructed to have the same density as the real ones; it is not meant to approximate the true wavefunction. Exchange and correlation are combined into one functional of the density, \(E_{xc}[n]\). In principle it contains all the correlation energy that Hartree–Fock misses; in practice it must be approximated.</p>
+<p>Hybrid functionals sit in between. They take a fraction of exact Hartree–Fock exchange, 25% in PBE0, and the rest of exchange and all of correlation from a density functional. Part II builds Kohn–Sham theory from the ground up, starting with <x-lec n="7">Lecture 7</x-lec>.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="in-vasp">
+<h2>Where does Hartree–Fock appear in VASP?</h2>
+<p class="claim">In the SCF loop every run performs, and as exact exchange in hybrid functionals.</p>
+<table class="tbl">
+<thead><tr><th>Idea from this lecture</th><th>In VASP</th></tr></thead>
+<tbody>
+<tr><td>SCF iterations</td><td>One OSZICAR line per electronic step; stop at <x-tag>EDIFF</x-tag> or after <x-tag>NELM</x-tag> steps</td></tr>
+<tr><td>A starting guess before self-consistency</td><td><x-tag>NELMDL</x-tag>: the first steps keep the initial Hamiltonian fixed (5 by default for a fresh run)</td></tr>
+<tr><td>Orbital energies and double counting</td><td>OUTCAR: band-energy sum EBANDS, corrected by DENC and XCENC</td></tr>
+<tr><td>Exact exchange</td><td><x-tag>LHFCALC</x-tag> = .TRUE. turns on a hybrid functional, PBE0 by default</td></tr>
+<tr><td>How much exact exchange</td><td><x-tag>AEXX</x-tag>: 0.25 by default (PBE0); 1.0 gives a full Hartree–Fock calculation</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>Every VASP run performs an SCF loop of the kind on the first slide, with the Kohn–Sham Hamiltonian in place of the Fock matrix (<x-lec n="12"></x-lec>). Each line in the OSZICAR file is one pass. The loop stops when the energy changes by less than <x-tag>EDIFF</x-tag> from one step to the next, or after <x-tag>NELM</x-tag> steps, whichever comes first.</p>
+<p>A fresh run starts from random orbitals, far from any solution. So VASP first holds the Hamiltonian fixed for a few steps, built from a superposition of atomic charge densities, while the orbitals settle; only then does it start rebuilding the Hamiltonian from the new density. <x-tag>NELMDL</x-tag> sets the number of these steps: 5 for a fresh run with the default algorithm, 12 with ALGO = VeryFast, and none when the run restarts from a WAVECAR. Its default is written with a minus sign, −5, which means the delay applies only to the first ionic step.</p>
+<p><x-tag>LHFCALC</x-tag> = .TRUE. adds exact exchange; without further tags VASP uses the PBE0 hybrid. <x-tag>AEXX</x-tag> sets the fraction of exact exchange, 0.25 by default. With AEXX = 1.0, VASP switches correlation off and runs a full Hartree–Fock calculation. Hartree–Fock for a solid is therefore a two-line change to the INCAR, but an expensive one, because of the nonlocal exchange operator.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="part-one-milestone">
+<h2>What has Part I built?</h2>
+<p class="claim">Why electronic structure is a many-body problem, and what “self-consistent” means.</p>
+<ol class="flow">
+<li><span>L1 Born–Oppenheimer</span></li>
+<li><span>L2 Ĥψ = Eψ</span></li>
+<li><span>L3 Variational principle, bases</span></li>
+<li><span>L4 Atoms, core, valence</span></li>
+<li><span>L5 Pauli, determinants</span></li>
+<li class="on"><span>L6 Hartree–Fock, SCF</span></li>
+</ol>
+<ul class="tiles" style="--n: 2">
+<li class="tile"><span class="k">The problem</span>Electrons in the field of clamped nuclei; their repulsion couples them all, and Ψ is too big to store.</li>
+<li class="tile acc"><span class="k">The first answer</span>The best single determinant, found self-consistently. It misses only correlation, about 1%.</li>
+</ul>
+<div class="notes">
+<p>Part I set out to explain why electronic structure is a many-body problem, and what "self-consistent" means. The chain of ideas:</p>
+<ol>
+<li>Lecture 1 clamps the nuclei and leaves an electronic problem.</li>
+<li>Lecture 2 gives the language of states, operators and eigenvalues.</li>
+<li>Lecture 3 turns them into matrices a computer can solve, with a variational guarantee.</li>
+<li>Lecture 4 builds atoms from orbitals and separates core from valence.</li>
+<li>Lecture 5 adds the Pauli principle, and shows that the full wavefunction cannot be stored.</li>
+<li>This lecture finds the best orbital-based answer, self-consistently, and names what it misses.</li>
+</ol>
+<p>Part II replaces the wavefunction by the density and keeps the self-consistent machinery.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-scf">
+<h2>Lab 6: how did your Lab 0 run become self-consistent?</h2>
+<p class="claim">Read Lab 0's OSZICAR as an SCF history, then predict what a tighter EDIFF does.</p>
+<div class="cols top">
+<div>
+<p class="file-k">Read (no run)</p>
+<ol>
+<li>Count the electronic steps, the lines before <code>F=</code>.</li>
+<li>The first five keep the starting Hamiltonian fixed (<x-tag>NELMDL</x-tag>).</li>
+<li>From step six on, check that <code>dE</code> and <code>d eps</code> shrink, by a roughly steady factor once the loop settles, until both are below <x-tag>EDIFF</x-tag> = 10⁻⁶ eV.</li>
+<li>In the OUTCAR, find EBANDS, DENC and XCENC in the last energy block.</li>
+</ol>
+</div>
+<div>
+<p class="file-k">Predict, then run (optional)</p>
+<ol>
+<li>Rerun with <code>EDIFF = 1E-8</code>.</li>
+<li>Predict: only a few more steps; E0 changes only in the last digits.</li>
+</ol>
+</div>
+</div>
+<div class="notes">
+<p>Lab 0 ran from scratch, without a WAVECAR and with the default algorithm. Its first five electronic steps therefore kept the initial Hamiltonian, built from atomic charge densities, fixed while the random starting orbitals settled. From step six on, each step rebuilt the Hamiltonian from the new density: an SCF iteration like those of the helium figure.</p>
+<p>If the energy changes shrink by a roughly constant factor per step, the loop converges steadily, and tightening EDIFF by two orders of magnitude costs a predictable handful of extra steps: with a factor of 10 per step, two more; with a factor of 3, about four. Read the factor off your OSZICAR before you rerun, and turn the prediction into a number. <x-lec n="12"></x-lec> explains density mixing, which is what keeps that factor large in a solid.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="misconceptions">
+<h2>Which misconceptions should you drop now?</h2>
+<p class="claim">Six beliefs about Hartree–Fock and the SCF loop. Click a card to turn it over.</p>
+<div class="flips myths" style="--n: 3">
+<div class="flip"><p class="q">“Hartree–Fock ignores electron repulsion.”</p><p class="a">It includes the average repulsion and exact exchange. It misses only correlation.</p></div>
+<div class="flip"><p class="q">“Self-consistency means the answer is exact.”</p><p class="a">It means the orbitals reproduce their own field. The basis and the method can still be in error.</p></div>
+<div class="flip"><p class="q">“1% of the energy is negligible.”</p><p class="a">For helium it is 1.14 eV, and without it F₂ is unbound. Chemistry lives in such differences.</p></div>
+<div class="flip"><p class="q">“The total energy is the sum of the orbital energies.”</p><p class="a">That sum counts each pair's repulsion twice. Subtract it once (VASP: DENC, XCENC).</p></div>
+<div class="flip"><p class="q">“HF and Kohn–Sham orbital energies mean the same.”</p><p class="a">HF ones estimate ionization energies (Koopmans); Kohn–Sham ones in general do not.</p></div>
+<div class="flip"><p class="q">“DFT is Hartree–Fock with a correction.”</p><p class="a">It shares the SCF machinery, but its determinant describes an auxiliary system, and one functional gives exchange and correlation.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="check">
+<h2>Check yourself</h2>
+<p class="claim">One question per outcome. Answer aloud, then click to compare.</p>
+<div class="flips checks" style="--n: 3">
+<div class="flip"><p class="q" data-k="Outcome 1">Where does exchange come from, and what is in the Fock operator?</p><p class="a">From the swapped term of the determinant, for equal spins only. f: kinetic energy, nuclear attraction, average Coulomb and exchange.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 2">Why is there no self-interaction in Hartree–Fock?</p><p class="a">For an orbital with itself, K_aa = J_aa, so exchange cancels each self-repulsion term in the Hartree energy.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 3">Why must FC = SCε be iterated?</p><p class="a">F is built from the coefficients it is meant to produce. Iterate until they agree: 7 steps for helium.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 4">Helium: −ε₁ₛ = 24.98 eV, 2ε₁ₛ = −1.836 Ha. What do they mean?</p><p class="a">−ε is Koopmans' ionization energy (exact 24.59 eV). 2ε double-counts J; E = 2ε − J = −2.862 Ha.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 5">Define the correlation energy and give helium's.</p><p class="a">E_corr = E_exact − E_HF, never positive: −0.042 Ha, or −1.14 eV, for helium.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="summary">
+<h2>What should you remember?</h2>
+<p class="claim">The best single determinant, found self-consistently, misses only correlation, and that still matters.</p>
+<ul>
+<li>Hartree–Fock minimizes the energy of one determinant. Antisymmetry adds exchange between equal spins; each electron moves in the mean field of the Fock operator.</li>
+<li>Exchange cancels each electron's self-repulsion exactly; approximate DFT does not quite.</li>
+<li>In a basis, FC = SCε with F built from C: iterate to self-consistency, the ancestor of VASP's electronic loop.</li>
+<li>−ε of an occupied orbital estimates an ionization energy (Koopmans); the sum of the ε counts the repulsion twice.</li>
+<li>E_corr = E_exact − E_HF: −1.14 eV for helium, about 1%, yet enough to decide whether F₂ is bound. DFT's E_xc must supply it.</li>
+</ul>
+<p class="next">Next: Part II, starting with <x-lec n="7">Lecture 7</x-lec>, replaces the wavefunction by the electron density.</p>
+</section>

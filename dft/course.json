@@ -1,0 +1,764 @@
+{
+ "name": "Density Functional Theory and VASP",
+ "short": "DFT & VASP Course",
+ "homeTitle": "DFT and VASP Course: Density Functional Theory from Scratch",
+ "tagline": "An interactive course from the Schrödinger equation to calculations you can defend.",
+ "description": "A free, interactive course on density functional theory and VASP: quantum mechanics, Kohn–Sham DFT, k-points, plane waves, PAW, and calculations you can defend.",
+ "base": "https://oridwan.github.io/dft/",
+ "image": "https://oridwan.github.io/assets/fig/dft-course.webp",
+ "published": null,
+ "teaches": [
+  "Density functional theory",
+  "Kohn–Sham equations",
+  "Exchange–correlation functionals",
+  "Plane-wave basis sets",
+  "Projector augmented-wave method",
+  "Brillouin-zone sampling",
+  "VASP"
+ ],
+ "author": {
+  "name": "Osman Goni Ridwan",
+  "url": "https://oridwan.github.io/",
+  "jobTitle": "Computational Materials Scientist",
+  "affiliation": "University of North Carolina at Charlotte",
+  "sameAs": [
+   "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+   "https://www.linkedin.com/in/ogridwan",
+   "https://github.com/oridwan"
+  ],
+  "bio": "I'm a computational materials scientist and Ph.D. candidate in Mechanical Engineering at the University of North Carolina at Charlotte, and an Academic Cooperation Participant at Lawrence Livermore National Laboratory. I use DFT and VASP in my research on rare-earth permanent magnets, proton-conducting ceramics, carbon allotropes and molecular crystals, alongside machine-learning interatomic potentials and generative models."
+ },
+ "thread": [
+  {
+   "label": "Born–Oppenheimer",
+   "n": 1
+  },
+  {
+   "label": "\\(\\hat H\\psi = E\\psi\\)",
+   "n": 2
+  },
+  {
+   "label": "Many electrons",
+   "n": 5
+  },
+  {
+   "label": "Density \\(n(\\mathbf r)\\)",
+   "n": 7
+  },
+  {
+   "label": "Hohenberg–Kohn",
+   "n": 8
+  },
+  {
+   "label": "Kohn–Sham",
+   "n": 9
+  },
+  {
+   "label": "\\(E_{\\mathrm{xc}}\\)",
+   "n": 10
+  },
+  {
+   "label": "SCF",
+   "n": 12
+  },
+  {
+   "label": "Bloch states and k-points",
+   "n": 14
+  },
+  {
+   "label": "Plane waves",
+   "n": 17
+  },
+  {
+   "label": "PAW",
+   "n": 18
+  },
+  {
+   "label": "VASP",
+   "n": 19
+  },
+  {
+   "label": "Energies and forces",
+   "n": 21
+  },
+  {
+   "label": "Phonons, NEB, MD, ML potentials",
+   "n": 31
+  }
+ ],
+ "parts": [
+  {
+   "id": "0",
+   "title": "Start here"
+  },
+  {
+   "id": "I",
+   "title": "Quantum mechanics you need",
+   "milestone": "Explain why electronic structure is a many-body problem, and what “self-consistent” means."
+  },
+  {
+   "id": "II",
+   "title": "Density functional theory",
+   "milestone": "Explain the chain from the Schrödinger equation through Born–Oppenheimer, the many-electron problem, the density, Hohenberg–Kohn and Kohn–Sham to the exchange–correlation energy and the SCF loop."
+  },
+  {
+   "id": "III",
+   "title": "Electrons in crystals"
+  },
+  {
+   "id": "IV",
+   "title": "How VASP represents electrons",
+   "milestone": "Explain why VASP uses periodic cells, k-points, plane waves, ENCUT, PAW datasets and the POTCAR."
+  },
+  {
+   "id": "V",
+   "title": "Energies, forces and structures"
+  },
+  {
+   "id": "VI",
+   "title": "Spin, magnetism and correlated electrons"
+  },
+  {
+   "id": "VII",
+   "title": "Beyond semilocal functionals",
+   "milestone": "Compare PBE, DFT+U, r²SCAN, dispersion-corrected DFT and HSE by approximation, cost and typical failures."
+  },
+  {
+   "id": "VIII",
+   "title": "Reading electronic structure"
+  },
+  {
+   "id": "IX",
+   "title": "From energies and forces to materials properties"
+  },
+  {
+   "id": "X",
+   "title": "Doing DFT responsibly",
+   "milestone": "Design, critique and defend a DFT methodology for a real research problem."
+  }
+ ],
+ "lectures": [
+  {
+   "n": 0,
+   "slug": "what-is-dft",
+   "part": "0",
+   "status": "published",
+   "title": "Introduction to density functional theory",
+   "seo": "Introduction to Density Functional Theory",
+   "question": "What does a DFT calculation compute, and what does VASP do when you press run?",
+   "description": "What density functional theory computes, why it works with the electron density, where its one approximation sits, and what VASP does when you run it.",
+   "published": "2026-10-30",
+   "modified": "2026-10-30",
+   "minutes": 40,
+   "outcomes": [
+    "what a DFT calculation takes in and what it gives back",
+    "why DFT works with the electron density instead of the many-electron wavefunction",
+    "where DFT's one approximation sits, and the errors it is known for",
+    "what VASP does with its four input files, from the first SCF step to the outputs",
+    "how to convert between the energy units of theory papers and of VASP"
+   ],
+   "teaches": [
+    "Density functional theory",
+    "VASP input and output files",
+    "Self-consistent field loop",
+    "Hartree atomic units"
+   ],
+   "reading": [
+    "Kohn1999",
+    "Jones2025",
+    "Ridwan2026"
+   ],
+   "keywords": [
+    "what is DFT",
+    "density functional theory introduction",
+    "Hohenberg-Kohn theorem",
+    "Kohn-Sham DFT",
+    "exchange-correlation functional",
+    "Jacob's ladder",
+    "LDA PBE SCAN HSE06",
+    "VASP input files",
+    "INCAR POSCAR POTCAR KPOINTS",
+    "OSZICAR",
+    "exponential wall"
+   ]
+  },
+  {
+   "n": 1,
+   "slug": "born-oppenheimer-approximation",
+   "part": "I",
+   "status": "published",
+   "title": "The Born–Oppenheimer approximation",
+   "seo": "Born-Oppenheimer Approximation Explained",
+   "question": "What physical problem is VASP solving when it relaxes a structure?",
+   "description": "What VASP actually solves: the electron–nuclear Hamiltonian, the Born–Oppenheimer approximation, potential-energy surfaces, forces and structural relaxation.",
+   "published": "2026-10-30",
+   "modified": "2026-10-30",
+   "minutes": 45,
+   "prereq": [
+    "what-is-dft"
+   ],
+   "outcomes": [
+    "which particles and interactions the full Hamiltonian of a material contains",
+    "why the nuclei can be clamped while the electrons are solved, and what that neglects",
+    "how an energy surface gives forces, and why a relaxation solves the electrons again at every step",
+    "which physical approximations a VASP relaxation makes before any functional is chosen"
+   ],
+   "teaches": [
+    "Born–Oppenheimer approximation",
+    "Molecular Hamiltonian",
+    "Potential-energy surface",
+    "Interatomic forces",
+    "Structural relaxation"
+   ],
+   "reading": [
+    "Sherrill2005",
+    "Vogtenhuber2016"
+   ],
+   "keywords": [
+    "Born-Oppenheimer approximation",
+    "clamped nuclei",
+    "electronic Hamiltonian",
+    "potential energy surface",
+    "Hellmann-Feynman forces",
+    "nonadiabatic coupling",
+    "structural relaxation",
+    "VASP relaxation",
+    "IBRION",
+    "EDIFFG",
+    "NSW"
+   ]
+  },
+  {
+   "n": 2,
+   "slug": "wavefunctions-operators-eigenvalues",
+   "part": "I",
+   "status": "published",
+   "title": "Wavefunctions, operators and eigenvalues",
+   "seo": "Wavefunctions, Operators and Eigenvalues",
+   "question": "What does Ĥψ = Eψ actually mean?",
+   "description": "Wavefunctions, operators and eigenvalues, worked through a particle in a box: probability, measurement, Hermitian operators, Hc = Ec and VASP's band energies.",
+   "published": "2026-10-30",
+   "modified": "2026-10-30",
+   "minutes": 45,
+   "prereq": [
+    "born-oppenheimer-approximation"
+   ],
+   "outcomes": [
+    "what a wavefunction is, and how |ψ|² gives probabilities",
+    "what operators, eigenfunctions and eigenvalues are",
+    "what a measurement returns, and how an expectation value differs from an eigenvalue",
+    "how a basis turns Ĥψ = Eψ into a matrix problem, Hc = Ec",
+    "what NBANDS and VASP's eigenvalues are, and why they are not, in general, measured energies"
+   ],
+   "teaches": [
+    "Wavefunction",
+    "Quantum operators",
+    "Eigenvalues and eigenfunctions",
+    "Expectation value",
+    "Particle in a box",
+    "Matrix eigenvalue problem"
+   ],
+   "reading": [
+    "FieldL5",
+    "FieldL12"
+   ],
+   "keywords": [
+    "wavefunction",
+    "quantum mechanical operators",
+    "eigenvalue equation",
+    "particle in a box",
+    "expectation value",
+    "Hermitian operator",
+    "bra-ket notation",
+    "matrix eigenvalue problem",
+    "Kohn-Sham eigenvalues",
+    "VASP EIGENVAL",
+    "NBANDS"
+   ]
+  },
+  {
+   "n": 3,
+   "slug": "variational-principle-basis-sets",
+   "part": "I",
+   "status": "published",
+   "title": "The variational principle and basis sets",
+   "seo": "Variational Principle and Basis Sets",
+   "question": "How does an unsolvable differential equation become a finite calculation?",
+   "description": "The variational principle and basis sets: why trial energies are upper bounds, how Hc = ESc arises, why bigger bases converge, and what VASP's ENCUT controls.",
+   "published": "2026-10-30",
+   "modified": "2026-10-30",
+   "minutes": 50,
+   "prereq": [
+    "wavefunctions-operators-eigenvalues"
+   ],
+   "outcomes": [
+    "why the energy of any trial wavefunction is an upper bound to the ground-state energy",
+    "how a basis expansion turns the problem into Hc = ESc",
+    "why a larger nested basis can only lower the energy, and what it costs",
+    "how ENCUT sets the size of VASP's plane-wave basis",
+    "why numerical convergence is different from physical accuracy"
+   ],
+   "teaches": [
+    "Variational principle",
+    "Rayleigh–Ritz method",
+    "Basis sets",
+    "Generalized eigenvalue problem",
+    "Plane-wave cutoff (ENCUT)"
+   ],
+   "reading": [
+    "FieldL24",
+    "FieldL28"
+   ],
+   "keywords": [
+    "variational principle",
+    "Rayleigh quotient",
+    "trial wavefunction",
+    "basis set",
+    "generalized eigenvalue problem",
+    "Hc = ESc",
+    "basis set convergence",
+    "plane-wave basis",
+    "ENCUT",
+    "VASP cutoff energy convergence"
+   ]
+  },
+  {
+   "n": 4,
+   "slug": "atomic-orbitals-core-valence-electrons",
+   "part": "I",
+   "status": "published",
+   "title": "Atomic orbitals, core and valence electrons",
+   "seo": "Atomic Orbitals, Core and Valence Electrons",
+   "question": "Where do s, p, d and f, and “core” versus “valence”, come from?",
+   "description": "Atomic orbitals from hydrogen to titanium: quantum numbers, nodes, shielding, filling order, and how core, semicore and valence electrons decide your POTCAR.",
+   "published": "2026-10-30",
+   "modified": "2026-10-30",
+   "minutes": 45,
+   "prereq": [
+    "variational-principle-basis-sets"
+   ],
+   "outcomes": [
+    "what n, ℓ and m label, and how they set an orbital's shape and nodes",
+    "why many-electron atoms fill their orbitals in the order they do, with exceptions such as Cr and Cu",
+    "what distinguishes core, semicore and valence electrons",
+    "what changes in a calculation when you choose Ti, Ti_pv or Ti_sv"
+   ],
+   "teaches": [
+    "Hydrogen atom",
+    "Atomic orbitals and quantum numbers",
+    "Electron configuration and shielding",
+    "Core, semicore and valence electrons",
+    "PAW datasets (POTCAR)"
+   ],
+   "reading": [
+    "FieldL21",
+    "FieldL23",
+    "VASPwikiChoosing"
+   ],
+   "keywords": [
+    "atomic orbitals",
+    "quantum numbers n l m",
+    "radial nodes",
+    "shielding and penetration",
+    "aufbau principle",
+    "core and valence electrons",
+    "semicore states",
+    "PAW frozen core",
+    "POTCAR choice",
+    "Ti_sv",
+    "ZVAL ENMAX"
+   ]
+  },
+  {
+   "n": 5,
+   "slug": "pauli-exclusion-slater-determinant",
+   "part": "I",
+   "status": "published",
+   "title": "Pauli exclusion and Slater determinants",
+   "seo": "Pauli Exclusion and Slater Determinants",
+   "question": "What makes many electrons harder than one, and what does the Pauli principle demand?",
+   "description": "Electron spin, the Pauli exclusion principle and Slater determinants: antisymmetry, the exchange hole, what one determinant misses, and why codes never store Ψ.",
+   "published": "2026-10-30",
+   "modified": "2026-10-30",
+   "minutes": 45,
+   "prereq": [
+    "atomic-orbitals-core-valence-electrons"
+   ],
+   "outcomes": [
+    "why electron–electron repulsion makes the many-electron problem hard",
+    "what spin is, and what a spin-orbital is",
+    "why electron wavefunctions are antisymmetric, and how a Slater determinant builds that in",
+    "how antisymmetry gives the Pauli exclusion principle and the exchange hole",
+    "why codes store one-electron orbitals and the density instead of the many-electron wavefunction"
+   ],
+   "teaches": [
+    "Electron spin",
+    "Antisymmetry and identical particles",
+    "Slater determinants",
+    "Pauli exclusion principle",
+    "Exchange and correlation"
+   ],
+   "reading": [
+    "FieldL22",
+    "FieldL23"
+   ],
+   "keywords": [
+    "Pauli exclusion principle",
+    "Slater determinant",
+    "electron spin",
+    "spin-orbital",
+    "antisymmetric wavefunction",
+    "exchange hole",
+    "electron correlation",
+    "many-electron wavefunction",
+    "ISPIN",
+    "MAGMOM"
+   ]
+  },
+  {
+   "n": 6,
+   "slug": "hartree-fock-method",
+   "part": "I",
+   "status": "published",
+   "title": "The Hartree–Fock method",
+   "seo": "Hartree-Fock Method and SCF Explained",
+   "question": "What is the best you can do with one Slater determinant, and what does it miss?",
+   "description": "The Hartree–Fock method from scratch: exchange, the Fock operator, self-interaction, the SCF loop, Koopmans' theorem and correlation, with helium solved live.",
+   "published": "2026-10-30",
+   "modified": "2026-10-30",
+   "minutes": 60,
+   "prereq": [
+    "pauli-exclusion-slater-determinant"
+   ],
+   "outcomes": [
+    "where the exchange term comes from, and what the Fock operator contains",
+    "why exchange cancels the self-interaction that a Hartree mean field contains",
+    "how the Hartree–Fock equations become a matrix problem that must be solved self-consistently",
+    "what orbital energies mean: Koopmans' theorem, and why their sum is not the total energy",
+    "what the correlation energy is, and how Hartree–Fock relates to Kohn–Sham DFT"
+   ],
+   "teaches": [
+    "Hartree–Fock method",
+    "Self-consistent field",
+    "Exchange and self-interaction",
+    "Koopmans' theorem",
+    "Correlation energy"
+   ],
+   "reading": [
+    "MIT29",
+    "VASPwikiLHFCALC"
+   ],
+   "keywords": [
+    "Hartree-Fock method",
+    "self-consistent field",
+    "Fock operator",
+    "exchange integral",
+    "self-interaction",
+    "Roothaan-Hall equations",
+    "Koopmans' theorem",
+    "correlation energy",
+    "helium Hartree-Fock",
+    "hybrid functionals",
+    "LHFCALC",
+    "AEXX"
+   ]
+  },
+  {
+   "n": 7,
+   "slug": "electron-density-functionals",
+   "part": "II",
+   "status": "planned",
+   "title": "Electron density and functionals",
+   "seo": "Electron Density, Functionals, Thomas-Fermi",
+   "question": "Can three coordinates replace 3N?"
+  },
+  {
+   "n": 8,
+   "slug": "hohenberg-kohn-theorems",
+   "part": "II",
+   "status": "planned",
+   "title": "The Hohenberg–Kohn theorems",
+   "seo": "Hohenberg-Kohn Theorems Explained",
+   "question": "Why is the density, in principle, enough?"
+  },
+  {
+   "n": 9,
+   "slug": "kohn-sham-equations",
+   "part": "II",
+   "status": "planned",
+   "title": "The Kohn–Sham equations",
+   "seo": "Kohn-Sham Equations Explained",
+   "question": "How did Kohn and Sham turn an existence theorem into a working method?"
+  },
+  {
+   "n": 10,
+   "slug": "exchange-correlation-energy",
+   "part": "II",
+   "status": "planned",
+   "title": "Exchange–correlation energy and the xc hole",
+   "seo": "Exchange-Correlation Energy and the xc Hole",
+   "question": "What physics is hidden inside the exchange–correlation energy?"
+  },
+  {
+   "n": 11,
+   "slug": "lda-gga-pbe",
+   "part": "II",
+   "status": "planned",
+   "title": "LDA, GGA and the PBE functional",
+   "seo": "LDA vs GGA and the PBE Functional",
+   "question": "What exactly is approximated when INCAR says GGA = PE?"
+  },
+  {
+   "n": 12,
+   "slug": "scf-convergence",
+   "part": "II",
+   "status": "planned",
+   "title": "Self-consistent field convergence",
+   "seo": "Self-Consistent Field (SCF) Convergence",
+   "question": "Why can't VASP solve the Kohn–Sham equations once and stop?"
+  },
+  {
+   "n": 13,
+   "slug": "reciprocal-lattice-brillouin-zone",
+   "part": "III",
+   "status": "planned",
+   "title": "The reciprocal lattice and the Brillouin zone",
+   "seo": "Reciprocal Lattice and Brillouin Zone",
+   "question": "Why does a crystal lead naturally into reciprocal space?"
+  },
+  {
+   "n": 14,
+   "slug": "bloch-theorem-band-structure",
+   "part": "III",
+   "status": "planned",
+   "title": "Bloch's theorem and band structure",
+   "seo": "Bloch Theorem and Band Structure Explained",
+   "question": "What does a k-point physically represent?"
+  },
+  {
+   "n": 15,
+   "slug": "k-point-sampling",
+   "part": "III",
+   "status": "planned",
+   "title": "k-point sampling and Monkhorst–Pack grids",
+   "seo": "k-Point Sampling and Monkhorst-Pack Grids",
+   "question": "Why does a periodic calculation need many k-points, and how many?"
+  },
+  {
+   "n": 16,
+   "slug": "smearing-ismear-sigma",
+   "part": "III",
+   "status": "planned",
+   "title": "Smearing: ISMEAR and SIGMA",
+   "seo": "Smearing in VASP: ISMEAR and SIGMA",
+   "question": "Why do metals need special treatment of occupations, and what do ISMEAR and SIGMA really do?"
+  },
+  {
+   "n": 17,
+   "slug": "plane-wave-cutoff-encut",
+   "part": "IV",
+   "status": "planned",
+   "title": "Plane waves and the ENCUT cutoff",
+   "seo": "Plane-Wave Cutoff: What ENCUT Controls",
+   "question": "What exactly does ENCUT truncate?"
+  },
+  {
+   "n": 18,
+   "slug": "paw-pseudopotentials-potcar",
+   "part": "IV",
+   "status": "planned",
+   "title": "PAW, pseudopotentials and the POTCAR",
+   "seo": "PAW Method and Choosing a POTCAR",
+   "question": "Why is choosing a POTCAR a physics decision?"
+  },
+  {
+   "n": 19,
+   "slug": "vasp-input-files-convergence-tests",
+   "part": "IV",
+   "status": "planned",
+   "title": "VASP input files and convergence tests",
+   "seo": "VASP Input Files and Convergence Tests",
+   "question": "What does each line of my inputs do, and how do I know my numbers are converged?"
+  },
+  {
+   "n": 20,
+   "slug": "formation-energy-convex-hull",
+   "part": "V",
+   "status": "planned",
+   "title": "Formation energy and the convex hull",
+   "seo": "Formation Energy and Convex Hull from DFT",
+   "question": "What number is VASP minimizing, and when is comparing two of them meaningful?"
+  },
+  {
+   "n": 21,
+   "slug": "structural-relaxation-ibrion-isif",
+   "part": "V",
+   "status": "planned",
+   "title": "Forces, stress and structural relaxation",
+   "seo": "Structural Relaxation in VASP: IBRION, ISIF",
+   "question": "How can an electronic calculation produce forces, and what changes when ISIF changes?"
+  },
+  {
+   "n": 22,
+   "slug": "equation-of-state-elastic-constants",
+   "part": "V",
+   "status": "planned",
+   "title": "Equations of state and elastic constants",
+   "seo": "Equation of State and Elastic Constants",
+   "question": "How do I get a reliable lattice constant, bulk modulus or elastic tensor?"
+  },
+  {
+   "n": 23,
+   "slug": "spin-polarized-dft-magnetism",
+   "part": "VI",
+   "status": "planned",
+   "title": "Spin-polarized DFT and magnetism",
+   "seo": "Spin-Polarized DFT: ISPIN and MAGMOM",
+   "question": "What does spin-polarized DFT solve differently, and why can MAGMOM change the answer?"
+  },
+  {
+   "n": 24,
+   "slug": "spin-orbit-coupling-magnetic-anisotropy",
+   "part": "VI",
+   "status": "planned",
+   "title": "Spin–orbit coupling and magnetic anisotropy",
+   "seo": "Spin-Orbit Coupling and Magnetic Anisotropy",
+   "question": "Why does a magnet's energy depend on which way its moments point?"
+  },
+  {
+   "n": 25,
+   "slug": "dft-plus-u",
+   "part": "VI",
+   "status": "planned",
+   "title": "DFT+U and the Hubbard U",
+   "seo": "DFT+U and the Hubbard U Explained",
+   "question": "What does DFT+U correct, and why does the answer depend on U?"
+  },
+  {
+   "n": 26,
+   "slug": "meta-gga-scan-r2scan",
+   "part": "VII",
+   "status": "planned",
+   "title": "Meta-GGA functionals: SCAN and r²SCAN",
+   "seo": "Meta-GGA Functionals: SCAN and r2SCAN",
+   "question": "What does the kinetic-energy density add, and is higher on the ladder always better?"
+  },
+  {
+   "n": 27,
+   "slug": "hybrid-functionals-hse06",
+   "part": "VII",
+   "status": "planned",
+   "title": "Hybrid functionals and HSE06",
+   "seo": "Hybrid Functionals and HSE06 Explained",
+   "question": "Why is HSE so much more expensive than PBE, and what do you get for the cost?"
+  },
+  {
+   "n": 28,
+   "slug": "van-der-waals-dispersion-corrections",
+   "part": "VII",
+   "status": "planned",
+   "title": "van der Waals and dispersion corrections",
+   "seo": "van der Waals Corrections: DFT-D3, vdW-DF",
+   "question": "Why does semilocal DFT miss what holds graphite layers and molecular crystals together?"
+  },
+  {
+   "n": 29,
+   "slug": "band-structure-dos",
+   "part": "VIII",
+   "status": "planned",
+   "title": "Band structure, DOS and projected DOS",
+   "seo": "Band Structure, DOS and PDOS in VASP",
+   "question": "What can, and can't, be concluded from a band structure?"
+  },
+  {
+   "n": 30,
+   "slug": "band-gap-problem",
+   "part": "VIII",
+   "status": "planned",
+   "title": "Why DFT underestimates band gaps",
+   "seo": "Why DFT Underestimates Band Gaps",
+   "question": "Why is “PBE underestimates band gaps” an incomplete explanation?"
+  },
+  {
+   "n": 31,
+   "slug": "phonons-dynamical-stability",
+   "part": "IX",
+   "status": "planned",
+   "title": "Phonons and dynamical stability",
+   "seo": "Phonons and Dynamical Stability with DFT",
+   "question": "How do second derivatives of the energy become vibrational spectra, and what does an imaginary mode mean?"
+  },
+  {
+   "n": 32,
+   "slug": "nudged-elastic-band",
+   "part": "IX",
+   "status": "planned",
+   "title": "The nudged elastic band method",
+   "seo": "Nudged Elastic Band (NEB) Method Explained",
+   "question": "How do we find the barrier for an atom, or a proton, to hop?"
+  },
+  {
+   "n": 33,
+   "slug": "ab-initio-molecular-dynamics",
+   "part": "IX",
+   "status": "planned",
+   "title": "Ab initio molecular dynamics",
+   "seo": "Ab Initio Molecular Dynamics (AIMD)",
+   "question": "How do DFT forces drive atoms in time, and how do I know my MD is trustworthy?"
+  },
+  {
+   "n": 34,
+   "slug": "machine-learning-interatomic-potentials",
+   "part": "IX",
+   "status": "planned",
+   "title": "Machine-learning interatomic potentials",
+   "seo": "Machine-Learning Interatomic Potentials",
+   "question": "How can DFT data train a fast potential, and which DFT errors does it inherit?"
+  },
+  {
+   "n": 35,
+   "slug": "dft-errors-convergence-accuracy",
+   "part": "X",
+   "status": "planned",
+   "title": "DFT errors: convergence versus accuracy",
+   "seo": "DFT Errors: Convergence vs Accuracy",
+   "question": "What kind of error am I reducing when I converge a calculation?"
+  },
+  {
+   "n": 36,
+   "slug": "dft-methods-section",
+   "part": "X",
+   "status": "planned",
+   "title": "Writing a defensible DFT methods section",
+   "seo": "Writing a Defensible DFT Methods Section",
+   "question": "How do I choose, justify and report a methodology that survives peer review?"
+  },
+  {
+   "n": 37,
+   "label": "Capstone",
+   "slug": "vasp-calculation-audit",
+   "part": "X",
+   "status": "planned",
+   "title": "Audit a real VASP calculation",
+   "seo": "Audit a Real VASP Calculation",
+   "question": "Could every choice in one of your own calculations survive a referee's questions?"
+  }
+ ],
+ "errata": [],
+ "imageAlt": "Density Functional Theory and VASP: a free interactive course by Osman Goni Ridwan, from the Schrödinger equation to calculations you can defend, with the Kohn–Sham equation.",
+ "keywords": [
+  "DFT course",
+  "density functional theory course",
+  "density functional theory tutorial",
+  "learn DFT",
+  "DFT for beginners",
+  "VASP tutorial",
+  "VASP course",
+  "Kohn-Sham equations",
+  "exchange-correlation functional",
+  "first-principles calculations",
+  "computational materials science",
+  "plane-wave DFT",
+  "free online course"
+ ]
+}

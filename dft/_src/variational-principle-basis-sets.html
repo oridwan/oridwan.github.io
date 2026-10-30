@@ -1,0 +1,317 @@
+<!-- Fact-checked 2026-10-30. Sources (checked, not cited on the page):
+  Field, MIT 5.61 F17 L22 (p. 2): helium not exactly solvable. L24 (pp. 4-13): variational theorem, proof,
+    parameters, Hc = ESc, orthonormal case, two-level mixing and bonding. L28 (pp. 4-5, T. Van Voorhis):
+    Gaussians lack a cusp, decay too fast, "given enough Gaussians you can expand anything"; bigger basis
+    lowers the energy. L20 (p. 5): hydrogen -1 Ry = -1/2 Ha for infinite nuclear mass.
+  VASP Wiki (2026-10-30): ENCUT (definition, set explicitly, number of plane waves varies by k-point),
+    Cutoff (default = max ENMAX, never below it; energy differences converge faster; FFT grids from ENCUT
+    and PREC), ALGO (Normal = blocked Davidson; Exact), NBANDS, OUTCAR "maximum number of plane-waves", PAW.
+  Trial energies E(alpha) for the oscillator and hydrogen, two-level values 0.9615/2.0385 eV, Ritz
+    monotonicity and the 1e-4 E1 convergence are checked in scripts/test_dft.mjs. -->
+<div class="notes">
+<p>Lecture 2 ended with a recipe: expand \(\psi\) in a basis and \(\hat H\psi = E\psi\) becomes a matrix problem. This lecture asks the two questions that recipe raises. If the basis cannot represent the exact state, what does the answer mean? And how do you know the basis is big enough? The answers, the variational principle and basis convergence, are why VASP has a tag called <x-tag>ENCUT</x-tag>.</p>
+</div>
+
+<section class="deck-slide" id="no-exact-solutions">
+<h2>Why can't we just solve Ĥψ = Eψ exactly?</h2>
+<p class="claim">Only toy problems have exact solutions; everything real needs a systematic approximation.</p>
+<div class="cols">
+<ul class="tiles" style="--n: 1">
+<li class="tile acc"><span class="k">Solved exactly</span>A particle in a box, the harmonic oscillator, the hydrogen atom.</li>
+<li class="tile"><span class="k">Not solvable exactly</span>Helium, with just two electrons, and everything larger: molecules and solids.</li>
+</ul>
+<ol class="flow v">
+<li><span>Variational principle: a rule</span></li>
+<li><span>Trial functions: one parameter</span></li>
+<li><span>Basis sets: many parameters</span></li>
+<li><span>Hc = ESc: a matrix problem</span></li>
+<li><span>Convergence and ENCUT</span></li>
+</ol>
+</div>
+<div class="notes">
+<p>Once Schrödinger had solved the hydrogen atom in 1926, people expected helium to follow quickly. It never did. With two electrons, the repulsion \(1/|\mathbf r_1 - \mathbf r_2|\) couples their motions, the equation no longer separates into one-electron pieces, and no closed-form solution exists. The same is true of every molecule and every solid. Electronic structure is therefore the art of approximating well, and of knowing how good the approximation is. This lecture gives the rule that makes approximation systematic, then the machinery that turns it into a computer program.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="variational-principle">
+<h2>What does the variational principle say?</h2>
+<p class="claim">No trial wavefunction can have an energy below the true ground-state energy.</p>
+<div class="eqbox">
+\[ \eqterm{E}{E[\phi]} = \eqterm{num}{\frac{\langle \phi | \hat H | \phi \rangle}{\langle \phi | \phi \rangle}} \;\eqterm{ge}{\ge}\; \eqterm{E0}{E_0} \]
+<ul class="eq-legend">
+<li data-eq="E"><b>Trial energy</b> of any allowed function \(\phi\), the trial wavefunction.</li>
+<li data-eq="num"><b>Rayleigh quotient</b>: the energy expectation value; the denominator removes the normalization.</li>
+<li data-eq="ge"><b>Never below</b>: equal only if \(\phi\) is an exact ground state.</li>
+<li data-eq="E0"><b>Exact ground-state energy</b> of the same Hamiltonian.</li>
+</ul>
+</div>
+<div class="notes">
+<p>Make a guess \(\phi\), the <x-term k="trial-wavefunction">trial wavefunction</x-term>, and compute its average energy. The <x-term k="variational-principle">variational principle</x-term> says this average is never below the exact ground-state energy \(E_0\), whatever \(\phi\) you choose, provided it obeys the same boundary conditions as the true states. Dividing by \(\langle\phi|\phi\rangle\) means \(\phi\) need not even be normalized.</p>
+<p>That one inequality makes approximation a practical tool, in two ways:</p>
+<ul>
+<li><b>Ranking.</b> Of two trial functions, the one with the lower energy gives the better estimate of the ground-state energy.</li>
+<li><b>Optimizing.</b> If \(\phi\) contains adjustable parameters, minimizing the energy over them gives the best function of that form, and the minimum is still an upper bound to \(E_0\).</li>
+</ul>
+</div>
+</section>
+
+<section class="deck-slide" id="why-true">
+<h2>Why can no trial energy fall below E₀?</h2>
+<p class="claim">A trial state is a mixture of exact states, so its energy is their weighted average.</p>
+<div class="eqbox">
+\[ E[\phi] = \eqterm{avg}{\sum_n |c_n|^2 E_n} \quad\Longrightarrow\quad E[\phi] - E_0 = \eqterm{exc}{\sum_{n>0} |c_n|^2 \,(E_n - E_0)} \;\ge\; 0 \]
+<ul class="eq-legend">
+<li data-eq="avg"><b>Weighted average</b> of exact energies, with weights \(|c_n|^2\) that add up to 1 (Lecture 2).</li>
+<li data-eq="exc"><b>Excited-state admixture</b>: every term is positive or zero, so the trial energy sits above \(E_0\).</li>
+</ul>
+<p class="eq-hint">Expand the normalized trial state in the exact eigenstates: \(\phi = \sum_n c_n \psi_n\).</p>
+</div>
+<div class="notes">
+<p>The proof uses only Lecture 2. Any normalized trial function can be expanded in the exact eigenstates of \(\hat H\), \(\phi = \sum_n c_n\psi_n\), even though we do not know them. Its energy is then the weighted average \(\sum_n |c_n|^2 E_n\), with weights that add up to one. An average of numbers that are all at least \(E_0\) is itself at least \(E_0\).</p>
+<p>Subtracting \(E_0\), using \(\sum_n|c_n|^2 = 1\), shows exactly what raises the energy: every bit of excited state mixed in, weighted by how far above the ground state it lies. The equality holds only when all coefficients of higher-energy states vanish, that is when \(\phi\) is the ground state. A useful corollary: if the trial function is wrong by a small amount \(\delta\), so that the excited-state coefficients are of size \(\delta\), the energy is wrong only by an amount of size \(\delta^2\). Energies converge faster than wavefunctions, which is why a variational energy can be good while the wavefunction is still visibly off.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="trial-functions">
+<h2>How do you use the variational principle?</h2>
+<p class="claim">Choose a family of trial functions and lower the energy by varying its parameters.</p>
+<figure class="fig side" data-fig="trial">
+<div class="fig-body" data-snapshot="trial"></div>
+<figcaption><span class="model-label">Model</span>Gaussian trial functions with one width parameter α. For the oscillator the family contains the exact ground state; for hydrogen it does not.</figcaption>
+</figure>
+<div class="notes">
+<p><b>The harmonic oscillator.</b> Take a Gaussian, \(\phi = e^{-\alpha x^2/2}\), for \(\hat H = -\frac{\hbar^2}{2m}\frac{d^2}{dx^2} + \frac12 m\omega^2x^2\). Its probability density \(e^{-\alpha x^2}\) has \(\langle x^2\rangle = 1/2\alpha\), so the potential energy is \(\tfrac12 m\omega^2\langle x^2\rangle = m\omega^2/4\alpha\). Its slope is \(\phi' = -\alpha x\phi\), so the kinetic energy is \(\frac{\hbar^2}{2m}\langle(\alpha x)^2\rangle = \hbar^2\alpha/4m\). Together,</p>
+\[ E(\alpha) = \frac{\hbar^2\alpha}{4m} + \frac{m\omega^2}{4\alpha}. \]
+<p>A narrow Gaussian (large \(\alpha\)) curves sharply and has high kinetic energy; a broad one reaches into high potential energy. Setting \(dE/d\alpha = 0\) gives \(\alpha = m\omega/\hbar\) and \(E = \tfrac12\hbar\omega\): the exact ground-state energy, because this family happens to contain the exact ground state.</p>
+<p><b>The hydrogen atom.</b> Now try \(\phi = e^{-\alpha r^2}\) for the electron of hydrogen. The same kind of calculation in atomic units gives</p>
+\[ E(\alpha) = \tfrac32\,\alpha - 2\sqrt{2\alpha/\pi}, \]
+<p>kinetic energy minus nuclear attraction. Setting \(dE/d\alpha = \tfrac32 - \sqrt{2/\pi\alpha} = 0\) gives \(\alpha = 8/9\pi \approx 0.283\) bohr\(^{-2}\) and \(E = -4/3\pi = -0.4244\) hartree, 15% above the exact \(-0.5\) hartree (for an infinitely heavy nucleus). The bound holds, but no width fixes the error. The exact 1s orbital, \(e^{-r}\), has a sharp cusp at the nucleus and decays as a simple exponential far away; a Gaussian is flat at the nucleus and decays much faster. Use the switch to compare the two families.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="what-the-bound-means">
+<h2>What does a low variational energy prove?</h2>
+<p class="claim">Only that it is an upper bound. It does not prove the wavefunction, or the physics, is good.</p>
+<div class="cols top">
+<ul class="tiles" style="--n: 1">
+<li class="tile acc"><span class="k">Guaranteed</span>The trial energy is never below \(E_0\).</li>
+<li class="tile acc"><span class="k">Guaranteed</span>A bigger family that contains the smaller one can reach an equal or lower energy.</li>
+</ul>
+<ul class="tiles" style="--n: 1">
+<li class="tile warn"><span class="k">Not guaranteed</span>That the family is flexible enough: hydrogen's Gaussian stops 15% too high.</li>
+<li class="tile warn"><span class="k">Not guaranteed</span>That a minimizer found the lowest minimum, or that the Hamiltonian itself is right.</li>
+</ul>
+</div>
+<div class="notes">
+<p>The variational principle is a one-sided guarantee. It tells you which of two approximations is better for the ground-state energy, but not how far the better one is from the truth. It says nothing about other properties: because energies converge faster than wavefunctions (the \(\delta^2\) of the earlier slide), a wavefunction with a good energy can still give a poor dipole moment or a poor density far from the nucleus.</p>
+<p>It also applies only to the Hamiltonian you wrote down. If that Hamiltonian, or later the exchange–correlation functional, is wrong, minimizing it carefully gives a precise answer to the wrong problem. And bounds for excited states need extra conditions, such as orthogonality to the states below.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="basis-expansion">
+<h2>How do you give a trial function many parameters?</h2>
+<p class="claim">Write it as a sum of fixed basis functions; only the coefficients are unknown.</p>
+<div class="cols wl">
+<div class="eqbox">
+\[ \psi(\mathbf r) \approx \sum_{i=1}^{M} \eqterm{c}{c_i}\, \eqterm{phi}{\phi_i(\mathbf r)} \qquad \longleftrightarrow \qquad \mathbf v = v_x \hat{\mathbf x} + v_y \hat{\mathbf y} + v_z \hat{\mathbf z} \]
+<ul class="eq-legend">
+<li data-eq="phi"><b>Basis functions</b>: chosen in advance, like the unit vectors x̂, ŷ, ẑ.</li>
+<li data-eq="c"><b>Coefficients</b>: the \(M\) numbers the calculation determines.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">A basis function is not an orbital</span>An optimized orbital is a combination of many basis functions.</li>
+<li class="tile acc"><span class="k">The gain</span>An unknown function becomes a list of \(M\) unknown numbers.</li>
+</ul>
+</div>
+<div class="notes">
+<p>One parameter is rarely enough. The general method chooses a <x-term k="basis-set">basis set</x-term> of known functions and lets the coefficients vary. The analogy with ordinary vectors is close: a vector is a sum of unit vectors weighted by its components, and a wavefunction is a sum of basis functions weighted by its coefficients. With \(M\) basis functions the trial family has \(M\) parameters, and the variational principle tells us how to choose them: make the energy as low as possible.</p>
+<p>Unlike the Gaussian width of the last slide, the coefficients enter linearly. That makes the minimization much easier: it does not need trial and error, as the next slide shows.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="generalized-eigenvalue-problem">
+<h2>How does the minimization become a matrix problem?</h2>
+<p class="claim">Minimizing the energy over the coefficients gives Hc = ESc, a generalized eigenvalue problem.</p>
+<div class="eqbox">
+\[ \sum_j \eqterm{H}{\langle \phi_i | \hat H | \phi_j \rangle}\, c_j = E \sum_j \eqterm{S}{\langle \phi_i | \phi_j \rangle}\, c_j \quad\Longleftrightarrow\quad \mathbf H\mathbf c = E\, \eqterm{Sm}{\mathbf S}\, \mathbf c \]
+<ul class="eq-legend">
+<li data-eq="H"><b>Hamiltonian matrix</b> element \(H_{ij}\), as in Lecture 2.</li>
+<li data-eq="S"><b>Overlap matrix</b> element \(S_{ij}\): how much two basis functions overlap.</li>
+<li data-eq="Sm"><b>Orthonormal basis</b>: \(\mathbf S\) is the identity, and the problem is \(\mathbf H\mathbf c = E\mathbf c\).</li>
+</ul>
+</div>
+<div class="notes">
+<p>Insert \(\psi = \sum_j c_j\phi_j\) into the Rayleigh quotient. Numerator and denominator become sums over pairs of basis functions:</p>
+\[ E(\mathbf c) = \frac{\sum_{ij} c_i^* H_{ij}\, c_j}{\sum_{ij} c_i^* S_{ij}\, c_j} = \frac{\mathbf c^\dagger \mathbf H \mathbf c}{\mathbf c^\dagger \mathbf S \mathbf c}. \]
+<p>At the minimum the energy is stationary with respect to every coefficient. Multiply out, \(\mathbf c^\dagger\mathbf H\mathbf c = E\,\mathbf c^\dagger\mathbf S\mathbf c\), and differentiate with respect to \(c_i^*\), keeping \(\partial E/\partial c_i^* = 0\): the result is \(\sum_j H_{ij}c_j = E\sum_j S_{ij}c_j\) for every \(i\), the equation on the slide. It is called a generalized eigenvalue problem because of the matrix \(\mathbf S\) on the right. In an orthonormal basis the overlap matrix is the identity and it becomes the ordinary eigenvalue problem of Lecture 2.</p>
+<p>An \(M \times M\) problem has \(M\) solutions. The lowest eigenvalue is the best ground-state energy available in this basis, and its eigenvector holds the best coefficients. The higher eigenvalues are upper bounds to the excited-state energies, one by one; this is the Hylleraas–Undheim–MacDonald theorem. In short, the variational principle turns operator algebra into matrix algebra, which is what computers do best.</p>
+<p>One practical condition: the basis functions must be linearly independent. If one is nearly a combination of the others, \(\mathbf S\) becomes nearly singular and the coefficients become numerically unstable, a known problem in large atom-centred basis sets.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="two-level-mixing">
+<h2>What happens when two basis functions couple?</h2>
+<p class="claim">They mix, and the two levels repel: the lower one drops below both starting energies.</p>
+<figure class="fig side" data-fig="mixing">
+<div class="fig-body" data-snapshot="mixing"></div>
+<figcaption><span class="model-label">Model</span>An orthonormal two-function basis with \(H_{11} = 1\) eV and \(H_{22} = 2\) eV. Slide the coupling \(H_{12}\).</figcaption>
+</figure>
+<div class="notes">
+<p>With two orthonormal basis functions, \(\mathbf H\mathbf c = E\mathbf c\) has a solution only if \(\det(\mathbf H - E\mathbf I) = 0\), that is \((H_{11} - E)(H_{22} - E) - H_{12}^2 = 0\). This quadratic gives two energies,</p>
+\[ E_\pm = \frac{H_{11} + H_{22}}{2} \pm \sqrt{\Big(\frac{H_{22} - H_{11}}{2}\Big)^2 + H_{12}^2}. \]
+<p>Without coupling they are just \(H_{11}\) and \(H_{22}\). Any coupling pushes them apart, symmetrically about their mean: the lower one falls below \(H_{11}\) and the upper one rises above \(H_{22}\) by the same amount. With \(H_{12} = 0.2\) eV the levels are 0.9615 and 2.0385 eV. Two limits are worth remembering. If the coupling is weak compared with the gap, the shift is about \(H_{12}^2/(H_{22} - H_{11})\), small. If the two starting energies are equal, the shift is the full \(\pm H_{12}\) and the two functions mix half and half.</p>
+<p>The same mathematics describes a chemical bond forming from two atomic orbitals, the lower level being the bonding orbital and the upper the antibonding one, and, in <x-lec n="14"></x-lec>, gaps opening in band structures.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="basis-convergence">
+<h2>Why does a bigger basis give a better answer?</h2>
+<p class="claim">A bigger basis contains the smaller one, so the lowest energy can never go up.</p>
+<figure class="fig side" data-fig="ritz">
+<div class="fig-body" data-snapshot="ritz"></div>
+<figcaption><span class="model-label">Model</span>A particle in a box with an off-centre well, \(V = 800\,E_1 (x/L - 0.38)^2\), where \(E_1\) is the ground-state energy of the empty box (Lecture 2), solved in the first M box states. Each point is one diagonalization.</figcaption>
+</figure>
+<div class="notes">
+<p>Here the basis functions are the box states of Lecture 2, \(\sin(n\pi x/L)\), and the Hamiltonian adds a harmonic well that none of them describes on its own. With one function the energy is far too high. Each added function brings new freedom while keeping all the old trial states available (set the new coefficient to zero), so the lowest energy never rises:</p>
+\[ E^{(1)} \ge E^{(2)} \ge E^{(3)} \ge \dots \ge E_0 . \]
+<p>Ten functions get within \(10^{-4}\,E_1\) of the converged value, and the approximate wavefunction becomes indistinguishable from the converged one. The figure plots the error on a logarithmic scale, so you can watch it fall by orders of magnitude as functions are added.</p>
+<p>Two cautions for real calculations. This steady decrease holds for the ground-state energy of a fixed Hamiltonian in nested bases; other quantities, such as forces or band gaps, need not converge steadily. And in a self-consistent calculation other settings change with the basis, so test the quantity you will report (<x-lec n="19"></x-lec>).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="cost">
+<h2>What does a bigger basis cost?</h2>
+<p class="claim">Bigger vectors and matrices: more memory and time for every orbital.</p>
+<ul class="tiles" style="--n: 3">
+<li class="tile"><span class="k">Per orbital</span>\(M\) coefficients to store and update.</li>
+<li class="tile"><span class="k">Per matrix</span>\(M^2\) elements; diagonalizing it fully takes of order \(M^3\) operations.</li>
+<li class="tile acc"><span class="k">What VASP does</span>By default, iterative diagonalization finds only the NBANDS lowest states (<x-lec n="12"></x-lec>).</li>
+</ul>
+<div class="notes">
+<p>The useful question is never “how big can I make the basis?” but “what is the smallest basis for which my result no longer changes, to the tolerance I need?” A larger basis means longer coefficient vectors, a larger Hamiltonian to apply, more orthogonalization and, in parallel runs, more communication.</p>
+<p>Plane-wave codes have so many basis functions, often thousands to hundreds of thousands per k-point, that they avoid building and diagonalizing the full matrix. Instead they need only the lowest few eigenvectors, and find them iteratively: start from guesses, apply \(\hat H\) to them, and improve them step by step. By default VASP uses such a method, the blocked-Davidson algorithm (ALGO = Normal), and computes only the NBANDS lowest orbitals. Full diagonalization (ALGO = Exact) is kept for special cases.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="basis-types">
+<h2>Which basis sets do electronic-structure codes use?</h2>
+<p class="claim">Plane waves suit periodic solids; atom-centred functions suit molecules.</p>
+<table class="tbl">
+<thead><tr><th>Basis</th><th>Strength</th><th>Weakness</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td>Plane waves \(e^{i\mathbf G\cdot\mathbf r}\)</td><td>Natural for periodic cells; improved by one number, the cutoff</td><td>Need very many plane waves for the rapid oscillations near nuclei</td><td>VASP, Quantum ESPRESSO</td></tr>
+<tr><td>Gaussian orbitals \(e^{-\alpha r^2}\)</td><td>Compact; integrals are fast</td><td>No cusp, wrong tail: many are needed</td><td>Quantum-chemistry codes</td></tr>
+<tr><td>Real-space grids</td><td>Direct, flexible resolution</td><td>Accuracy set by the grid spacing</td><td>GPAW (finite-difference mode)</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>Gaussian orbitals are popular in molecular codes because the integrals between them, including the four-centre integrals of electron repulsion, can be evaluated in closed form. A single Gaussian looks little like an atomic orbital, as the hydrogen example showed, but sums of several reproduce one well, and with enough Gaussians you can expand any smooth function.</p>
+<p>Plane waves have the opposite strengths. They are orthonormal, they do not depend on where the atoms are, and their quality is controlled by a single number, the cutoff, which makes convergence tests simple. Their weakness is the region near each nucleus, where orbitals oscillate rapidly. VASP handles that region with PAW, whose smooth pseudo-orbitals a moderate plane-wave basis can represent (<x-lec n="17"></x-lec>, <x-lec n="18"></x-lec>).</p>
+</div>
+</section>
+
+<section class="deck-slide" id="encut">
+<h2>What does ENCUT control?</h2>
+<p class="claim">ENCUT keeps every plane wave below a kinetic-energy cutoff, so it sets the size of the basis.</p>
+<div class="cols wl">
+<div class="eqbox">
+\[ \psi_{n\mathbf k}(\mathbf r) = \sum_{\mathbf G} c_{n\mathbf k}(\mathbf G)\, e^{i(\mathbf k + \mathbf G)\cdot \mathbf r}, \qquad \eqterm{cut}{\frac{\hbar^2}{2m}\,|\mathbf k + \mathbf G|^2 < E_{\mathrm{cut}}} \]
+<ul class="eq-legend">
+<li data-eq="cut"><b>The cutoff</b>: only plane waves with kinetic energy below \(E_{\mathrm{cut}}\) = <code>ENCUT</code> are kept.</li>
+</ul>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Default</span>The largest ENMAX in the POTCARs. Never go below it.</li>
+<li class="tile acc"><span class="k">Recommended</span>Set ENCUT explicitly, and test the quantity you report.</li>
+<li class="tile warn"><span class="k">Not</span>A cutoff on the band energies.</li>
+</ul>
+</div>
+<div class="notes">
+<p>In a periodic cell, each orbital is a sum of plane waves labelled by reciprocal-lattice vectors \(\mathbf G\) (<x-lec n="13"></x-lec>, <x-lec n="14"></x-lec>). Each plane wave \(e^{i(\mathbf k + \mathbf G)\cdot\mathbf r}\) is an eigenfunction of the kinetic-energy operator, with eigenvalue \(\hbar^2|\mathbf k + \mathbf G|^2/2m\) (Lecture 2), and higher kinetic energy means shorter wavelength. <x-tag>ENCUT</x-tag> keeps all plane waves with kinetic energy below it. Raising it adds shorter wavelengths, finer detail, to a bigger nested basis, so the variational principle applies.</p>
+<p>The default is the largest ENMAX among the POTCARs, the cutoff each PAW dataset was designed for. Values below it give large errors and should never be used. Set ENCUT explicitly, so that calculations you want to compare use the same basis, and check the convergence of the quantity you report.</p>
+<p>ENCUT limits the basis, not the eigenvalues: the band energies VASP reports are not limited by ENCUT. And because the set of plane waves depends on the cell, changing the cell during a relaxation changes the basis, a subtlety called Pulay stress that returns in <x-lec n="22"></x-lec>.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="numerical-vs-physical">
+<h2>Does a converged basis give the right answer?</h2>
+<p class="claim">No: convergence removes numerical error, not the errors of the physical model.</p>
+<table class="tbl">
+<thead><tr><th>Question</th><th>Kind of error</th><th>How to test it</th></tr></thead>
+<tbody>
+<tr><td>Is the basis large enough?</td><td>Numerical</td><td>Raise ENCUT</td></tr>
+<tr><td>Is the k-point mesh dense enough?</td><td>Numerical</td><td>Compare denser meshes (<x-lec n="15"></x-lec>)</td></tr>
+<tr><td>Is the SCF loop converged?</td><td>Numerical</td><td>Tighten EDIFF (<x-lec n="12"></x-lec>)</td></tr>
+<tr><td>Is PBE suitable here?</td><td>Physical</td><td>Known failures; other functionals (<x-lec n="11"></x-lec>)</td></tr>
+<tr><td>Does spin–orbit coupling matter?</td><td>Physical</td><td>Run with it (<x-lec n="24"></x-lec>)</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>Keep two questions apart. Did we solve the chosen model accurately? That is numerical convergence, and the variational principle and basis tests answer it. Was the model appropriate? That is physics: Born–Oppenheimer, the exchange–correlation functional, the PAW datasets, spin–orbit coupling. A calculation can be perfectly converged and physically wrong, and no ENCUT repairs an unsuitable functional, a missing magnetic state or a poor structure. <x-lec n="35"></x-lec> returns to this distinction for the whole course.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-encut">
+<h2>Lab 3: how does ENCUT change the silicon energy?</h2>
+<p class="claim">Rerun Lab 0 at six cutoffs; predict the basis size and the energy before you look.</p>
+<div class="cols top">
+<div>
+<p class="file-k">Run</p>
+<ol>
+<li>Copy Lab 0. Change only <code>ENCUT</code>: 250, 300, 350, 400, 450, 500 eV.</li>
+<li>Record <code>E0</code> (last line of OSZICAR) and <code>grep "maximum number of plane-waves" OUTCAR</code>.</li>
+</ol>
+</div>
+<div>
+<p class="file-k">Predict first</p>
+<ol>
+<li>Basis size grows as ENCUT<sup>3/2</sup>: about 2.8 times more plane waves at 500 eV than at 250 eV.</li>
+<li>E0 should fall as ENCUT rises, and level off.</li>
+<li>Its total change says little; energy differences usually converge much faster.</li>
+</ol>
+</div>
+</div>
+<div class="notes">
+<p><b>Why ENCUT<sup>3/2</sup>?</b> The plane waves kept are the reciprocal-lattice points inside a sphere of radius \(G_{\mathrm{cut}}\), with \(E_{\mathrm{cut}} = \hbar^2G_{\mathrm{cut}}^2/2m\). Their number grows with the sphere's volume, \(G_{\mathrm{cut}}^3 \propto E_{\mathrm{cut}}^{3/2}\), and \(2^{3/2} \approx 2.83\). OUTCAR reports the count as “maximum number of plane-waves”; it varies slightly between k-points, because the sphere is centred on each \(\mathbf k\) in turn.</p>
+<p><b>Why should E0 fall?</b> More plane waves form a bigger nested basis. VASP also sets its FFT grids from ENCUT and the precision setting PREC, so small deviations from a smooth decrease are possible; note any you see.</p>
+<p><b>Why does that matter less than it seems?</b> Total-energy differences, between two structures or two phases computed with the same settings, usually converge much faster than total energies, because most of the basis error comes from the region near the nuclei and is the same in both. That is why <x-lec n="19"></x-lec> converges the quantity you report, not the raw total energy. Bring back your table of ENCUT, number of plane waves and E0.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="misconceptions">
+<h2>Which misconceptions should you drop now?</h2>
+<p class="claim">Five beliefs about variational methods and basis sets. Click a card to turn it over.</p>
+<div class="flips myths" style="--n: 3">
+<div class="flip"><p class="q">“The variational principle makes any approximation accurate.”</p><p class="a">It gives an upper bound. A poor trial family gives a poor energy, as hydrogen's single Gaussian shows.</p></div>
+<div class="flip"><p class="q">“The lowest energy I found is the ground state.”</p><p class="a">Only if the trial space is flexible enough and the optimizer found its global minimum.</p></div>
+<div class="flip"><p class="q">“Every quantity improves steadily with basis size.”</p><p class="a">The ground-state energy in nested bases does. Forces, gaps and other properties need not.</p></div>
+<div class="flip"><p class="q">“ENCUT is a cutoff on the band energies.”</p><p class="a">It limits the kinetic energy of the plane waves in the basis, not the eigenvalues VASP reports.</p></div>
+<div class="flip"><p class="q">“A converged calculation agrees with experiment.”</p><p class="a">Convergence removes numerical error only. The functional and the model can still be wrong.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="check">
+<h2>Check yourself</h2>
+<p class="claim">One question per outcome. Answer aloud, then click to compare.</p>
+<div class="flips checks" style="--n: 3">
+<div class="flip"><p class="q" data-k="Outcome 1">Why can a trial energy never fall below E₀?</p><p class="a">It is a weighted average of exact energies, Σ|c_n|²E_n, and all of them are at least E₀.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 2">What do H_ij and S_ij mean, and when is S the identity?</p><p class="a">H_ij = ⟨φ_i|Ĥ|φ_j⟩ is a Hamiltonian matrix element, S_ij = ⟨φ_i|φ_j⟩ an overlap. S = I for an orthonormal basis.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 3">Why can a bigger nested basis only lower the ground-state energy?</p><p class="a">It keeps every old trial state and adds new ones, so the minimum can stay or drop, never rise. It costs more.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 4">What exactly does ENCUT truncate?</p><p class="a">The plane waves: only those with ħ²|k+G|²/2m below ENCUT are in the basis.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 5">Name one numerical and one physical approximation in a VASP run.</p><p class="a">Numerical: a finite ENCUT or k-mesh. Physical: the exchange–correlation functional, or no spin–orbit coupling.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="summary">
+<h2>What should you remember?</h2>
+<p class="claim">Minimize the energy over a trial space, then enlarge the space until the answer stops changing.</p>
+<ul>
+<li>Variational principle: \(\langle\phi|\hat H|\phi\rangle / \langle\phi|\phi\rangle \ge E_0\) for every trial function; equal only for the ground state.</li>
+<li>A basis turns the unknown function into coefficients and the problem into \(\mathbf H\mathbf c = E\mathbf S\mathbf c\).</li>
+<li>Nested bases lower the energy monotonically, at increasing cost; coupling makes levels repel.</li>
+<li>ENCUT sets VASP's plane-wave basis: set it explicitly, never below the largest ENMAX, and test what you report.</li>
+<li>Numerical convergence is not physical accuracy.</li>
+</ul>
+<p class="next">Next: <x-lec n="4">Lecture 4</x-lec> uses these tools on atoms: where s, p and d orbitals, and “core” and “valence”, come from.</p>
+</section>

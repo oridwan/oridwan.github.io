@@ -40,3 +40,21 @@ An interactive guide to crystallographic symmetry (`symmetry/index.html`) plus o
 Regenerate after changing the template or the data: `python3 scripts/build_symmetry.py` (needs `pyxtal` and
 `spglib`). Settings follow the International Tables / Bilbao defaults: unique axis b, origin choice 2,
 hexagonal axes for R groups.
+
+## DFT course (`dft/`)
+
+An interactive course, *Density Functional Theory and VASP*: a course home (`dft/index.html`) and one page
+per lecture (`dft/<slug>/index.html`). The plan and syllabus are in `dft/PLAN.md`.
+
+| File | Purpose |
+| --- | --- |
+| `dft/course.json` | Course metadata and the ordered lecture list (slug, title, title tag, status, dates, description, keywords, further-reading list). |
+| `dft/terms.json` | Key terms, VASP tags and references shared by all lectures. |
+| `dft/_src/<slug>.html` | The authored body of each lecture (markup documented in `scripts/build_dft.mjs`). |
+| `dft/deck.js`, `dft/dft.css` | Slide rail, presentation mode (`P`), popovers, equation legends, lazy figures. |
+| `dft/figs/<slug>.js` | Interactive figures of one lecture, one exported function per `<figure data-fig>`. |
+| `dft/index.html`, `dft/<slug>/index.html` | **Generated** — do not edit by hand. |
+
+Build after any change: `npm install` once, then `node scripts/build_dft.mjs` (renders math with KaTeX,
+writes the pages and refreshes `sitemap.xml`). `node scripts/build_dft.mjs --demo` also builds a local
+component demo at `dft/_demo/` (git-ignored).

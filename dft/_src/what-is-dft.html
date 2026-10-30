@@ -1,0 +1,396 @@
+<!-- Fact-checked 2026-10-30. Sources (checked, not cited on the page):
+  Ridwan et al. 2026, Fig. 7: carbon frameworks 0.197 and 0.201 eV/atom; mct-cI192 0.211 eV/atom.
+  Kohn 1999 (Nobel lecture, RMP 71, 1253): exponential wall M = p^(3N), 3 <= p <= 10, 10^9 limit, ~10 active
+    electrons; density as basic variable; Kohn-Sham cost N^2 to N^3.
+  Jones 2025 (sec. 1, 4, 5.3-5.5): HK theorem, ladder cost, fitted vs constraint-based functionals, weaknesses.
+  Kaplan, Levy and Perdew 2023 (sec. I, III.B, eqs. 6, 9): KS energy decomposition, only E_xc approximated,
+    ladder accuracy, KS eigenvalue gaps.
+  Kato cusp condition / E. B. Wilson's argument: dn/dr = -2Z n at a nucleus (spherical average).
+  Uniform-gas exchange per electron -(3/4)(3n/pi)^(1/3) Ha; correlation from Ceperley-Alder QMC.
+  Band gaps: Si PBE ~0.6 eV vs 1.17 eV measured (0 K); NiO LDA a few tenths of an eV vs ~4 eV.
+  VASP Wiki (2026-10-30): input/output files, PAW, ENCUT, ISMEAR, ISTART, INIWAV, ICHARG, NELMDL, NSW,
+    IBRION, POTIM, EDIFF(G), LCHARG, LWAVE, KSPACING, OSZICAR columns; POTCAR Si ENMAX 245.345 eV, ZVAL 4.
+  Lejaeghere et al. 2016: 15 codes, 71 elemental crystals, PBE equations of state agree like experiments.
+  CODATA 2022: hartree, rydberg, bohr, Si lattice parameter 5.431020511 A.
+  Every number in a figure is checked in scripts/test_dft.mjs. -->
+<div class="notes">
+<p>This first lecture is a map of the subject. It answers three questions: what a DFT calculation computes, why the method can work at all, and what VASP does with your input files when you press run. Every idea here returns later in a lecture of its own; the links show where.</p>
+</div>
+
+<section class="deck-slide" id="the-question">
+<h2>What kind of question does DFT answer?</h2>
+<p class="claim">Is a new structure more stable than the known ones? DFT answers with energies.</p>
+<figure class="fig">
+<div class="fig-body" data-snapshot="carbon"></div>
+<figcaption><span class="data-label">Research data</span>Eight carbon frameworks, energy per atom above graphite, computed with VASP and the r²SCAN functional (Ridwan et al. 2026, Fig. 7).</figcaption>
+</figure>
+<div class="notes">
+<p>Here is a real question from my own research. My co-authors and I used an AI method to generate over 1,700 frameworks of sp² carbon, then ranked 100 of those whose graphene-like sheets curve everywhere like a saddle. The ranking uses one number per structure: its energy per atom, measured from graphite, the most stable form of carbon. The two lowest are new, at 0.197 and 0.201 eV per atom above graphite. The lowest such structure reported before, mct-cI192, sits at 0.211 eV per atom, so the new ones are 0.014 and 0.010 eV per atom lower.</p>
+<p>Two choices in that ranking are worth noticing. Energies are compared <b>per atom</b>, because the structures have different numbers of atoms in their cells. And they are measured <b>from graphite</b>, because the total energy a DFT code prints has no absolute meaning on its own; only differences between calculations done the same way do (the outputs slide explains why).</p>
+<p>The question "is it more stable?" has become a question about energies, and the differences that decide the ranking are about a hundredth of an electronvolt per atom. By the end of this course you should be able to judge whether a calculation is precise enough to resolve a difference that small. This lecture starts with where such energies come from.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="exponential-wall">
+<h2>Why not solve the Schrödinger equation exactly?</h2>
+<p class="claim">The exact many-electron wavefunction is too big: its size grows exponentially with the number of electrons.</p>
+<figure class="fig side" data-fig="wall">
+<div class="fig-body" data-snapshot="wall"></div>
+<figcaption><b>The exponential wall.</b> Describing Ψ takes about p<sup>3N</sup> numbers, with p between 3 and 10 per coordinate. The orange line applies the same count to a function of three coordinates.</figcaption>
+</figure>
+<div class="notes">
+<p>The energy of a structure is decided by its electrons: how they arrange themselves around the nuclei. Electrons obey quantum mechanics, so in principle we solve the Schrödinger equation for all of them at once. Its solution, the many-electron wavefunction \(\Psi(\mathbf r_1, \dots, \mathbf r_N)\), is one function of the positions of all \(N\) electrons: \(3N\) coordinates. (Spin adds a label to each electron but no new coordinates.)</p>
+<p>How much information is that? Describe the function along each coordinate by \(p\) numbers, for example its values at \(p\) points. A function of one coordinate then needs \(p\) numbers, a function of two needs \(p \times p\), and a function of \(3N\) coordinates needs</p>
+\[ M = p^{3N}. \]
+<p>Walter Kohn made this estimate in his 1998 Nobel lecture, with \(p\) between 3 and 10. Take a computer that can handle \(M = 10^9\) numbers and the most modest \(p = 3\). Then \(3N \log_{10} 3 \le 9\), so \(N \le 6\): six electrons. For \(N = 100\), \(M = 3^{300} \approx 10^{143}\). Only the order of magnitude of such estimates means anything, but no improvement in computers closes a gap of a hundred orders of magnitude. Kohn called it the <x-term k="exponential-wall">exponential wall</x-term>: wavefunction methods of chemical accuracy are limited to molecules with about ten chemically active electrons. Move the slider to see where the wall stands for other values of p.</p>
+<p>The orange line shows the way out. A function of three coordinates needs \(p^3\) numbers, whatever the number of electrons. DFT is built on such a function, the electron density. It does not make the calculation free: Kohn–Sham DFT still uses one orbital per electron, so its cost grows as a power of the system size, roughly the square to the cube of the number of atoms. But it grows as a power, not exponentially. <x-lec n="5"></x-lec> returns to the wall.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="what-is-dft">
+<h2>What does DFT use instead?</h2>
+<p class="claim">The electron density: a function of only three coordinates that fixes the ground state.</p>
+<div class="cols wl">
+<div class="eqbox">
+\[ \eqterm{in}{\{Z_I,\ \mathbf R_I\}} \;\xrightarrow{\ \text{DFT}\ }\; \eqterm{E}{E_0}, \ \eqterm{n}{n_0(\mathbf r)} \]
+<ul class="eq-legend">
+<li data-eq="in"><b>In:</b> the atomic number \(Z_I\) and position \(\mathbf R_I\) of every nucleus (and the cell, for a crystal).</li>
+<li data-eq="E"><b>Out:</b> the ground-state total energy for those nuclei. Forces, structures and stabilities follow from it.</li>
+<li data-eq="n"><b>Out:</b> the ground-state electron density, electrons per unit volume at each point \(\mathbf r\).</li>
+</ul>
+<p class="eq-hint">Click a term or a line of the legend.</p>
+</div>
+<ul class="tiles" style="--n: 1">
+<li class="tile"><span class="k">Wavefunction</span>\(\Psi(\mathbf r_1, \dots, \mathbf r_N)\): \(3N\) coordinates. Its size grows exponentially with \(N\).</li>
+<li class="tile acc"><span class="k">Density</span>\(n(\mathbf r)\): 3 coordinates, for any number of electrons.</li>
+</ul>
+</div>
+<div class="notes">
+<p><x-term k="density-functional-theory">Density functional theory</x-term> (DFT) replaces the wavefunction by the <x-term k="electron-density">electron density</x-term> \(n(\mathbf r)\), the number of electrons per unit volume near the point \(\mathbf r\). It follows from \(\Psi\) by integrating out all electrons but one,</p>
+\[ n(\mathbf r) = N \int |\Psi(\mathbf r, \mathbf r_2, \dots, \mathbf r_N)|^2\, d\mathbf r_2 \cdots d\mathbf r_N , \qquad \int n(\mathbf r)\, d\mathbf r = N, \]
+<p>with the spins summed over. However many electrons there are, it is a function of three coordinates.</p>
+<p>Why should three coordinates be enough? In 1964 Pierre Hohenberg and Walter Kohn proved that the <x-term k="ground-state">ground-state</x-term> density determines the external potential \(v(\mathbf r)\), the attraction of the nuclei, up to a constant. The rest of the Hamiltonian, the kinetic energy and the repulsion between electrons, is the same for every system. So the density fixes the Hamiltonian, and with it the ground-state energy and every other property. <x-lec n="8"></x-lec> proves the theorem.</p>
+<p>For atoms, molecules and solids there is a simple way to see it, an argument due to E. Bright Wilson. The density has a sharp peak, a cusp, at every nucleus, which gives the positions \(\mathbf R_I\). How steeply it falls away from the cusp gives the nuclear charge: averaged over directions, \(dn/dr = -2Z_I\, n\) right at the nucleus. And the integral of \(n\) gives \(N\). Positions, charges and the number of electrons are all the Hamiltonian contains. The Hohenberg–Kohn theorem proves the same for any external potential, not only that of point nuclei.</p>
+<p>A DFT calculation therefore takes the atomic numbers and positions of the nuclei and returns the ground-state energy and density. The energy \(E_0\) is the total energy for those fixed nuclei: the energy of the electrons plus the repulsion between the nuclei.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="one-approximation">
+<h2>If DFT is exact, why do results depend on the functional?</h2>
+<p class="claim">Only one piece of the energy, exchange–correlation, is unknown and must be approximated.</p>
+<div class="eqbox">
+\[ E[n] = \eqterm{Ts}{T_s[n]} + \eqterm{U}{U[n]} + \eqterm{ext}{\int v(\mathbf r)\, n(\mathbf r)\, d\mathbf r} + \eqterm{xc}{E_{xc}[n]} \]
+<ul class="eq-legend">
+<li class="step" data-eq="Ts"><b>Kinetic energy</b> of non-interacting electrons with the same density, computed exactly from the Kohn–Sham orbitals.</li>
+<li class="step" data-eq="U"><b>Hartree energy</b>: the classical repulsion of the density with itself. Exact.</li>
+<li class="step" data-eq="ext"><b>Attraction to the nuclei</b>, through their potential \(v(\mathbf r)\). Exact.</li>
+<li class="step" data-eq="xc"><b>Exchange–correlation energy</b>: everything the other terms leave out. Unknown, so it is approximated: LDA, PBE, SCAN, HSE…</li>
+</ul>
+<p class="eq-hint">The Kohn–Sham form of the energy of the electrons; the repulsion between the nuclei is added to it.</p>
+</div>
+<div class="notes">
+<p>The Hohenberg–Kohn theorem says the energy is a functional of the density, \(E[n]\), but not what that functional is. Kohn and Sham made it usable in 1965. They imagined a stand-in system of non-interacting electrons with the same density as the real one, described by orbitals \(\varphi_i\) with \(n = \sum_i |\varphi_i|^2\), and split the energy into the four pieces on the slide:</p>
+\[ T_s = \sum_i \Big\langle \varphi_i \Big| -\tfrac12\nabla^2 \Big| \varphi_i \Big\rangle, \qquad U = \frac12 \iint \frac{n(\mathbf r)\, n(\mathbf r')}{|\mathbf r - \mathbf r'|}\, d\mathbf r\, d\mathbf r', \qquad \int v\, n\, d\mathbf r, \qquad E_{xc}. \]
+<p>(Atomic units: energies in hartree, lengths in bohr.) The first three are known exactly in terms of the orbitals or the density: the kinetic energy of the stand-in electrons, the classical electrostatic energy of the density with itself, and the attraction to the nuclei. The fourth, the <x-term k="exchange-correlation">exchange–correlation energy</x-term>, is defined as everything else. It contains the energy lowering from the Pauli principle (exchange, Lecture 6), the way electrons avoid each other (correlation), and the part of the true kinetic energy that the stand-in system misses. It must also cancel the spurious repulsion of each electron with its own charge, which \(U\) contains.</p>
+<p>The exact form of \(E_{xc}\) is unknown, and it is the only piece that must be approximated. So DFT is <b>exact in principle and approximate in practice</b>, and the approximation has a name: the exchange–correlation functional. Choosing it is the main physical choice you make in a DFT calculation (<x-lec n="10"></x-lec>, <x-lec n="11"></x-lec>).</p>
+<details class="deeper"><summary>The Kohn–Sham equations: what VASP actually solves</summary>
+<p>Minimizing \(E[n]\) over the orbitals, while keeping them orthonormal, gives one-electron equations, the Kohn–Sham equations:</p>
+\[ \Big[-\tfrac12\nabla^2 + v(\mathbf r) + v_H(\mathbf r) + v_{xc}(\mathbf r)\Big]\varphi_i(\mathbf r) = \varepsilon_i\,\varphi_i(\mathbf r), \qquad v_H(\mathbf r) = \int \frac{n(\mathbf r')}{|\mathbf r - \mathbf r'|}\,d\mathbf r', \qquad v_{xc}(\mathbf r) = \frac{\delta E_{xc}}{\delta n(\mathbf r)}. \]
+<p>Each electron moves in the attraction of the nuclei, the electrostatic potential of the whole density (the Hartree potential \(v_H\)), and the exchange–correlation potential. The N orbitals with the lowest \(\varepsilon_i\) are occupied. Because \(v_H\) and \(v_{xc}\) depend on the density, and the density on the orbitals, the equations are solved by the self-consistent loop of the run slide. <x-lec n="9"></x-lec> derives them.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="jacobs-ladder">
+<h2>What does an exchange–correlation functional look like?</h2>
+<p class="claim">Functionals form a ladder: higher rungs use more ingredients, are generally more accurate, and cost more.</p>
+<div class="cols wl">
+<ol class="tiles ladder" style="--n: 1" reversed>
+<li class="tile"><span class="k">Rung 4 · hybrid</span>adds a fraction of exact exchange (short-range only in HSE06) · <b>PBE0, HSE06</b></li>
+<li class="tile"><span class="k">Rung 3 · meta-GGA</span>adds the kinetic-energy density of the orbitals · <b>SCAN, r²SCAN</b></li>
+<li class="tile"><span class="k">Rung 2 · GGA</span>adds the gradient of the density, \(\nabla n\) · <b>PBE</b></li>
+<li class="tile"><span class="k">Rung 1 · local (LSDA)</span>uses the density at each point, \(n(\mathbf r)\) · <b>LDA</b></li>
+</ol>
+<div class="eqbox">
+\[ E_{xc} \approx \int n(\mathbf r)\; \eqterm{exc}{\varepsilon_{xc}\big(n, \nabla n, \tau\big)}\; d\mathbf r \]
+<ul class="eq-legend">
+<li data-eq="exc"><b>Energy per electron</b> at each point, built from local ingredients: the density, its gradient, and the orbitals' kinetic-energy density \(\tau\). Each rung allows one more.</li>
+</ul>
+</div>
+</div>
+<div class="notes">
+<p>Most approximations share one form, the formula on the slide: \(E_{xc}\) is an integral over space of the density times an exchange–correlation energy per electron, \(\varepsilon_{xc}\), which depends on ingredients evaluated at each point. John Perdew named the resulting hierarchy <x-term k="jacobs-ladder">Jacob's ladder</x-term>. The rungs differ in which ingredients \(\varepsilon_{xc}\) may use.</p>
+<ul>
+<li><b>LDA</b> uses only \(n(\mathbf r)\). It takes \(\varepsilon_{xc}\) from the uniform electron gas, a model metal of constant density. Its exchange part is known exactly, \(\varepsilon_x = -\tfrac34\,(3n/\pi)^{1/3}\) hartree with \(n\) in electrons per bohr³; its correlation part comes from accurate quantum Monte Carlo calculations. Each point of a real material is treated as if it were a piece of uniform gas with the local density.</li>
+<li><b>GGA</b> adds the gradient \(\nabla n\), which tells \(\varepsilon_{xc}\) how fast the density changes nearby. PBE, published in 1996, is the GGA most used for solids.</li>
+<li><b>Meta-GGA</b> adds the kinetic-energy density of the occupied orbitals, \(\tau = \tfrac12\sum_i |\nabla\varphi_i|^2\). It lets the functional recognize regions dominated by a single orbital, such as a covalent bond, which look nothing like a uniform gas. SCAN and r²SCAN are meta-GGAs.</li>
+<li><b>Hybrids</b> replace a fraction of the approximate exchange by exact Hartree–Fock exchange computed from the orbitals (Lecture 6): 25% in PBE0, and 25% at short range only in HSE06. Exact exchange is not of the integral form on the slide; it is nonlocal, which is why hybrids cost much more in a plane-wave code.</li>
+</ul>
+<p>Higher rungs are generally more accurate, and always more expensive. In this course we use PBE most of the time, r²SCAN in places, and hybrids such as HSE06 where band gaps matter (<x-lec n="26"></x-lec>, <x-lec n="27"></x-lec>).</p>
+<details class="deeper"><summary>Is DFT really “first principles”?</summary>
+<p>“<x-term k="first-principles">First principles</x-term>” describes the inputs: no experimental data on the system being studied. It does not guarantee accuracy. Perdew's group built PBE and SCAN without fitting to experiment, by requiring the approximation to obey exact properties of the true functional, for instance the exact limit of a uniform gas and known scaling laws. Other functionals, such as B3LYP in chemistry, contain parameters fitted to experimental data for a set of molecules. They can be excellent for systems like the ones they were fitted to, and should be used with caution for systems of a different kind, such as metals.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="what-it-predicts">
+<h2>What can a DFT calculation predict?</h2>
+<p class="claim">Most properties follow from one map: the energy as a function of the atomic positions.</p>
+<table class="tbl">
+<thead><tr><th>What you want</th><th>What DFT provides</th><th>Lecture</th></tr></thead>
+<tbody>
+<tr><td>Equilibrium structure, lattice constants</td><td>Minimum of the energy; forces and stress</td><td><x-lec n="21"></x-lec>, <x-lec n="22"></x-lec></td></tr>
+<tr><td>Which phase or compound is stable</td><td>Energy differences between structures</td><td><x-lec n="20"></x-lec></td></tr>
+<tr><td>Vibrations, dynamical stability</td><td>Second derivatives of the energy</td><td><x-lec n="31"></x-lec></td></tr>
+<tr><td>Migration and reaction barriers</td><td>Saddle points of the energy</td><td><x-lec n="32"></x-lec></td></tr>
+<tr><td>Behaviour at finite temperature</td><td>Forces along a trajectory</td><td><x-lec n="33"></x-lec></td></tr>
+<tr><td>Magnetic moments and ordering</td><td>Spin-resolved densities</td><td><x-lec n="23"></x-lec>, <x-lec n="24"></x-lec></td></tr>
+<tr><td>Band structure, density of states</td><td>Kohn–Sham eigenvalues, read with care</td><td><x-lec n="29"></x-lec>, <x-lec n="30"></x-lec></td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>Because DFT gives the energy for any arrangement of the nuclei, it gives the whole <x-term k="potential-energy-surface">potential-energy surface</x-term> \(E(\{\mathbf R_I\})\). Most properties are features of that surface. Structures are its minima. The force on a nucleus is minus its slope, \(\mathbf F_I = -\partial E/\partial \mathbf R_I\), which VASP computes directly from the converged density without extra calculations (Lecture 21). Vibrational frequencies come from its curvature, and barriers from its saddle points: the lowest passes between two minima. None of this needs experimental input on the material.</p>
+<p>The last two rows are different. Magnetism and band structures come from the electronic structure itself, not from the shape of the energy surface, and band structures in particular must be read with care, as the next slide explains.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="where-it-struggles">
+<h2>Where does DFT struggle?</h2>
+<p class="claim">Its known weaknesses are not numerical, so no convergence setting removes them.</p>
+<ul class="tiles">
+<li class="tile"><h3><x-term k="self-interaction-error">Self-interaction</x-term></h3><p>An electron spuriously interacts with itself, clearest in a one-electron system. <x-lec n="10"></x-lec>, <x-lec n="25"></x-lec></p></li>
+<li class="tile"><h3>Band gaps</h3><p>Kohn–Sham gaps underestimate measured gaps: silicon about 0.6 eV with PBE, 1.17 eV measured. <x-lec n="30"></x-lec>, <x-lec n="27"></x-lec></p></li>
+<li class="tile"><h3><x-term k="dispersion">Dispersion</x-term></h3><p>LDA and GGAs miss the long-range attraction between separated atoms or molecules. <x-lec n="28"></x-lec></p></li>
+<li class="tile"><h3><x-term k="strong-correlation">Strong correlation</x-term></h3><p>Some transition-metal and rare-earth compounds are described poorly; a Hubbard U is a common fix. <x-lec n="25"></x-lec></p></li>
+</ul>
+<div class="notes">
+<p>The common approximations have known, systematic weaknesses. Each has a physical cause.</p>
+<ul>
+<li><b>Self-interaction.</b> A hydrogen atom has one electron, so there is no repulsion between electrons at all. But the Hartree energy \(U\) of its density is not zero: for the 1s density it is 5/16 hartree, 8.5 eV, the electron repelling its own charge cloud. The exact \(E_{xc}\) cancels this exactly. Approximate functionals cancel most of it but not all, and what remains pushes electrons to spread out too much over too many atoms.</li>
+<li><b>Band gaps.</b> The gap between the highest occupied and lowest empty Kohn–Sham eigenvalue is not the measured gap, even with the exact functional, and with LDA or PBE it is much smaller: about 0.6 eV for silicon, against 1.17 eV measured at low temperature.</li>
+<li><b>Dispersion.</b> The van der Waals attraction between separated atoms comes from correlated fluctuations of their electrons far apart. A functional that looks only at the density near each point cannot see it. PBE, for example, barely binds the layers of graphite.</li>
+<li><b>Strong correlation.</b> In some compounds of transition metals and rare earths, localized d or f electrons are poorly described. LDA gives nickel oxide a gap of a few tenths of an electronvolt; the measured gap is about 4 eV.</li>
+</ul>
+<p>None of these errors goes away with a larger basis or more k-points. They belong to the approximate functional, and for band gaps partly to reading Kohn–Sham eigenvalues as excitation energies. That is why this course asks two separate questions about every number: is it converged, and is the approximation right for this system?</p>
+</div>
+</section>
+
+<section class="deck-slide" id="what-is-vasp">
+<h2>What is VASP?</h2>
+<p class="claim">A DFT code for periodic cells that expands the orbitals in plane waves and uses PAW.</p>
+<ul class="tiles" style="--n: 3">
+<li class="tile"><span class="k">Kohn–Sham DFT</span><h3>Solves the Kohn–Sham equations</h3><p>for a cell that repeats in all three directions.</p></li>
+<li class="tile"><span class="k">Basis</span><h3>Plane waves</h3><p>The number of plane waves is set by the cutoff <x-tag>ENCUT</x-tag>. <x-lec n="17"></x-lec></p></li>
+<li class="tile"><span class="k">Near the nuclei</span><h3>PAW and a frozen core</h3><p>Smooth pseudo-orbitals; the core electrons are fixed by the POTCAR. <x-lec n="18"></x-lec></p></li>
+</ul>
+<div class="notes">
+<p>VASP, the Vienna Ab initio Simulation Package, is developed at the University of Vienna. It solves the <x-term k="kohn-sham-equations">Kohn–Sham equations</x-term> for a cell that repeats periodically in all three directions, which is how it describes a crystal. It expands each orbital in a <x-term k="plane-wave-basis">plane-wave basis</x-term>, a sum of waves \(e^{i(\mathbf k + \mathbf G)\cdot\mathbf r}\) that fit the periodic cell. Only waves whose kinetic energy \(\hbar^2|\mathbf k + \mathbf G|^2/2m\) lies below a cutoff are kept, and that cutoff is <x-tag>ENCUT</x-tag>: raising it adds shorter wavelengths and makes the basis more complete.</p>
+<p>Near each nucleus the orbitals oscillate rapidly, and representing those wiggles would take an enormous number of plane waves. VASP avoids this with the <x-term k="paw">projector augmented-wave method</x-term> (PAW). The calculation works with smooth pseudo-orbitals, which a moderate number of plane waves can represent, and reconstructs the true orbitals near each atom from atomic functions when needed. The innermost electrons are not computed at all: they are held in the configuration of the isolated atom used to generate the PAW dataset, the <x-term k="frozen-core">frozen-core approximation</x-term>. Which electrons count as core is decided by the POTCAR you choose.</p>
+<p>VASP is licensed software: academic licences go to research groups, whose users must be registered. If you publish VASP results, cite the method papers it asks for, among them Kresse and Furthmüller (1996) and Kresse and Joubert (1999). Other DFT codes include Quantum ESPRESSO, ABINIT, CASTEP and GPAW. The physics in this course applies to all of them; only the input tags are VASP's. When 15 solid-state codes were compared on the PBE equations of state of 71 elemental crystals, the recent codes agreed with each other about as well as high-precision experiments agree with each other. That is why this course spends its time on approximations and settings rather than on the choice of code.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="inputs">
+<h2>What goes into a VASP calculation?</h2>
+<p class="claim">Four files: where the atoms are, what they are, which method, and which k-points.</p>
+<ul class="tiles keep2">
+<li class="tile"><span class="k">Where the atoms are</span><h3><code class="file">POSCAR</code></h3><p>Lattice vectors, the species and number of atoms, and their positions (fractional or Cartesian).</p></li>
+<li class="tile"><span class="k">What they are</span><h3><code class="file">POTCAR</code></h3><p>One PAW dataset per species, in POSCAR's order. Its header gives the valence electrons (ZVAL) and a suggested cutoff (ENMAX).</p></li>
+<li class="tile"><span class="k">Which method</span><h3><code class="file">INCAR</code></h3><p>Lines of <code>TAG = value</code> choosing the method and its settings. Tags you leave out take default values.</p></li>
+<li class="tile"><span class="k">Which k-points</span><h3><code class="file">KPOINTS</code></h3><p>How the Brillouin zone is sampled. Optional: without it, VASP builds a mesh from <x-tag>KSPACING</x-tag>.</p></li>
+</ul>
+<div class="notes">
+<p>These four files define the calculation. In INCAR, text after <code>#</code> or <code>!</code> is a comment. POSCAR starts with a scaling factor that converts the lattice vectors to ångströms. KPOINTS lists the <x-term k="k-points">k-points</x-term>: in a crystal the orbitals are labelled by a wavevector \(\mathbf k\), and the density is an average over all of them, which VASP approximates by a finite mesh of sample points. <x-lec n="15"></x-lec> explains how to choose it.</p>
+<p>The roles overlap more than the file names suggest. The POTCAR also fixes which electrons are frozen in the core and, unless INCAR sets <x-tag>GGA</x-tag> or METAGGA, the exchange–correlation functional: a PBE POTCAR gives a PBE calculation. INCAR can set physical choices too, such as spin polarization. Lab 0 opens all four files for silicon.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="run">
+<h2>What happens when you press run?</h2>
+<p class="claim">An electronic loop finds the ground state; an ionic loop around it moves the nuclei.</p>
+<figure class="fig run-fig" data-fig="run">
+<div class="fig-body" data-snapshot="run"></div>
+</figure>
+<div class="notes">
+<p>A VASP run is two nested loops. The electronic loop, the <x-term k="self-consistent-field">self-consistent field</x-term> (SCF) loop, finds the ground-state density for fixed nuclei. It is a loop because the Kohn–Sham potential depends on the density, which depends on the orbitals, which depend on the potential. The ionic loop around it moves the nuclei and runs the electronic loop again. In a static run such as Lab 0 the ionic loop is skipped. In the figure, click a box or step through a static run or a relaxation; the number of electronic steps it shows is illustrative. Step by step, with VASP's defaults:</p>
+<ol class="run-steps">
+<li data-step="read"><h3>1. Read the inputs.</h3><p>VASP reads INCAR, POSCAR, POTCAR and KPOINTS (or uses <x-tag>KSPACING</x-tag>), then sets up the plane-wave basis and the k-point mesh.</p></li>
+<li data-step="guess"><h3>2. Make a starting guess.</h3><p>With no WAVECAR present, <x-tag>ISTART</x-tag> = 0: the orbitals start from random numbers (<x-tag>INIWAV</x-tag> = 1) and the density from a superposition of atomic charge densities (<x-tag>ICHARG</x-tag> = 2). For the first few steps (<x-tag>NELMDL</x-tag>) the Hamiltonian built from this density is held fixed while the orbitals settle.</p></li>
+<li data-step="solve"><h3>3. Solve the Kohn–Sham equations.</h3><p>With the potential held fixed, VASP improves the orbitals and their energies, the eigenvalues, at every k-point (<x-lec n="12"></x-lec>).</p></li>
+<li data-step="density"><h3>4. Build a new density.</h3><p>The occupied orbitals give a new density, which is mixed with the previous one to form the input of the next step (<x-lec n="12"></x-lec>).</p></li>
+<li data-step="converged"><h3>5. Converged?</h3><p>Each electronic step writes one line to OSZICAR. The loop stops when the changes in both the free energy and the band-structure energy fall below <x-tag>EDIFF</x-tag>, or after <x-tag>NELM</x-tag> steps.</p></li>
+<li data-step="forces"><h3>6. Energy and forces.</h3><p>From the converged density VASP evaluates the total energy and the forces on the nuclei and, depending on the settings, the stress on the cell (<x-lec n="21"></x-lec>).</p></li>
+<li data-step="ionic"><h3>7. Move the nuclei?</h3><p>If <x-tag>NSW</x-tag> &gt; 0, the nuclei are moved as <x-tag>IBRION</x-tag> prescribes and the electronic loop runs again. Unless you set IBRION, it defaults to 0, molecular dynamics, which always takes NSW steps and needs a time step, <x-tag>POTIM</x-tag>. A relaxation (IBRION = 1, 2 or 3) stops when <x-tag>EDIFFG</x-tag> is satisfied or after NSW steps. With the default NSW = 0 the nuclei stay put: a single-point calculation.</p></li>
+<li data-step="write"><h3>8. Write the outputs.</h3><p>OSZICAR, OUTCAR, CONTCAR and vasprun.xml, and by default CHGCAR and WAVECAR (<x-tag>LCHARG</x-tag>, <x-tag>LWAVE</x-tag>).</p></li>
+</ol>
+</div>
+</section>
+
+<section class="deck-slide" id="outputs">
+<h2>What comes out of a VASP run?</h2>
+<p class="claim">Read OSZICAR to follow the run, OUTCAR for the details, CONTCAR to continue.</p>
+<table class="tbl">
+<thead><tr><th>File</th><th>What it holds</th><th>Open it to</th></tr></thead>
+<tbody>
+<tr><td><code>OSZICAR</code></td><td>One line per electronic step, a summary line per ionic step</td><td>See whether the loops converge</td></tr>
+<tr><td><code>OUTCAR</code></td><td>Detailed, human-readable output of the whole run</td><td>Find energies, forces, stress, warnings</td></tr>
+<tr><td><code>CONTCAR</code></td><td>The last structure, in POSCAR format</td><td>Continue from where the run stopped</td></tr>
+<tr><td><code>vasprun.xml</code></td><td>Machine-readable output of the run</td><td>Post-process with pymatgen or ASE</td></tr>
+<tr><td><code>CHGCAR</code></td><td>The structure, the charge density and the PAW occupancies</td><td>Restart (<x-tag>ICHARG</x-tag> = 1), band structures</td></tr>
+<tr><td><code>WAVECAR</code></td><td>Binary file of orbitals, eigenvalues, occupations</td><td>Restart from converged orbitals (<x-tag>ISTART</x-tag> = 1)</td></tr>
+</tbody>
+</table>
+<div class="notes">
+<p>Six files cover almost everything you will look at. OSZICAR is short enough to read in full, and it is the first file to open after any run.</p>
+<details class="deeper"><summary>Reading one line of OSZICAR</summary>
+<p>The electronic steps are printed under the header <code>N E dE d eps ncg rms rms(c)</code>: the step number, the current free energy, its change since the previous step, the change in the band-structure energy, the number of Hamiltonian evaluations on a wavefunction, the norm of the residual of the trial orbitals (their approximate error), and the difference between input and output charge density. At the end of each ionic step a line gives <code>F</code>, the total free energy, and <code>E0</code>, the energy extrapolated to zero smearing.</p>
+<p>Both are measured not from zero but from the isolated reference atoms for which the POTCAR files were made. That is why the energy of a crystal comes out as a few eV per atom, not the thousands of eV that all its electrons would have, and why only differences between calculations with the same POTCARs mean anything (<x-lec n="20"></x-lec>). <x-lec n="12"></x-lec> reads every column in detail.</p>
+</details>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-silicon">
+<h2>Lab 0: what will you run?</h2>
+<p class="claim">One static calculation of silicon: two atoms in the cell, four short input files.</p>
+<div class="cols-3 fit">
+<div><p class="file-k">INCAR</p>
+<pre class="code"><x-tag>ENCUT</x-tag>  = 300
+<x-tag>ISMEAR</x-tag> = 0
+<x-tag>SIGMA</x-tag>  = 0.05
+<x-tag>EDIFF</x-tag>  = 1E-6</pre></div>
+<div><p class="file-k">POSCAR</p>
+<pre class="code">Si, diamond structure
+5.431
+  0.0  0.5  0.5
+  0.5  0.0  0.5
+  0.5  0.5  0.0
+Si
+2
+Direct
+  0.00  0.00  0.00
+  0.25  0.25  0.25</pre></div>
+<div><p class="file-k">KPOINTS</p>
+<pre class="code">Gamma-centred 8x8x8
+0
+Gamma
+8 8 8</pre>
+<p class="file-k" style="margin-top: .8em !important">POTCAR</p>
+<p class="small">The PBE PAW dataset <code>Si</code> from your group's licensed VASP installation.</p></div>
+</div>
+<p class="small muted">Crystalline silicon in the diamond structure, primitive cell. The point is to watch the loop of the run figure happen, not yet to get a converged number.</p>
+<div class="notes">
+<p><b>INCAR.</b> Set the plane-wave cutoff explicitly, so that every calculation you want to compare uses the same basis; 300 eV is above the 245.345 eV ENMAX of the silicon POTCAR. <code>ISMEAR = 0</code> with <code>SIGMA = 0.05</code> eV selects Gaussian smearing with a small width. Silicon has a band gap, so every state should be either full or empty. VASP's default smearing (ISMEAR = 1) is designed for metals and can give unphysical occupations in a material with a gap; small Gaussian smearing is the safe choice (<x-lec n="16"></x-lec>). <code>EDIFF = 1E-6</code> stops the SCF loop when the energy and the eigenvalue sum change by less than 10<sup>−6</sup> eV. No functional is set, so VASP takes PBE from the POTCAR.</p>
+<p><b>POSCAR.</b> Line 1 is a comment. Line 2 is the scaling factor in Å, here the measured lattice parameter of silicon at room temperature, 5.431 Å. Lines 3–5 are the primitive vectors of the face-centred cubic lattice in units of the scaling factor. Lines 6–7 give one species and two atoms. The last lines are fractional coordinates: the second atom sits a quarter of the way along the cube diagonal.</p>
+<p><b>KPOINTS.</b> The 0 on line 2 asks VASP to generate the mesh; line 3 makes it Γ-centred; line 4 asks for 8 subdivisions along each reciprocal lattice vector.</p>
+<p><b>POTCAR.</b> The silicon dataset treats 4 electrons per atom as valence, the 3s² 3p² shell, and freezes the 10 core electrons. Its ENMAX is 245.345 eV in the potpaw.64 set. This site never shows POTCAR contents, which are part of the licensed VASP distribution.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="lab-silicon-read">
+<h2>Lab 0: what should you look for?</h2>
+<p class="claim">Watch the SCF loop converge, then record the energy and everything that produced it.</p>
+<div class="cols top">
+<ol>
+<li><b>OSZICAR</b>: count the electronic steps. Watch <code>dE</code> and <code>d eps</code> shrink until both fall below <x-tag>EDIFF</x-tag>.</li>
+<li><b>Last line of OSZICAR</b>: note <code>F</code> and <code>E0</code>, the free energy and the energy extrapolated to zero smearing.</li>
+<li><b>Reproducibility</b>: note the VASP version and the first line of the POTCAR.</li>
+</ol>
+<div class="callout vasp"><p class="callout-k">Bring back</p>
+<p>OSZICAR, OUTCAR, the VASP version and the POTCAR's first line. We read your OSZICAR line by line in <x-lec n="12"></x-lec>.</p></div>
+</div>
+<p class="small muted">None of these settings is converged yet: <x-lec n="19"></x-lec> tests ENCUT and the k-mesh properly.</p>
+<div class="notes">
+<p>Lab outputs on this site always come from real runs, never invented ones. The first line of a POTCAR names the dataset and its date, which is what another person needs to reproduce your number. The OSZICAR columns are explained in the “Reading one line of OSZICAR” panel on the outputs slide.</p>
+<p>Before you run, predict: the first few electronic steps (five, by default) change the energy by large amounts, because the Hamiltonian is held fixed while random orbitals settle. After that, each step should shrink the change by a roughly constant factor. Check both predictions against your OSZICAR.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="units">
+<h2>Which units does DFT use?</h2>
+<p class="claim">VASP speaks electronvolts and ångströms; theory papers speak hartrees and bohrs.</p>
+<figure class="fig units-fig" data-fig="units">
+<div class="cols">
+<div class="fig-body">
+<table class="tbl units-table">
+<thead><tr><th>Quantity</th><th>Value</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>1 hartree, \(E_\mathrm{h}\)</td><td>27.211386245981 eV</td><td>measured</td></tr>
+<tr><td>1 rydberg, \(E_\mathrm{h}/2\)</td><td>13.605693122990 eV</td><td>measured</td></tr>
+<tr><td>1 bohr, \(a_0\)</td><td>0.529177210544 Å</td><td>measured</td></tr>
+<tr><td>1 eV per particle</td><td>96.4853321233 kJ/mol</td><td>exact</td></tr>
+<tr><td>1 eV ÷ \(k_\mathrm B\)</td><td>11604.5181216 K</td><td>exact</td></tr>
+<tr><td>1 eV ÷ \(hc\)</td><td>8065.54393735 cm<sup>−1</sup></td><td>exact</td></tr>
+</tbody>
+</table>
+</div>
+<div class="conv-slot"></div>
+</div>
+<figcaption>“Exact” values follow from the defining constants of the SI; the hartree, rydberg and bohr are measured, and given as their 2022 recommended values.</figcaption>
+</figure>
+<div class="notes">
+<p>Theory papers use <x-term k="hartree-atomic-units">Hartree atomic units</x-term>, in which \(\hbar = m_e = e = 4\pi\varepsilon_0 = 1\). In these units the hydrogen atom's ground-state energy is exactly −½ hartree and its Bohr radius is 1 bohr, which is why equations look uncluttered. VASP reads and writes electronvolts and ångströms, and gives pressures in kilobar (kB, the unit of <x-tag>PSTRESS</x-tag>; 1 kB = 0.1 GPa).</p>
+<p>The "exact" conversions follow from \(e\), \(N_\mathrm A\), \(k_\mathrm B\), \(h\) and \(c\), which have fixed values in the SI since 2019. For example, 1 eV per particle is \(e \times N_\mathrm A\) = 96.485 kJ/mol. The hartree, rydberg and bohr depend on measured constants, such as the electron mass, and carry tiny uncertainties.</p>
+<p>Back to the opening slide: the 0.010–0.014 eV/atom that separated the carbon frameworks is 0.96–1.35 kJ/mol, or \(k_\mathrm B\) times 116–162 K. Type a value into the converter to check.</p>
+</div>
+</section>
+
+<section class="deck-slide" id="course-map">
+<h2>How is this course organized?</h2>
+<p class="claim">Ten parts, from the Schrödinger equation to calculations you can defend.</p>
+<ol class="tiles parts" style="--n: 2">
+<li class="tile"><b>Quantum mechanics you need</b>: Born–Oppenheimer to Hartree–Fock</li>
+<li class="tile"><b>Density functional theory</b>: Hohenberg–Kohn, Kohn–Sham, SCF</li>
+<li class="tile"><b>Electrons in crystals</b>: Bloch's theorem, k-points, smearing</li>
+<li class="tile"><b>How VASP represents electrons</b>: plane waves, PAW, convergence</li>
+<li class="tile"><b>Energies, forces, structures</b>: formation energies, relaxations</li>
+<li class="tile"><b>Spin and correlation</b>: magnetism, spin–orbit, DFT+U</li>
+<li class="tile"><b>Beyond semilocal functionals</b>: meta-GGAs, hybrids, vdW</li>
+<li class="tile"><b>Reading electronic structure</b>: bands, DOS, the gap problem</li>
+<li class="tile"><b>Properties</b>: phonons, barriers, MD, ML potentials</li>
+<li class="tile"><b>Doing DFT responsibly</b>: errors, methods, a capstone audit</li>
+</ol>
+<div class="notes">
+<p>Each part is made necessary by the one before. How to use these pages:</p>
+<ul>
+<li>A <a class="term" href="#term-electron-density">dotted underline</a> marks a key term and a blue chip such as <x-tag>ENCUT</x-tag> a VASP tag. Click either for a short explanation.</li>
+<li>The text under each slide explains the slide in full, like a textbook section; you should not need another source to follow it. “Going deeper” panels hold derivations you can skip on a first reading.</li>
+<li>Press <kbd>P</kbd> to present one slide at a time and <kbd>S</kbd> to open these notes in a second window. Printing a lecture gives a handout with the notes.</li>
+</ul>
+</div>
+</section>
+
+<section class="deck-slide" id="misconceptions">
+<h2>Which misconceptions should you drop now?</h2>
+<p class="claim">Four beliefs that cause most beginners' mistakes. Click a card to turn it over.</p>
+<div class="flips myths">
+<div class="flip"><p class="q">“DFT is exact.”</p><p class="a">Only in principle, and only for the ground state. Every practical calculation approximates the exchange–correlation energy, often the largest error.</p></div>
+<div class="flip"><p class="q">“DFT is just fitting to experiment.”</p><p class="a">PBE and SCAN are built from exact constraints without experimental input. Some functionals do contain fitted parameters, so it matters which one you use.</p></div>
+<div class="flip"><p class="q">“VASP finished without errors, so the answer is right.”</p><p class="a">It only means the loops stopped: by meeting <x-tag>EDIFF</x-tag> or <x-tag>EDIFFG</x-tag>, or by running out of <x-tag>NELM</x-tag> or <x-tag>NSW</x-tag> steps. Check which, then check the settings and the functional.</p></div>
+<div class="flip"><p class="q">“The band gap in my output is the measured gap.”</p><p class="a">Kohn–Sham gaps underestimate measured gaps: about 0.6 eV for silicon with PBE, against 1.17 eV. <x-lec n="30"></x-lec> explains why.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="check">
+<h2>Check yourself</h2>
+<p class="claim">One question per outcome. Answer aloud, then click to compare.</p>
+<div class="flips checks" style="--n: 3">
+<div class="flip"><p class="q" data-k="Outcome 1">What does a DFT calculation take in, and what does it give back?</p><p class="a">The atomic numbers and positions of the nuclei (and the cell). It returns the ground-state energy and density; forces and structures follow from the energy.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 2">Why does DFT work with the density rather than the wavefunction?</p><p class="a">Ψ depends on 3N coordinates, so its size grows like p<sup>3N</sup>. The density depends on 3 for any N, and the ground-state density fixes the energy.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 3">DFT is exact in principle. Why can a converged calculation still be wrong?</p><p class="a">The exchange–correlation energy is approximated. Its errors, such as missing dispersion or self-interaction, do not shrink with more k-points or a higher cutoff.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 4">With no WAVECAR, how does VASP start, and when does the SCF loop stop?</p><p class="a">From random orbitals and overlapping atomic densities. It stops when the energy changes fall below EDIFF, or after NELM steps.</p></div>
+<div class="flip"><p class="q" data-k="Outcome 5">Convert 0.010 eV/atom to kJ/mol and to a temperature.</p><p class="a">0.010 × 96.485 = 0.965 kJ/mol. Divided by \(k_\mathrm B\): 0.010 × 11604.5 K = 116 K.</p></div>
+</div>
+</section>
+
+<section class="deck-slide" id="summary">
+<h2>What should you remember?</h2>
+<p class="claim">DFT trades the wavefunction for the density, and puts its one approximation in E<sub>xc</sub>.</p>
+<ul>
+<li>A DFT calculation turns the nuclei, \(\{Z_I, \mathbf R_I\}\), into a ground-state energy and density. Forces, structures and stabilities follow from the energy.</li>
+<li>The wavefunction hits the exponential wall; the density has three coordinates for any number of electrons.</li>
+<li>Exact in principle, approximate in practice: band gaps, dispersion, self-interaction and strong correlation are physical errors, not numerical ones.</li>
+<li>VASP: four input files; an electronic loop inside an ionic loop; read OSZICAR first.</li>
+<li>1 hartree = 27.211 eV, and 0.01 eV/atom ≈ 1 kJ/mol ≈ \(k_\mathrm B\) × 116 K.</li>
+</ul>
+<p class="next">Next: <x-lec n="1">Lecture 1</x-lec> asks what physical problem lies underneath POSCAR, POTCAR and INCAR.</p>
+</section>

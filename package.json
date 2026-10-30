@@ -1,0 +1,11 @@
+{
+  "name": "oridwan-github-io",
+  "private": true,
+  "description": "Build tools for the DFT course pages under dft/.",
+  "scripts": {
+    "build:dft": "node scripts/build_dft.mjs"
+  },
+  "devDependencies": {
+    "katex": "0.19.0"
+  }
+}

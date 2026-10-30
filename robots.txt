@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /dft/_src/
+Disallow: /dft/PLAN.md
 
 Sitemap: https://oridwan.github.io/sitemap.xml
