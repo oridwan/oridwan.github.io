@@ -202,6 +202,7 @@ html:not(.js) .nav-dd:focus-within .nav-dd-menu { display: block; }
 .slide-media { margin: 0; padding: 28px; border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
 .slide-media img { width: 100%; height: auto; max-height: 420px; object-fit: contain; }
 .slide-video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 6px; background: #0b3a28; }
+.slide-video.is-light { aspect-ratio: 6 / 5; max-height: 420px; object-fit: contain; border-radius: 0; background: #fff; }
 .slide-media figcaption { font-size: .8rem; line-height: 1.5; color: var(--muted); }
 .slide-body { padding: 30px 32px; display: flex; flex-direction: column; }
 .slide-meta { font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
