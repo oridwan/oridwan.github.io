@@ -201,6 +201,7 @@ html:not(.js) .nav-dd:focus-within .nav-dd-menu { display: block; }
 }
 .slide-media { margin: 0; padding: 28px; border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
 .slide-media img { width: 100%; height: auto; max-height: 420px; object-fit: contain; }
+.slide-video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 6px; background: #0b3a28; }
 .slide-media figcaption { font-size: .8rem; line-height: 1.5; color: var(--muted); }
 .slide-body { padding: 30px 32px; display: flex; flex-direction: column; }
 .slide-meta { font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
@@ -216,7 +217,7 @@ html:not(.js) .nav-dd:focus-within .nav-dd-menu { display: block; }
 .carousel-dots button::before { content: ""; display: block; height: 3px; border-radius: 3px; background: var(--line-strong); }
 .carousel-dots .fill { display: block; height: 3px; margin-top: -3px; border-radius: 3px; background: var(--ink); transform: scaleX(0); transform-origin: left; }
 .carousel-dots .is-active .fill { transform: scaleX(1); }
-.carousel.is-running .carousel-dots .is-active .fill { animation: dotfill var(--car-delay, 7s) linear; }
+.carousel.is-running .carousel-dots .is-active .fill { animation: dotfill var(--car-delay, 7s) linear var(--car-start, 0s); }
 @keyframes dotfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* CSPFlow funnel diagram */

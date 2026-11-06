@@ -150,14 +150,26 @@
     var toggleBtn = document.getElementById('car-toggle');
     var DELAY = 7000;
     var current = 0, timer = null, playing = !reduceMotion, held = false, inView = false;
+    var pageLoaded = document.readyState === 'complete';
     carousel.style.setProperty('--car-delay', DELAY + 'ms');
 
     function offsetOf(i) { return slides[i].offsetLeft - slides[0].offsetLeft; }
+    function videoOf(i) { return slides[i].querySelector('video'); }
 
-    function setActive(i, restartFill) {
+    // span = how long this slide stays (ms); done = how much of it has already played.
+    function setActive(i, restartFill, span, done) {
+      if (i !== current) {
+        var oldV = videoOf(current), newV = videoOf(i);
+        if (oldV) oldV.pause();
+        if (newV) newV.currentTime = 0;   // a video slide always starts its story from the beginning
+      }
       current = i;
       dots.forEach(function (d, k) {
         var on = k === i;
+        if (on && span) {
+          d.style.setProperty('--car-delay', span + 'ms');
+          d.style.setProperty('--car-start', -(done || 0) + 'ms');
+        }
         if (on && restartFill) { d.classList.remove('is-active'); void d.offsetWidth; }
         d.classList.toggle('is-active', on);
         if (on) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
@@ -171,15 +183,55 @@
       schedule();
     }
 
+    // A slide video plays like a GIF, but only while it is the active slide, the carousel is on
+    // screen, rotation is not paused and the page has finished loading. With preload="none" it
+    // downloads nothing until then. The pause button stops it too.
+    function syncVideo() {
+      var v = videoOf(current);
+      if (!v) return;
+      if (playing && inView && pageLoaded && !document.hidden && !v.blocked) {
+        var p = v.play();
+        if (p) p.catch(function (e) {
+          // Autoplay refused (e.g. iOS Low Power Mode): keep the poster and treat it as an image slide.
+          if (e && e.name === 'NotAllowedError') { v.blocked = true; schedule(); }
+        });
+      } else {
+        v.pause();
+      }
+    }
+
     function schedule() {
       clearTimeout(timer);
       var run = playing && !held && inView && !document.hidden;
       carousel.classList.toggle('is-running', run);
-      if (run) {
-        setActive(current, true);
-        timer = setTimeout(function () { go(current + 1); }, DELAY);
+      syncVideo();
+      if (!run) return;
+      // An image slide stays DELAY ms. A video slide stays until its 'ended' event; the timer is
+      // only a safety net in case the video stalls or never starts.
+      var v = videoOf(current), span = DELAY, done = 0, wait = DELAY;
+      if (v && !v.blocked && v.duration) {
+        span = v.duration * 1000;
+        done = v.currentTime * 1000;
+        wait = span - done + 2000;
+      } else if (v && !v.blocked) {
+        wait = DELAY + 2000;   // not started yet; the 'playing' event re-runs schedule()
       }
+      setActive(current, true, span, done);
+      timer = setTimeout(function () { go(current + 1); }, wait);
     }
+
+    slides.forEach(function (s, k) {
+      var v = s.querySelector('video');
+      if (!v) return;
+      // Re-time the slide and its dot once frames are actually playing (after loading or a stall).
+      v.addEventListener('playing', function () { if (k === current) schedule(); });
+      v.addEventListener('ended', function () {
+        if (k !== current) return;
+        if (carousel.classList.contains('is-running')) go(current + 1);
+        else { v.currentTime = 0; syncVideo(); }   // rotation held (hover/focus/touch): keep looping
+      });
+    });
+    if (!pageLoaded) window.addEventListener('load', function () { pageLoaded = true; schedule(); });
 
     // Sync the active dot once scrolling settles (covers swipes and drags).
     var settle = null;
