@@ -93,7 +93,7 @@ const math = (html, where) => html
 const tagId = name => "tag-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
 /** Replace x-term / x-tag / x-ref markup; returns the HTML and what was used, in order of first use. */
-function links(html, where) {
+function links(html, where, lecBase = "../") {
   const used = { terms: [], tags: [], refs: [] };
   const note = (list, k) => { if (!list.includes(k)) list.push(k); };
   html = html.replace(/<x-term k="([^"]+)">([\s\S]*?)<\/x-term>/g, (_, k, text) => {
@@ -115,7 +115,7 @@ function links(html, where) {
   html = html.replace(/<x-lec n="(\d+)">([\s\S]*?)<\/x-lec>/g, (_, n, text) => {
     const l = byN.get(+n) || fail(`${where}: unknown lecture ${n}`);
     const label = text.trim() || lecNo(l);
-    return isPub(l) ? `<a class="lec-link" href="../${l.slug}/">${label}</a>`
+    return isPub(l) ? `<a class="lec-link" href="${lecBase}${l.slug}/">${label}</a>`
                     : `<span class="lec-ref" title="${esc(l.title)} (in preparation)">${label}</span>`;
   });
   const left = html.match(/<x-(term|tag|ref|lec)\b[^>]*>/);
@@ -179,7 +179,7 @@ const person = () => ({
   sameAs: course.author.sameAs,
 });
 
-function head({ title, description, url, image, imageAlt = course.imageAlt, keywords = [], published, modified, jsonld, up, noindex, type = "article" }) {
+function head({ title, description, url, image, imageAlt = course.imageAlt, keywords = [], published, modified, jsonld, up, noindex, type = "article", css = [] }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -211,7 +211,7 @@ ${jsonld.map(o => `  <script type="application/ld+json">\n${json({ "@context": "
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@${KATEX_VERSION}/dist/katex-swap.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="${up}style.css">
-  <link rel="stylesheet" href="${up}dft/dft.css">
+  <link rel="stylesheet" href="${up}dft/dft.css">${css.map(c => `\n  <link rel="stylesheet" href="${up}${c}">`).join("")}
 </head>`;
 }
 
@@ -393,6 +393,22 @@ ${copyright}
 
 // ---------- course home ----------
 
+/** The course home's link block to the cheat sheets (empty until one is published). */
+function cheatBlock() {
+  const pub = cheats.sheets.filter(s => s.status === "published");
+  if (!pub.length) return "";
+  return `<section class="home-block cheat-block" aria-labelledby="cheat-h">
+    <div class="home-in">
+      <h2 id="cheat-h">VASP cheat sheets</h2>
+      <p>The practical side of the course: what to type, how to check that it worked and what usually goes wrong, organized by task and checked against VASP ${esc(cheats.vasp)}.</p>
+      <ul class="cheat-links">
+        ${pub.map(s => `<li><a href="${cheats.dir}/${s.slug}/"><b>${esc(s.short)}</b> ${esc(s.card)}</a></li>`).join("\n        ")}
+      </ul>
+      <p><a class="btn btn-sm" href="${cheats.dir}/">All VASP cheat sheets</a></p>
+    </div>
+  </section>`;
+}
+
 function homePage() {
   const pub = lectures.filter(isPub);
   const url = course.base;
@@ -489,6 +505,7 @@ ${topbar({ up: "../", crumbs: `<span>${esc(course.short)}</span>` })}
     </div>
   </section>
 
+  ${cheatBlock()}
   <div class="home-in syllabus">
     ${partsHtml}
   </div>
@@ -531,6 +548,332 @@ ${copyright}
   writeFileSync(join(DFT, "index.html"), page);
 }
 
+// ---------- VASP cheat sheets ----------
+/*
+ * Reads dft/cheatsheets.json and dft/_cheat/<slug>.html; writes the hub dft/vasp-cheat-sheets/
+ * and one page per published sheet. Extra markup in the sheet sources:
+ *   <section class="sheet-sec" id="…"><h2>…</h2> … </section>   one section each; feeds the contents list
+ *   <x-tags names="ENCUT PREC …"></x-tags>   a tag table from terms.json (short, default, use, pitfall)
+ *   <pre class="incar" data-title="…" [data-allow="rule-id …"]>…</pre>   an INCAR block, checked with
+ *                         cheat-tools.js: an unknown tag, a non-ASCII character or an error-level rule
+ *                         (unless allowed) fails the build
+ *   <pre class="sh" data-title="…">…</pre>   a shell block
+ *   <x-sheet slug="kpoints">text</x-sheet>   another sheet: linked once it is published
+ *   <x-tag>, <x-lec>  as in the lectures
+ */
+
+const cheats = JSON.parse(readFileSync(join(DFT, "cheatsheets.json"), "utf8"));
+const { lintIncar } = await import(pathToFileURL(join(DFT, "cheat-tools.js")).href);
+const sheets = cheats.sheets;
+const isSheetPub = s => s && s.status === "published";
+const bySheet = new Map(sheets.map(s => [s.slug, s]));
+const knownTags = new Set(Object.keys(terms.tags));
+const longDate = iso => new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const groupTitle = id => (cheats.groups.find(g => g.id === id) || fail(`cheatsheets.json: unknown group "${id}"`)).title;
+
+function tagTable(names, where) {
+  const rows = names.trim().split(/\s+/).map(name => {
+    const t = terms.tags[name] || fail(`${where}: <x-tags> names unknown tag "${name}" (add it to dft/terms.json)`);
+    if (!t.short || !t.use) fail(`${where}: tag ${name} needs "short" and "use" in dft/terms.json to appear in a table`);
+    return `<tr id="${tagId(name)}"><th scope="row"><a class="wiki" href="${esc(t.wiki)}" rel="noopener" title="${name} on the VASP Wiki"><code>${name}</code></a>${t.since ? ` <span class="since" title="Needs VASP ${esc(t.since)} or later">${esc(t.since)}+</span>` : ""}</th>`
+      + `<td data-label="What it does">${t.short}</td><td data-label="Default">${t.default || "—"}</td><td data-label="What to use">${t.use}</td><td data-label="Watch out">${t.pitfall || ""}</td></tr>`;
+  });
+  return `<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+${rows.join("\n")}
+</tbody>
+</table></div>`;
+}
+
+/** INCAR and shell blocks: checked, highlighted, wrapped in a captioned figure (cheat.js adds the copy button). */
+function codeBlocks(html, where) {
+  return html.replace(/<pre class="(incar|sh)"([^>]*)>([\s\S]*?)<\/pre>/g, (_, kind, attrs, body) => {
+    const attr = k => (attrs.match(new RegExp(`${k}="([^"]*)"`)) || [])[1];
+    const title = attr("data-title") || fail(`${where}: a ${kind} block needs data-title`);
+    const allow = (attr("data-allow") || "").split(/\s+/).filter(Boolean);
+    const text = unent(body).replace(/^\n/, "").replace(/\s+$/, "");
+    const bad = text.match(/[^\x00-\x7f]/);
+    if (bad) fail(`${where}: "${title}": non-ASCII character "${bad[0]}" in a ${kind} block (keep input files plain ASCII)`);
+    let code;
+    if (kind === "incar") {
+      for (const p of lintIncar(text, knownTags)) {
+        if (p.id === "unlisted") fail(`${where}: "${title}" uses ${p.tag}, which is not in dft/terms.json tags`);
+        if (p.level === "error" && !allow.includes(p.id)) fail(`${where}: "${title}": ${p.message}`);
+        if (p.level === "warn" && !allow.includes(p.id)) console.warn(`    note  ${where}: "${title}": ${p.message}`);
+      }
+      code = text.split("\n").map(line => {
+        const i = line.search(/[!#]/);
+        const stmt = i < 0 ? line : line.slice(0, i), com = i < 0 ? "" : line.slice(i);
+        return esc(stmt).replace(/\b([A-Z][A-Z0-9_]*)(?=\s*=)/g, '<span class="k">$1</span>') + (com ? `<span class="c">${esc(com)}</span>` : "");
+      }).join("\n");
+    } else {
+      code = text.split("\n").map(line => {
+        const i = line.search(/(^|\s)#/);
+        return i < 0 ? esc(line) : esc(line.slice(0, i)) + `<span class="c">${esc(line.slice(i))}</span>`;
+      }).join("\n");
+    }
+    return `<figure class="code ${kind}"><figcaption><span class="code-t">${esc(title)}</span></figcaption><pre><code>${code}</code></pre></figure>`;
+  });
+}
+
+function sheetLinks(html, where, base) {
+  return html.replace(/<x-sheet slug="([^"]+)">([\s\S]*?)<\/x-sheet>/g, (_, slug, text) => {
+    const [name, hash = ""] = slug.split("#");
+    const s = bySheet.get(name) || fail(`${where}: unknown cheat sheet "${name}"`);
+    return isSheetPub(s) ? `<a href="${base}${s.slug}/${hash ? "#" + hash : ""}">${text}</a>`
+                         : `<span class="lec-ref" title="${esc(s.h1)} (in preparation)">${text}</span>`;
+  });
+}
+
+function sheetPage(s) {
+  const where = `dft/_cheat/${s.slug}.html`;
+  const url = `${cheats.base}${s.slug}/`;
+  let src = readFileSync(join(DFT, "_cheat", `${s.slug}.html`), "utf8").replace(/<!--[\s\S]*?-->/g, "");
+  src = src.replace(/<x-tags names="([^"]+)"><\/x-tags>/g, (_, names) => tagTable(names, where));
+  src = src.replace(/data-tool="incar-builder"/g, `data-tool="incar-builder" data-known="${[...knownTags].sort().join(" ")}"`);
+  src = codeBlocks(src, where);
+  src = sheetLinks(src, where, "../");
+  const { html: body0, used } = links(src, where, "../../");
+  if (used.refs.length) fail(`${where}: cheat sheets cite nothing inline; use "reading" in cheatsheets.json`);
+  const body = math(body0, where);
+
+  const toc = [...body.matchAll(/<section class="sheet-sec" id="([^"]+)">\s*<h2>([\s\S]*?)<\/h2>/g)]
+    .map(([, id, h]) => `<li><a href="#${id}">${strip(h)}</a></li>`).join("\n        ");
+  if (!toc) fail(`${where}: no <section class="sheet-sec" id="…"><h2> found`);
+
+  // tags linked with <x-tag> but not shown in a table on this page get a short glossary
+  const extra = used.tags.filter(name => !body.includes(`id="${tagId(name)}"`));
+  let back = "";
+  if (extra.length) {
+    back += `<section class="backmatter" id="key-terms">\n<h2>Other tags on this sheet</h2>\n<dl class="terms tags">\n` + extra.map(name => {
+      const t = terms.tags[name];
+      return `<dt id="${tagId(name)}"><code>${name}</code></dt>\n<dd>${math(t.short || t.def, `tag ${name}`)}<span class="tag-meta">${t.default ? `Default: ${t.default} · ` : ""}<a href="${esc(t.wiki)}" rel="noopener">VASP Wiki: ${name}</a></span></dd>`;
+    }).join("\n") + `\n</dl>\n</section>\n`;
+  }
+  if (s.lectures?.length) {
+    back += `<section class="backmatter" id="lectures">\n<h2>The physics behind this sheet</h2>\n<ul class="sheet-lecs">\n` + s.lectures.map(n => {
+      const l = byN.get(n) || fail(`cheatsheets.json: ${s.slug} lists unknown lecture ${n}`);
+      return isPub(l) ? `<li><a href="../../${l.slug}/">${lecNo(l)}: ${esc(l.title)}</a></li>`
+                      : `<li>${lecNo(l)}: ${esc(l.title)} <span class="muted">(in preparation)</span></li>`;
+    }).join("\n") + `\n</ul>\n</section>\n`;
+  }
+  for (const k of s.reading || []) if (!terms.refs[k]) fail(`cheatsheets.json: unknown reference "${k}" in ${s.slug}`);
+  if (s.reading?.length) back += `<section class="backmatter" id="further-reading">\n<h2>Further reading</h2>\n<ol class="refs">\n${s.reading.map(k => refItem(k, false)).join("\n")}\n</ol>\n</section>\n`;
+
+  const pub = sheets.filter(isSheetPub);
+  const i = pub.indexOf(s);
+  const prev = pub[i - 1], next = pub[i + 1];
+  const pn = `<nav class="sheet-pn" aria-label="Other cheat sheets">
+    ${prev ? `<a class="pn-prev" href="../${prev.slug}/"><span>Previous sheet</span>${esc(prev.short)}</a>` : `<span></span>`}
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    ${next ? `<a class="pn-next" href="../${next.slug}/"><span>Next sheet</span>${esc(next.short)}</a>` : `<span></span>`}
+  </nav>`;
+
+  const jsonld = [
+    {
+      "@type": ["TechArticle", "LearningResource"],
+      headline: s.title, name: s.h1, description: s.description, url,
+      image: cheats.hub.image, inLanguage: "en", isAccessibleForFree: true,
+      learningResourceType: "Cheat sheet",
+      keywords: [...(s.keywords || []), "VASP", "VASP cheat sheet"].join(", "),
+      datePublished: s.published, dateModified: s.modified,
+      author: person(), publisher: person(),
+      isPartOf: { "@type": "Course", name: course.name, url: course.base },
+      ...(s.reading?.length ? { citation: s.reading.map(k => strip(terms.refs[k].text)) } : {}),
+    },
+    crumbList([[course.author.name, course.author.url], [course.short, course.base], ["VASP cheat sheets", cheats.base], [s.short, url]]),
+  ];
+
+  const page = `${head({ title: s.title, description: s.description, url, image: cheats.hub.image, imageAlt: cheats.hub.imageAlt, keywords: [...(s.keywords || []), "VASP"], published: s.published, modified: s.modified, jsonld, up: "../../../", css: ["dft/cheat.css"] })}
+<body class="dft cheat" data-sheet="${s.slug}">
+<a class="skip-link" href="#main">Skip to content</a>
+${topbar({ up: "../../../", crumbs: `<a href="../../">${esc(course.short)}</a><a href="../">VASP cheat sheets</a><span>${esc(s.short)}</span>` })}
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · ${esc(groupTitle(s.group))}</p>
+    <h1>${esc(s.h1)}</h1>
+    <p class="sheet-lede">${esc(s.lede)}</p>
+    <p class="stamp">Checked against VASP ${esc(cheats.vasp)} · Updated <time datetime="${s.modified}">${longDate(s.modified)}</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        ${toc}
+      </ol>
+    </nav>
+    <article class="sheet-body">
+${body}
+${back}
+    </article>
+  </div>
+  ${pn}
+</main>
+
+${copyright}
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>
+`;
+  const out = join(DFT, cheats.dir, s.slug);
+  mkdirSync(out, { recursive: true });
+  writeFileSync(join(out, "index.html"), page);
+}
+
+function cheatHub() {
+  const h = cheats.hub;
+  const url = cheats.base;
+  const pub = sheets.filter(isSheetPub);
+  // only tasks whose sheet is published; the others appear once their sheet does
+  const tasks = cheats.tasks.filter(t => {
+    const s = bySheet.get(t.sheet) || fail(`cheatsheets.json: task "${t.text}" names unknown sheet "${t.sheet}"`);
+    return isSheetPub(s);
+  }).map(t => {
+    const s = bySheet.get(t.sheet);
+    return `<li><a href="${s.slug}/${t.anchor ? "#" + t.anchor : ""}"><span>${esc(t.text)}</span><b>${esc(s.short)}</b></a></li>`;
+  }).join("\n        ");
+
+  const node = (slug, label) => {
+    const s = bySheet.get(slug) || fail(`hub map: unknown sheet ${slug}`);
+    return isSheetPub(s) ? `<a class="node" href="${slug}/">${label}</a>` : `<span class="node soon" title="In preparation">${label}</span>`;
+  };
+  const map = `<ol class="wmap">
+        <li><span class="wmap-k">Prepare</span>${node("poscar", "POSCAR")}${node("potcar", "POTCAR")}${node("kpoints", "KPOINTS")}${node("incar-tags", "INCAR")}</li>
+        <li><span class="wmap-k">Run</span>${node("slurm-job-script", "Slurm job script")}</li>
+        <li><span class="wmap-k">Read</span>${node("outcar-oszicar-grep", "OUTCAR, OSZICAR")}</li>
+        <li><span class="wmap-k">Fix</span>${node("errors-and-fixes", "Errors and fixes")}</li>
+        <li><span class="wmap-k">Workflows</span>${node("relaxation-workflow", "Relax → static → DOS and bands")}${node("properties", "Properties")}${node("magnetism-magmom", "Magnetism")}${node("neb", "Barriers (NEB)")}${node("aimd-mlff", "MD and ML force fields")}</li>
+      </ol>`;
+
+  const groups = cheats.groups.map(g => {
+    const cards = sheets.filter(s => s.group === g.id).map(s => {
+      const chips = (s.sample || []).map(t => `<code>${esc(t)}</code>`).join(" ");
+      const inner = `<h3>${esc(s.short)}</h3>
+          <p>${esc(s.card)}</p>
+          <p class="cs-meta">${chips}${s.tool ? `<span class="cs-tool">${esc(s.tool)}</span>` : ""}</p>
+          <p class="cs-status">${isSheetPub(s) ? "Open the sheet →" : "In preparation"}</p>`;
+      return isSheetPub(s)
+        ? `<li class="cs-card" data-search="${esc((s.short + " " + s.card + " " + (s.sample || []).join(" ")).toLowerCase())}"><a href="${s.slug}/">${inner}</a></li>`
+        : `<li class="cs-card soon" data-search="${esc((s.short + " " + s.card).toLowerCase())}">${inner}</li>`;
+    }).join("\n        ");
+    return `<section class="cs-group" aria-labelledby="g-${g.id}">
+      <h2 id="g-${g.id}">${esc(g.title)}</h2>
+      <p class="cs-blurb">${esc(g.blurb)}</p>
+      <ol class="cs-cards">
+        ${cards}
+      </ol>
+    </section>`;
+  }).join("\n    ");
+
+  // A–Z index of every tag in terms.json
+  const incar = bySheet.get("incar-tags");
+  const index = Object.keys(terms.tags).sort().map(name => {
+    const t = terms.tags[name];
+    const where = [];
+    if (t.group && isSheetPub(incar)) where.push(`<a href="incar-tags/#${tagId(name)}">INCAR sheet</a>`);
+    const l = t.lecture != null ? byN.get(t.lecture) : null;
+    if (isPub(l)) where.push(`<a href="../${l.slug}/">${lecNo(l)}</a>`);
+    return `<tr id="${tagId(name)}" data-search="${esc((name + " " + strip(t.short || t.def)).toLowerCase())}"><th scope="row"><a class="wiki" href="${esc(t.wiki)}" rel="noopener"><code>${name}</code></a></th><td data-label="What it does">${math(t.short || t.def, `tag ${name}`)}</td><td data-label="Default">${t.default || "—"}</td><td data-label="More">${where.join(" · ") || "—"}</td></tr>`;
+  }).join("\n");
+
+  const jsonld = [
+    {
+      "@type": "CollectionPage",
+      name: h.h1, headline: h.title, description: h.description, url,
+      image: h.image, inLanguage: "en", isAccessibleForFree: true,
+      keywords: h.keywords.join(", "),
+      datePublished: h.published, dateModified: [h.modified, ...pub.map(s => s.modified)].sort().pop(),
+      author: person(), publisher: person(),
+      isPartOf: { "@type": "Course", name: course.name, url: course.base },
+      ...(pub.length ? { mainEntity: { "@type": "ItemList", itemListElement: pub.map((s, i) => ({ "@type": "ListItem", position: i + 1, name: s.h1, url: `${url}${s.slug}/` })) } } : {}),
+    },
+    crumbList([[course.author.name, course.author.url], [course.short, course.base], ["VASP cheat sheets", url]]),
+  ];
+
+  const page = `${head({ title: h.title, description: h.description, url, image: h.image, imageAlt: h.imageAlt, keywords: h.keywords, jsonld, up: "../../", type: "website", css: ["dft/cheat.css"] })}
+<body class="dft cheat cheat-hub">
+<a class="skip-link" href="#main">Skip to content</a>
+${topbar({ up: "../../", crumbs: `<a href="../">${esc(course.short)}</a><span>VASP cheat sheets</span>` })}
+
+<main id="main">
+  <header class="home-hero hub-hero">
+    <div class="home-in">
+      <p class="eyebrow">Free reference · Checked against VASP ${esc(cheats.vasp)}</p>
+      <h1>${esc(h.h1)}</h1>
+      <p class="home-lede">${esc(h.lede)}</p>
+      <form class="hub-search" role="search" onsubmit="return false">
+        <label for="hub-q" class="visually-hidden">Search the cheat sheets and the tag index</label>
+        <input id="hub-q" type="search" placeholder="Search sheets and INCAR tags, e.g. ISMEAR" autocomplete="off">
+      </form>
+    </div>
+  </header>
+
+  <section class="home-block" aria-labelledby="task-h">
+    <div class="home-in">
+      <h2 id="task-h">Start from your task</h2>
+      <ul class="tasks">
+        ${tasks}
+      </ul>
+    </div>
+  </section>
+
+  <section class="home-block" aria-labelledby="map-h">
+    <div class="home-in">
+      <h2 id="map-h">Where each sheet fits</h2>
+      <p>A calculation moves through the same stages every time. Each box opens its sheet.</p>
+      ${map}
+    </div>
+  </section>
+
+  <div class="home-in cs-groups">
+    ${groups}
+  </div>
+
+  <section class="home-block" aria-labelledby="index-h" id="tag-index">
+    <div class="home-in">
+      <h2 id="index-h">INCAR tag index, A to Z</h2>
+      <p>Every tag used in the course and the sheets, with its default. Each tag name opens its page on the VASP Wiki.</p>
+      <div class="tagtable-wrap"><table class="tagtable tag-index">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">More</th></tr></thead>
+<tbody>
+${index}
+</tbody>
+</table></div>
+    </div>
+  </section>
+
+  <section class="home-block" aria-labelledby="checked-h">
+    <div class="home-in two">
+      <div>
+        <h2 id="checked-h">How the sheets are checked</h2>
+        <ul class="checked">
+          <li>Every tag, default and recommendation is read on the VASP Wiki when its sheet is written, and the sheet says which VASP version it was checked against.</li>
+          <li>Every INCAR on a sheet is checked by the same rules as the INCAR checker, and the build rejects unknown or misspelled tags.</li>
+          <li>Shell commands are tested on real VASP output files.</li>
+          <li>Labels separate VASP's own advice from rules of thumb, and say when a setting needs a newer VASP or the VTST add-on.</li>
+        </ul>
+      </div>
+      <div>
+        <h2 id="course-h">Part of a course</h2>
+        <p>These sheets are the practical side of <a href="../">Density Functional Theory and VASP</a>, a free interactive course that builds the physics behind every tag, from the Schrödinger equation to Kohn–Sham DFT, k-points, plane waves and PAW.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+${copyright}
+<script type="module" src="../deck.js"></script>
+<script type="module" src="../cheat.js"></script>
+</body>
+</html>
+`;
+  mkdirSync(join(DFT, cheats.dir), { recursive: true });
+  writeFileSync(join(DFT, cheats.dir, "index.html"), page);
+}
+
 // ---------- run ----------
 
 const seen = new Set();
@@ -564,7 +907,18 @@ if (DEMO) {
   await lecturePage(demo, join(DFT, "_src", "_demo.html"), join(DFT, "_demo"), { noindex: true });
   console.log("  demo       dft/_demo/");
 }
-console.log(`Built dft/index.html and ${count} lecture page(s) with KaTeX ${KATEX_VERSION}.`);
+const sheetSlugs = new Set();
+for (const s of sheets) {
+  if (sheetSlugs.has(s.slug)) fail(`cheatsheets.json: duplicate slug "${s.slug}"`);
+  sheetSlugs.add(s.slug);
+  groupTitle(s.group);
+}
+let nSheets = 0;
+if (sheets.some(isSheetPub)) {
+  cheatHub();
+  for (const s of sheets.filter(isSheetPub)) { sheetPage(s); nSheets++; console.log(`  sheet      ${cheats.dir}/${s.slug}`); }
+}
+console.log(`Built dft/index.html, ${count} lecture page(s) and ${nSheets} cheat sheet(s) with KaTeX ${KATEX_VERSION}.`);
 
 if (existsSync(join(ROOT, "scripts", "build_sitemap.py"))) {
   execFileSync("python3", [join(ROOT, "scripts", "build_sitemap.py")], { stdio: "inherit" });

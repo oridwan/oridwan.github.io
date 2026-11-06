@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP Cheat Sheets: INCAR, KPOINTS, POTCAR, Slurm</title>
+  <meta name="description" content="VASP cheat sheets for VASP 6: INCAR tags and recipes, KPOINTS, POTCAR, Slurm scripts, output commands, errors, relaxation, magnetism, NEB and AIMD.">
+  <meta name="keywords" content="VASP cheat sheet, VASP INCAR tags, VASP tutorial, VASP 6, INCAR recipes, KPOINTS, POTCAR, VASP Slurm script, VASP errors">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP Cheat Sheets: INCAR, KPOINTS, POTCAR, Slurm">
+  <meta property="og:description" content="VASP cheat sheets for VASP 6: INCAR tags and recipes, KPOINTS, POTCAR, Slurm scripts, output commands, errors, relaxation, magnetism, NEB and AIMD.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP Cheat Sheets: INCAR, KPOINTS, POTCAR, Slurm">
+  <meta name="twitter:description" content="VASP cheat sheets for VASP 6: INCAR tags and recipes, KPOINTS, POTCAR, Slurm scripts, output commands, errors, relaxation, magnetism, NEB and AIMD.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "VASP cheat sheets",
+  "headline": "VASP Cheat Sheets: INCAR, KPOINTS, POTCAR, Slurm",
+  "description": "VASP cheat sheets for VASP 6: INCAR tags and recipes, KPOINTS, POTCAR, Slurm scripts, output commands, errors, relaxation, magnetism, NEB and AIMD.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "keywords": "VASP cheat sheet, VASP INCAR tags, VASP tutorial, VASP 6, INCAR recipes, KPOINTS, POTCAR, VASP Slurm script, VASP errors",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "mainEntity": {
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "VASP INCAR cheat sheet",
+        "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/incar-tags/"
+      }
+    ]
+  }
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="../../dft/dft.css">
+  <link rel="stylesheet" href="../../dft/cheat.css">
+</head>
+<body class="dft cheat cheat-hub">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../">DFT &amp; VASP Course</a><span>VASP cheat sheets</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main">
+  <header class="home-hero hub-hero">
+    <div class="home-in">
+      <p class="eyebrow">Free reference · Checked against VASP 6.6.1</p>
+      <h1>VASP cheat sheets</h1>
+      <p class="home-lede">What to type, how to check that it worked, and what usually goes wrong, for the everyday jobs of a VASP calculation. Each sheet is organized by task, gives the default and the recommended value side by side, and says why, with a link to the lecture that explains the physics.</p>
+      <form class="hub-search" role="search" onsubmit="return false">
+        <label for="hub-q" class="visually-hidden">Search the cheat sheets and the tag index</label>
+        <input id="hub-q" type="search" placeholder="Search sheets and INCAR tags, e.g. ISMEAR" autocomplete="off">
+      </form>
+    </div>
+  </header>
+
+  <section class="home-block" aria-labelledby="task-h">
+    <div class="home-in">
+      <h2 id="task-h">Start from your task</h2>
+      <ul class="tasks">
+        <li><a href="incar-tags/#builder"><span>Write an INCAR for a new calculation</span><b>INCAR</b></a></li>
+        <li><a href="incar-tags/#smearing"><span>Choose ISMEAR and SIGMA</span><b>INCAR</b></a></li>
+        <li><a href="incar-tags/#recipes"><span>Relax a structure, then run a static calculation</span><b>INCAR</b></a></li>
+        <li><a href="incar-tags/#check"><span>Check what VASP actually read from my INCAR</span><b>INCAR</b></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="home-block" aria-labelledby="map-h">
+    <div class="home-in">
+      <h2 id="map-h">Where each sheet fits</h2>
+      <p>A calculation moves through the same stages every time. Each box opens its sheet.</p>
+      <ol class="wmap">
+        <li><span class="wmap-k">Prepare</span><span class="node soon" title="In preparation">POSCAR</span><span class="node soon" title="In preparation">POTCAR</span><span class="node soon" title="In preparation">KPOINTS</span><a class="node" href="incar-tags/">INCAR</a></li>
+        <li><span class="wmap-k">Run</span><span class="node soon" title="In preparation">Slurm job script</span></li>
+        <li><span class="wmap-k">Read</span><span class="node soon" title="In preparation">OUTCAR, OSZICAR</span></li>
+        <li><span class="wmap-k">Fix</span><span class="node soon" title="In preparation">Errors and fixes</span></li>
+        <li><span class="wmap-k">Workflows</span><span class="node soon" title="In preparation">Relax → static → DOS and bands</span><span class="node soon" title="In preparation">Properties</span><span class="node soon" title="In preparation">Magnetism</span><span class="node soon" title="In preparation">Barriers (NEB)</span><span class="node soon" title="In preparation">MD and ML force fields</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="home-in cs-groups">
+    <section class="cs-group" aria-labelledby="g-essentials">
+      <h2 id="g-essentials">Essentials</h2>
+      <p class="cs-blurb">The input files, the job script, the output, and what to do when it fails.</p>
+      <ol class="cs-cards">
+        <li class="cs-card" data-search="incar the tags to set yourself, their defaults, smearing choices and copy-ready incars for each task. encut ismear ibrion"><a href="incar-tags/"><h3>INCAR</h3>
+          <p>The tags to set yourself, their defaults, smearing choices and copy-ready INCARs for each task.</p>
+          <p class="cs-meta"><code>ENCUT</code> <code>ISMEAR</code> <code>IBRION</code><span class="cs-tool">INCAR builder and checker</span></p>
+          <p class="cs-status">Open the sheet →</p></a></li>
+        <li class="cs-card soon" data-search="kpoints every kpoints format, which mesh suits which lattice, kspacing and band-structure paths."><h3>KPOINTS</h3>
+          <p>Every KPOINTS format, which mesh suits which lattice, KSPACING and band-structure paths.</p>
+          <p class="cs-meta"><code>KSPACING</code> <code>KGAMMA</code><span class="cs-tool">k-mesh calculator</span></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="potcar suffixes decoded, building and checking a potcar without printing it, and the rare-earth choice."><h3>POTCAR</h3>
+          <p>Suffixes decoded, building and checking a POTCAR without printing it, and the rare-earth choice.</p>
+          <p class="cs-meta"><code>ENCUT</code> <code>LASPH</code><span class="cs-tool">POTCAR command generator</span></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="poscar the format line by line, selective dynamics, contcar reuse and the mistakes that stop a run."><h3>POSCAR</h3>
+          <p>The format line by line, selective dynamics, CONTCAR reuse and the mistakes that stop a run.</p>
+          <p class="cs-meta"><span class="cs-tool">POSCAR checker</span></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="slurm job script cpu and gpu job scripts, mpi ranks and threads, ncore and kpar, chained jobs and monitoring."><h3>Slurm job script</h3>
+          <p>CPU and GPU job scripts, MPI ranks and threads, NCORE and KPAR, chained jobs and monitoring.</p>
+          <p class="cs-meta"><code>NCORE</code> <code>KPAR</code><span class="cs-tool">Job script generator</span></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="reading the output which file holds what, one-line commands for energy, forces, stress, moments and convergence."><h3>Reading the output</h3>
+          <p>Which file holds what, one-line commands for energy, forces, stress, moments and convergence.</p>
+          <p class="cs-meta"><span class="cs-tool">Command picker</span></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="errors and fixes each error message with its cause and fix, and what to try when the scf or a relaxation will not converge."><h3>Errors and fixes</h3>
+          <p>Each error message with its cause and fix, and what to try when the SCF or a relaxation will not converge.</p>
+          <p class="cs-meta"><code>ALGO</code> <code>AMIX</code><span class="cs-tool">Error lookup</span></p>
+          <p class="cs-status">In preparation</p></li>
+      </ol>
+    </section>
+    <section class="cs-group" aria-labelledby="g-applications">
+      <h2 id="g-applications">Applications</h2>
+      <p class="cs-blurb">Research workflows, step by step.</p>
+      <ol class="cs-cards">
+        <li class="cs-card soon" data-search="relaxation from a starting structure to converged geometry, static energy, dos and band structure."><h3>Relaxation</h3>
+          <p>From a starting structure to converged geometry, static energy, DOS and band structure.</p>
+          <p class="cs-meta"><code>IBRION</code> <code>ISIF</code> <code>EDIFFG</code></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="magnetism ferro-, antiferro- and ferrimagnetic setups, moments, spin–orbit coupling, anisotropy and dft+u."><h3>Magnetism</h3>
+          <p>Ferro-, antiferro- and ferrimagnetic setups, moments, spin–orbit coupling, anisotropy and DFT+U.</p>
+          <p class="cs-meta"><code>MAGMOM</code> <code>ISPIN</code> <code>NUPDOWN</code><span class="cs-tool">MAGMOM builder</span></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="properties every major property with the tags, earlier steps, output files and analysis tools it needs."><h3>Properties</h3>
+          <p>Every major property with the tags, earlier steps, output files and analysis tools it needs.</p>
+          <p class="cs-meta"><code>LORBIT</code> <code>LOPTICS</code></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="neb migration barriers with stock vasp and with vtst: setup, climbing image and checks."><h3>NEB</h3>
+          <p>Migration barriers with stock VASP and with VTST: setup, climbing image and checks.</p>
+          <p class="cs-meta"><code>IMAGES</code> <code>SPRING</code></p>
+          <p class="cs-status">In preparation</p></li>
+        <li class="cs-card soon" data-search="aimd and ml force fields thermostats and ensembles, time steps, analysis, and on-the-fly machine-learned force fields."><h3>AIMD and ML force fields</h3>
+          <p>Thermostats and ensembles, time steps, analysis, and on-the-fly machine-learned force fields.</p>
+          <p class="cs-meta"><code>MDALGO</code> <code>POTIM</code></p>
+          <p class="cs-status">In preparation</p></li>
+      </ol>
+    </section>
+  </div>
+
+  <section class="home-block" aria-labelledby="index-h" id="tag-index">
+    <div class="home-in">
+      <h2 id="index-h">INCAR tag index, A to Z</h2>
+      <p>Every tag used in the course and the sheets, with its default. Each tag name opens its page on the VASP Wiki.</p>
+      <div class="tagtable-wrap"><table class="tagtable tag-index">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">More</th></tr></thead>
+<tbody>
+<tr id="tag-addgrid" data-search="addgrid an extra, finer grid for the augmentation charges."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ADDGRID" rel="noopener"><code>ADDGRID</code></a></th><td data-label="What it does">An extra, finer grid for the augmentation charges.</td><td data-label="Default">.FALSE.</td><td data-label="More"><a href="incar-tags/#tag-addgrid">INCAR sheet</a></td></tr>
+<tr id="tag-aexx" data-search="aexx fraction of exact (hartree–fock) exchange in a hybrid-functional calculation. with aexx = 1.0 vasp switches off correlation and runs a full hartree–fock calculation."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/AEXX" rel="noopener"><code>AEXX</code></a></th><td data-label="What it does">Fraction of exact (Hartree–Fock) exchange in a hybrid-functional calculation. With AEXX = 1.0 VASP switches off correlation and runs a full Hartree–Fock calculation.</td><td data-label="Default">0.25 with LHFCALC = .TRUE.; 0 otherwise</td><td data-label="More">—</td></tr>
+<tr id="tag-algo" data-search="algo electronic minimization algorithm."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ALGO" rel="noopener"><code>ALGO</code></a></th><td data-label="What it does">Electronic minimization algorithm.</td><td data-label="Default">Normal (blocked Davidson)</td><td data-label="More"><a href="incar-tags/#tag-algo">INCAR sheet</a></td></tr>
+<tr id="tag-amix" data-search="amix linear mixing parameter for the charge density."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/AMIX" rel="noopener"><code>AMIX</code></a></th><td data-label="What it does">Linear mixing parameter for the charge density.</td><td data-label="Default">0.4 (PAW)</td><td data-label="More"><a href="incar-tags/#tag-amix">INCAR sheet</a></td></tr>
+<tr id="tag-amix-mag" data-search="amix_mag mixing parameter for the magnetization density."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/AMIX_MAG" rel="noopener"><code>AMIX_MAG</code></a></th><td data-label="What it does">Mixing parameter for the magnetization density.</td><td data-label="Default">1.6</td><td data-label="More"><a href="incar-tags/#tag-amix-mag">INCAR sheet</a></td></tr>
+<tr id="tag-bmix" data-search="bmix cutoff wave vector of the kerker mixing for the charge density."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/BMIX" rel="noopener"><code>BMIX</code></a></th><td data-label="What it does">Cutoff wave vector of the Kerker mixing for the charge density.</td><td data-label="Default">1.0</td><td data-label="More"><a href="incar-tags/#tag-bmix">INCAR sheet</a></td></tr>
+<tr id="tag-bmix-mag" data-search="bmix_mag kerker cutoff for the magnetization density."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/BMIX_MAG" rel="noopener"><code>BMIX_MAG</code></a></th><td data-label="What it does">Kerker cutoff for the magnetization density.</td><td data-label="Default">1.0</td><td data-label="More"><a href="incar-tags/#tag-bmix-mag">INCAR sheet</a></td></tr>
+<tr id="tag-ediff" data-search="ediff scf stopping criterion: the energy change between steps, in ev."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/EDIFF" rel="noopener"><code>EDIFF</code></a></th><td data-label="What it does">SCF stopping criterion: the energy change between steps, in eV.</td><td data-label="Default">10<sup>−4</sup> eV</td><td data-label="More"><a href="incar-tags/#tag-ediff">INCAR sheet</a></td></tr>
+<tr id="tag-ediffg" data-search="ediffg when a relaxation stops."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/EDIFFG" rel="noopener"><code>EDIFFG</code></a></th><td data-label="What it does">When a relaxation stops.</td><td data-label="Default">EDIFF × 10</td><td data-label="More"><a href="incar-tags/#tag-ediffg">INCAR sheet</a></td></tr>
+<tr id="tag-efermi" data-search="efermi how the fermi energy is placed."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/EFERMI" rel="noopener"><code>EFERMI</code></a></th><td data-label="What it does">How the Fermi energy is placed.</td><td data-label="Default">LEGACY</td><td data-label="More"><a href="incar-tags/#tag-efermi">INCAR sheet</a></td></tr>
+<tr id="tag-encut" data-search="encut plane-wave cutoff in ev: the size of the basis set."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ENCUT" rel="noopener"><code>ENCUT</code></a></th><td data-label="What it does">Plane-wave cutoff in eV: the size of the basis set.</td><td data-label="Default">the largest ENMAX among the POTCAR files</td><td data-label="More"><a href="incar-tags/#tag-encut">INCAR sheet</a></td></tr>
+<tr id="tag-gga" data-search="gga exchange–correlation functional of the gga family."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/GGA" rel="noopener"><code>GGA</code></a></th><td data-label="What it does">Exchange–correlation functional of the GGA family.</td><td data-label="Default">the functional given by LEXCH in the POTCAR, if METAGGA and XC are not set either</td><td data-label="More"><a href="incar-tags/#tag-gga">INCAR sheet</a></td></tr>
+<tr id="tag-hfrcut" data-search="hfrcut coulomb truncation for hybrid functionals."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/HFRCUT" rel="noopener"><code>HFRCUT</code></a></th><td data-label="What it does">Coulomb truncation for hybrid functionals.</td><td data-label="Default">0</td><td data-label="More"><a href="incar-tags/#tag-hfrcut">INCAR sheet</a></td></tr>
+<tr id="tag-hfscreen" data-search="hfscreen range-separation parameter of screened hybrids, in å⁻¹."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/HFSCREEN" rel="noopener"><code>HFSCREEN</code></a></th><td data-label="What it does">Range-separation parameter of screened hybrids, in Å⁻¹.</td><td data-label="Default">0 (no screening)</td><td data-label="More"><a href="incar-tags/#tag-hfscreen">INCAR sheet</a></td></tr>
+<tr id="tag-ibrion" data-search="ibrion how the atoms move."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/IBRION" rel="noopener"><code>IBRION</code></a></th><td data-label="What it does">How the atoms move.</td><td data-label="Default">−1 if NSW = −1 or 0, otherwise 0 (molecular dynamics)</td><td data-label="More"><a href="incar-tags/#tag-ibrion">INCAR sheet</a></td></tr>
+<tr id="tag-icharg" data-search="icharg how the starting charge density is made."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ICHARG" rel="noopener"><code>ICHARG</code></a></th><td data-label="What it does">How the starting charge density is made.</td><td data-label="Default">2 if ISTART = 0, otherwise 0</td><td data-label="More"><a href="incar-tags/#tag-icharg">INCAR sheet</a></td></tr>
+<tr id="tag-iniwav" data-search="iniwav how the orbitals are initialized when no wavecar is read. iniwav = 1 fills them with random numbers."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/INIWAV" rel="noopener"><code>INIWAV</code></a></th><td data-label="What it does">How the orbitals are initialized when no WAVECAR is read. INIWAV = 1 fills them with random numbers.</td><td data-label="Default">1</td><td data-label="More">—</td></tr>
+<tr id="tag-isearch" data-search="isearch line search used by algo = all."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISEARCH" rel="noopener"><code>ISEARCH</code></a></th><td data-label="What it does">Line search used by ALGO = All.</td><td data-label="Default">0</td><td data-label="More"><a href="incar-tags/#tag-isearch">INCAR sheet</a></td></tr>
+<tr id="tag-isif" data-search="isif which of atoms, cell shape and volume relax, and whether the stress is computed."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISIF" rel="noopener"><code>ISIF</code></a></th><td data-label="What it does">Which of atoms, cell shape and volume relax, and whether the stress is computed.</td><td data-label="Default">0 for molecular dynamics (IBRION = 0) or hybrid functionals (LHFCALC = .TRUE.), otherwise 2</td><td data-label="More"><a href="incar-tags/#tag-isif">INCAR sheet</a></td></tr>
+<tr id="tag-ismear" data-search="ismear how electrons are smeared over states near the fermi level."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISMEAR" rel="noopener"><code>ISMEAR</code></a></th><td data-label="What it does">How electrons are smeared over states near the Fermi level.</td><td data-label="Default">1</td><td data-label="More"><a href="incar-tags/#tag-ismear">INCAR sheet</a></td></tr>
+<tr id="tag-ispin" data-search="ispin spin polarization: 1 off, 2 collinear spin-polarized."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISPIN" rel="noopener"><code>ISPIN</code></a></th><td data-label="What it does">Spin polarization: 1 off, 2 collinear spin-polarized.</td><td data-label="Default">1</td><td data-label="More"><a href="incar-tags/#tag-ispin">INCAR sheet</a></td></tr>
+<tr id="tag-istart" data-search="istart read the orbitals from wavecar (1) or start from scratch (0)."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISTART" rel="noopener"><code>ISTART</code></a></th><td data-label="What it does">Read the orbitals from WAVECAR (1) or start from scratch (0).</td><td data-label="Default">1 if a WAVECAR file exists, otherwise 0</td><td data-label="More"><a href="incar-tags/#tag-istart">INCAR sheet</a></td></tr>
+<tr id="tag-isym" data-search="isym how symmetry is used."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISYM" rel="noopener"><code>ISYM</code></a></th><td data-label="What it does">How symmetry is used.</td><td data-label="Default">2 for PAW; 3 with hybrids (LHFCALC); 1 with ultrasoft potentials</td><td data-label="More"><a href="incar-tags/#tag-isym">INCAR sheet</a></td></tr>
+<tr id="tag-kgamma" data-search="kgamma γ-centred mesh for kspacing."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KGAMMA" rel="noopener"><code>KGAMMA</code></a></th><td data-label="What it does">Γ-centred mesh for KSPACING.</td><td data-label="Default">.TRUE.</td><td data-label="More"><a href="incar-tags/#tag-kgamma">INCAR sheet</a></td></tr>
+<tr id="tag-kpar" data-search="kpar number of k-point groups that run in parallel."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KPAR" rel="noopener"><code>KPAR</code></a></th><td data-label="What it does">Number of k-point groups that run in parallel.</td><td data-label="Default">1</td><td data-label="More"><a href="incar-tags/#tag-kpar">INCAR sheet</a></td></tr>
+<tr id="tag-kspacing" data-search="kspacing k-mesh from the incar: the largest allowed spacing between k-points, in å⁻¹ (2π included)."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KSPACING" rel="noopener"><code>KSPACING</code></a></th><td data-label="What it does">k-mesh from the INCAR: the largest allowed spacing between k-points, in Å⁻¹ (2π included).</td><td data-label="Default">0.5 (Γ-centred while KGAMMA = .TRUE., its default)</td><td data-label="More"><a href="incar-tags/#tag-kspacing">INCAR sheet</a></td></tr>
+<tr id="tag-lasph" data-search="lasph non-spherical gradient corrections inside the paw spheres."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LASPH" rel="noopener"><code>LASPH</code></a></th><td data-label="What it does">Non-spherical gradient corrections inside the PAW spheres.</td><td data-label="Default">.FALSE.</td><td data-label="More"><a href="incar-tags/#tag-lasph">INCAR sheet</a></td></tr>
+<tr id="tag-lcharg" data-search="lcharg write chgcar and chg at the end of the run."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LCHARG" rel="noopener"><code>LCHARG</code></a></th><td data-label="What it does">Write CHGCAR and CHG at the end of the run.</td><td data-label="Default">.TRUE. (VASP 6.0–6.4.2: .NOT. LH5)</td><td data-label="More"><a href="incar-tags/#tag-lcharg">INCAR sheet</a></td></tr>
+<tr id="tag-lhfcalc" data-search="lhfcalc switches on a hybrid functional with exact exchange."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LHFCALC" rel="noopener"><code>LHFCALC</code></a></th><td data-label="What it does">Switches on a hybrid functional with exact exchange.</td><td data-label="Default">.FALSE.</td><td data-label="More"><a href="incar-tags/#tag-lhfcalc">INCAR sheet</a></td></tr>
+<tr id="tag-lmaxmix" data-search="lmaxmix highest angular momentum ℓ of the on-site densities that are mixed and written to chgcar."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LMAXMIX" rel="noopener"><code>LMAXMIX</code></a></th><td data-label="What it does">Highest angular momentum ℓ of the on-site densities that are mixed and written to CHGCAR.</td><td data-label="Default">2</td><td data-label="More"><a href="incar-tags/#tag-lmaxmix">INCAR sheet</a></td></tr>
+<tr id="tag-lmixtau" data-search="lmixtau also mix the kinetic-energy density (meta-gga)."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LMIXTAU" rel="noopener"><code>LMIXTAU</code></a></th><td data-label="What it does">Also mix the kinetic-energy density (meta-GGA).</td><td data-label="Default">.FALSE.</td><td data-label="More"><a href="incar-tags/#tag-lmixtau">INCAR sheet</a></td></tr>
+<tr id="tag-lnoncollinear" data-search="lnoncollinear noncollinear magnetism: each moment can point anywhere."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LNONCOLLINEAR" rel="noopener"><code>LNONCOLLINEAR</code></a></th><td data-label="What it does">Noncollinear magnetism: each moment can point anywhere.</td><td data-label="Default">.FALSE. (.TRUE. if LSORBIT = .TRUE.)</td><td data-label="More"><a href="incar-tags/#tag-lnoncollinear">INCAR sheet</a></td></tr>
+<tr id="tag-lorbit" data-search="lorbit projections onto atoms and orbitals: procar, projected dos and site moments."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LORBIT" rel="noopener"><code>LORBIT</code></a></th><td data-label="What it does">Projections onto atoms and orbitals: PROCAR, projected DOS and site moments.</td><td data-label="Default">0 (which needs RWIGS; from LORBIT = 10 on, RWIGS is ignored)</td><td data-label="More"><a href="incar-tags/#tag-lorbit">INCAR sheet</a></td></tr>
+<tr id="tag-lreal" data-search="lreal evaluate the projection operators in real space, which is faster for large cells."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LREAL" rel="noopener"><code>LREAL</code></a></th><td data-label="What it does">Evaluate the projection operators in real space, which is faster for large cells.</td><td data-label="Default">.FALSE.</td><td data-label="More"><a href="incar-tags/#tag-lreal">INCAR sheet</a></td></tr>
+<tr id="tag-lsorbit" data-search="lsorbit spin–orbit coupling."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LSORBIT" rel="noopener"><code>LSORBIT</code></a></th><td data-label="What it does">Spin–orbit coupling.</td><td data-label="Default">.FALSE.</td><td data-label="More"><a href="incar-tags/#tag-lsorbit">INCAR sheet</a></td></tr>
+<tr id="tag-lwave" data-search="lwave write wavecar at the end of the run."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LWAVE" rel="noopener"><code>LWAVE</code></a></th><td data-label="What it does">Write WAVECAR at the end of the run.</td><td data-label="Default">.TRUE.</td><td data-label="More"><a href="incar-tags/#tag-lwave">INCAR sheet</a></td></tr>
+<tr id="tag-magmom" data-search="magmom starting magnetic moment of each atom in μb, in poscar order."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/MAGMOM" rel="noopener"><code>MAGMOM</code></a></th><td data-label="What it does">Starting magnetic moment of each atom in μB, in POSCAR order.</td><td data-label="Default">1.0 per atom for ISPIN = 2; 3 × 1.0 per atom for noncollinear runs</td><td data-label="More"><a href="incar-tags/#tag-magmom">INCAR sheet</a></td></tr>
+<tr id="tag-maxmix" data-search="maxmix how many previous steps the broyden mixer keeps."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/MAXMIX" rel="noopener"><code>MAXMIX</code></a></th><td data-label="What it does">How many previous steps the Broyden mixer keeps.</td><td data-label="Default">−45</td><td data-label="More"><a href="incar-tags/#tag-maxmix">INCAR sheet</a></td></tr>
+<tr id="tag-metagga" data-search="metagga meta-gga functional, e.g. r2scan."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/METAGGA" rel="noopener"><code>METAGGA</code></a></th><td data-label="What it does">Meta-GGA functional, e.g. R2SCAN.</td><td data-label="Default">the functional given by LEXCH in the POTCAR</td><td data-label="More"><a href="incar-tags/#tag-metagga">INCAR sheet</a></td></tr>
+<tr id="tag-nbands" data-search="nbands number of bands (orbitals) per k-point."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NBANDS" rel="noopener"><code>NBANDS</code></a></th><td data-label="What it does">Number of bands (orbitals) per k-point.</td><td data-label="Default">max(nint(NELECT + 2)/2 + max(NIONS/2, 3), int(0.6 NELECT))</td><td data-label="More"><a href="incar-tags/#tag-nbands">INCAR sheet</a> · <a href="../wavefunctions-operators-eigenvalues/">Lecture 2</a></td></tr>
+<tr id="tag-ncore" data-search="ncore number of cores that work together on one band."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NCORE" rel="noopener"><code>NCORE</code></a></th><td data-label="What it does">Number of cores that work together on one band.</td><td data-label="Default">1</td><td data-label="More"><a href="incar-tags/#tag-ncore">INCAR sheet</a></td></tr>
+<tr id="tag-nedos" data-search="nedos number of points on the dos energy grid."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NEDOS" rel="noopener"><code>NEDOS</code></a></th><td data-label="What it does">Number of points on the DOS energy grid.</td><td data-label="Default">301</td><td data-label="More"><a href="incar-tags/#tag-nedos">INCAR sheet</a></td></tr>
+<tr id="tag-nelect" data-search="nelect number of electrons. by default it is set from the potcars (zval of each species times its number of atoms) for a neutral cell; set it only for a charged calculation."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NELECT" rel="noopener"><code>NELECT</code></a></th><td data-label="What it does">Number of electrons. By default it is set from the POTCARs (ZVAL of each species times its number of atoms) for a neutral cell; set it only for a charged calculation.</td><td data-label="Default">number of valence electrons (neutral cell)</td><td data-label="More"><a href="../wavefunctions-operators-eigenvalues/">Lecture 2</a></td></tr>
+<tr id="tag-nelm" data-search="nelm maximum number of scf steps per ionic step."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NELM" rel="noopener"><code>NELM</code></a></th><td data-label="What it does">Maximum number of SCF steps per ionic step.</td><td data-label="Default">60</td><td data-label="More"><a href="incar-tags/#tag-nelm">INCAR sheet</a></td></tr>
+<tr id="tag-nelmdl" data-search="nelmdl non-self-consistent steps at the start, before the density is updated."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NELMDL" rel="noopener"><code>NELMDL</code></a></th><td data-label="What it does">Non-self-consistent steps at the start, before the density is updated.</td><td data-label="Default">−12 if ISTART = 0, INIWAV = 1 and IALGO = 48 or 50; 0 if a WAVECAR is present; −5 otherwise</td><td data-label="More"><a href="incar-tags/#tag-nelmdl">INCAR sheet</a></td></tr>
+<tr id="tag-nelmin" data-search="nelmin minimum number of scf steps per ionic step."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NELMIN" rel="noopener"><code>NELMIN</code></a></th><td data-label="What it does">Minimum number of SCF steps per ionic step.</td><td data-label="Default">2</td><td data-label="More"><a href="incar-tags/#tag-nelmin">INCAR sheet</a></td></tr>
+<tr id="tag-npar" data-search="npar legacy: the number of band groups (mpi ranks ÷ ncore)."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NPAR" rel="noopener"><code>NPAR</code></a></th><td data-label="What it does">Legacy: the number of band groups (MPI ranks ÷ NCORE).</td><td data-label="Default">the number of MPI ranks</td><td data-label="More"><a href="incar-tags/#tag-npar">INCAR sheet</a></td></tr>
+<tr id="tag-nsim" data-search="nsim number of bands optimized at once in the blocked algorithms."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NSIM" rel="noopener"><code>NSIM</code></a></th><td data-label="What it does">Number of bands optimized at once in the blocked algorithms.</td><td data-label="Default">4</td><td data-label="More"><a href="incar-tags/#tag-nsim">INCAR sheet</a></td></tr>
+<tr id="tag-nsw" data-search="nsw maximum number of ionic steps."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NSW" rel="noopener"><code>NSW</code></a></th><td data-label="What it does">Maximum number of ionic steps.</td><td data-label="Default">0</td><td data-label="More"><a href="incar-tags/#tag-nsw">INCAR sheet</a></td></tr>
+<tr id="tag-nupdown" data-search="nupdown fixes the difference between spin-up and spin-down electrons, i.e. the total moment."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NUPDOWN" rel="noopener"><code>NUPDOWN</code></a></th><td data-label="What it does">Fixes the difference between spin-up and spin-down electrons, i.e. the total moment.</td><td data-label="Default">not set (free)</td><td data-label="More"><a href="incar-tags/#tag-nupdown">INCAR sheet</a></td></tr>
+<tr id="tag-potim" data-search="potim step size: the time step in fs for md, a step scaling for relaxations, the displacement in å for finite differences."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/POTIM" rel="noopener"><code>POTIM</code></a></th><td data-label="What it does">Step size: the time step in fs for MD, a step scaling for relaxations, the displacement in Å for finite differences.</td><td data-label="Default">0.5 for IBRION = 1, 2 and 3; 0.015 Å for IBRION = 5 and 6; none for molecular dynamics (must be set)</td><td data-label="More"><a href="incar-tags/#tag-potim">INCAR sheet</a></td></tr>
+<tr id="tag-prec" data-search="prec precision mode: sets the default fft grids."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/PREC" rel="noopener"><code>PREC</code></a></th><td data-label="What it does">Precision mode: sets the default FFT grids.</td><td data-label="Default">Normal (Medium in VASP 4)</td><td data-label="More"><a href="incar-tags/#tag-prec">INCAR sheet</a></td></tr>
+<tr id="tag-pstress" data-search="pstress a pressure added in relaxations that change the cell. its unit is kb (kilobar); 1 kb = 0.1 gpa."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/PSTRESS" rel="noopener"><code>PSTRESS</code></a></th><td data-label="What it does">A pressure added in relaxations that change the cell. Its unit is kB (kilobar); 1 kB = 0.1 GPa.</td><td data-label="Default">—</td><td data-label="More">—</td></tr>
+<tr id="tag-sigma" data-search="sigma smearing width in ev."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SIGMA" rel="noopener"><code>SIGMA</code></a></th><td data-label="What it does">Smearing width in eV.</td><td data-label="Default">0.2</td><td data-label="More"><a href="incar-tags/#tag-sigma">INCAR sheet</a></td></tr>
+<tr id="tag-symprec" data-search="symprec tolerance for finding symmetry from the poscar positions."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SYMPREC" rel="noopener"><code>SYMPREC</code></a></th><td data-label="What it does">Tolerance for finding symmetry from the POSCAR positions.</td><td data-label="Default">1E-5</td><td data-label="More"><a href="incar-tags/#tag-symprec">INCAR sheet</a></td></tr>
+<tr id="tag-system" data-search="system a free-text title for the run, printed in the output files."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SYSTEM" rel="noopener"><code>SYSTEM</code></a></th><td data-label="What it does">A free-text title for the run, printed in the output files.</td><td data-label="Default">unknown system</td><td data-label="More">—</td></tr>
+<tr id="tag-time" data-search="time trial time step of the electronic algorithms algo = damped and all."><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/TIME" rel="noopener"><code>TIME</code></a></th><td data-label="What it does">Trial time step of the electronic algorithms ALGO = Damped and All.</td><td data-label="Default">0.4</td><td data-label="More">—</td></tr>
+</tbody>
+</table></div>
+    </div>
+  </section>
+
+  <section class="home-block" aria-labelledby="checked-h">
+    <div class="home-in two">
+      <div>
+        <h2 id="checked-h">How the sheets are checked</h2>
+        <ul class="checked">
+          <li>Every tag, default and recommendation is read on the VASP Wiki when its sheet is written, and the sheet says which VASP version it was checked against.</li>
+          <li>Every INCAR on a sheet is checked by the same rules as the INCAR checker, and the build rejects unknown or misspelled tags.</li>
+          <li>Shell commands are tested on real VASP output files.</li>
+          <li>Labels separate VASP's own advice from rules of thumb, and say when a setting needs a newer VASP or the VTST add-on.</li>
+        </ul>
+      </div>
+      <div>
+        <h2 id="course-h">Part of a course</h2>
+        <p>These sheets are the practical side of <a href="../">Density Functional Theory and VASP</a>, a free interactive course that builds the physics behind every tag, from the Schrödinger equation to Kohn–Sham DFT, k-points, plane waves and PAW.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../deck.js"></script>
+<script type="module" src="../cheat.js"></script>
+</body>
+</html>

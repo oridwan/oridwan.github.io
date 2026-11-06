@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP INCAR Cheat Sheet: Tags, Defaults and Recipes</title>
+  <meta name="description" content="VASP INCAR cheat sheet for VASP 6: every key tag with its default and recommended value, smearing choices, copy-ready recipes and an INCAR builder.">
+  <meta name="keywords" content="VASP INCAR, INCAR tags, INCAR cheat sheet, ENCUT, ISMEAR, SIGMA, IBRION, ISIF, EDIFFG, VASP relaxation INCAR, VASP static calculation, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/incar-tags/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP INCAR Cheat Sheet: Tags, Defaults and Recipes">
+  <meta property="og:description" content="VASP INCAR cheat sheet for VASP 6: every key tag with its default and recommended value, smearing choices, copy-ready recipes and an INCAR builder.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/incar-tags/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP INCAR Cheat Sheet: Tags, Defaults and Recipes">
+  <meta name="twitter:description" content="VASP INCAR cheat sheet for VASP 6: every key tag with its default and recommended value, smearing choices, copy-ready recipes and an INCAR builder.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "VASP INCAR Cheat Sheet: Tags, Defaults and Recipes",
+  "name": "VASP INCAR cheat sheet",
+  "description": "VASP INCAR cheat sheet for VASP 6: every key tag with its default and recommended value, smearing choices, copy-ready recipes and an INCAR builder.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/incar-tags/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP INCAR, INCAR tags, INCAR cheat sheet, ENCUT, ISMEAR, SIGMA, IBRION, ISIF, EDIFFG, VASP relaxation INCAR, VASP static calculation, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “INCAR” (file format, comments, line continuation, and a complete example).",
+    "VASP Wiki, “Smearing technique” (how to choose ISMEAR and SIGMA for insulators, metals and unknown systems).",
+    "VASP Wiki, “Setting up an electronic minimization” (a minimal INCAR, the dry run, and converging ENCUT and k-points).",
+    "VASP Wiki, “Structure optimization” (choosing IBRION, POTIM and NELMIN, and the symmetry caveat).",
+    "VASP Wiki, “Volume relaxation” (Pulay stress, the 1.3 × cutoff rule and the restart protocol)."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "INCAR",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/incar-tags/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="incar-tags">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>INCAR</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Essentials</p>
+    <h1>VASP INCAR cheat sheet</h1>
+    <p class="sheet-lede">The INCAR tells VASP what to calculate and how carefully. This sheet lists the tags you should set yourself, with the default VASP uses if you do not, the value to use instead and the mistake each one invites. Build an INCAR for your task below, or check one you already have.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#builder">Build or check an INCAR</a></li>
+        <li><a href="#syntax">How VASP reads the INCAR</a></li>
+        <li><a href="#defaults">Defaults that bite</a></li>
+        <li><a href="#smearing">Choosing ISMEAR and SIGMA</a></li>
+        <li><a href="#recipes">Recipes by task</a></li>
+        <li><a href="#tags">The tags, group by group</a></li>
+        <li><a href="#check">Check what VASP read</a></li>
+        <li><a href="#versions">What changed between versions</a></li>
+        <li><a href="#materials-project">Matching Materials Project settings</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Set <a class="vtag" href="#tag-encut">ENCUT</a> yourself, the same in every run you compare, and at least 1.3 × the largest ENMAX of your POTCAR when the cell relaxes.</li>
+  <li>Choose the smearing: <code>ISMEAR = 0 ; SIGMA = 0.05</code> for insulators, <code>ISMEAR = 1 ; SIGMA = 0.2</code> to relax metals, <code>ISMEAR = -5</code> for final energies and DOS. Not sure? <code>ISMEAR = 0 ; SIGMA = 0.1</code>.</li>
+  <li>Tighten <a class="vtag" href="#tag-ediff">EDIFF</a> to <code>1E-6</code>.</li>
+  <li>Whenever <a class="vtag" href="#tag-nsw">NSW</a> &gt; 0, set <a class="vtag" href="#tag-ibrion">IBRION</a> (2 to relax) and a negative <a class="vtag" href="#tag-ediffg">EDIFFG</a>, such as <code>-0.02</code> eV/Å.</li>
+  <li>Switch on <a class="vtag" href="#tag-lasph">LASPH</a> for d and f elements, meta-GGA and hybrids, and set <a class="vtag" href="#tag-lmaxmix">LMAXMIX</a> to 4 (d) or 6 (f).</li>
+  <li>Read back what VASP understood: OUTCAR lists every value it used (<a href="#check">commands below</a>).</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="builder">
+<h2>Build or check an INCAR</h2>
+<p>Choose the task and describe the system, and the builder writes a commented INCAR from the rules on this sheet. Paste an INCAR you already have into the checker to catch the common traps. Both run in your browser; nothing is uploaded.</p>
+<div class="tool" data-tool="incar-builder" data-known="ADDGRID AEXX ALGO AMIX AMIX_MAG BMIX BMIX_MAG EDIFF EDIFFG EFERMI ENCUT GGA HFRCUT HFSCREEN IBRION ICHARG INIWAV ISEARCH ISIF ISMEAR ISPIN ISTART ISYM KGAMMA KPAR KSPACING LASPH LCHARG LHFCALC LMAXMIX LMIXTAU LNONCOLLINEAR LORBIT LREAL LSORBIT LWAVE MAGMOM MAXMIX METAGGA NBANDS NCORE NEDOS NELECT NELM NELMDL NELMIN NPAR NSIM NSW NUPDOWN POTIM PREC PSTRESS SIGMA SYMPREC SYSTEM TIME">
+  <noscript><p class="callout">The builder needs JavaScript. The <a href="#recipes">recipes</a> below give the same INCARs.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="syntax">
+<h2>How VASP reads the INCAR</h2>
+<div class="two-col">
+<ul class="tight">
+  <li>Each statement is <code>TAG = value</code>. Put several on one line with <code>;</code> between them.</li>
+  <li><code>#</code> or <code>!</code> starts a comment.</li>
+  <li>A <code>\</code> at the end of a line continues the statement on the next line. Leave no space after it.</li>
+  <li><code>N*value</code> repeats a value in array tags such as <a class="vtag" href="#tag-magmom">MAGMOM</a>: <code>4*5.0</code> is four atoms at 5 μB.</li>
+  <li>Logical values are <code>.TRUE.</code> and <code>.FALSE.</code></li>
+  <li>Avoid tabs: lines with tabs have broken the parsing with some compilers.</li>
+  <li>VASP acts only on the tags it knows. Check that every tag you set appears in OUTCAR with the value you meant (<a href="#check">how</a>), or run <code>vasp_std --dry-run</code> first (VASP 6.4 and later): it parses the input and stops before computing anything.</li>
+</ul>
+<figure class="code incar"><figcaption><span class="code-t">INCAR syntax in one example</span></figcaption><pre><code><span class="k">SYSTEM</span> = bcc Fe, two-atom cubic cell   <span class="c"># comments start with # or !</span>
+<span class="k">ISPIN</span>  = 2
+<span class="k">MAGMOM</span> = 1*3.0 \
+         1*3.0                         <span class="c">! one value per atom, continued with a backslash</span>
+<span class="k">ISMEAR</span> = 1 ; <span class="k">SIGMA</span> = 0.2               <span class="c">! two statements on one line</span></code></pre></figure>
+</div>
+</section>
+
+<section class="sheet-sec" id="defaults">
+<h2>Defaults that bite</h2>
+<p>VASP runs without most tags, using its defaults. These are the defaults that most often give a wrong or wasteful result.</p>
+<div class="bites">
+  <div class="bite"><p class="bite-k"><code>NSW &gt; 0</code> with no <code>IBRION</code></p><p>IBRION then defaults to 0, molecular dynamics, which has no default time step: VASP stops at once.</p><p class="fix">Set <code>IBRION = 2</code> to relax.</p></div>
+  <div class="bite"><p class="bite-k"><code>ISMEAR = 1</code> on an insulator</p><p>Methfessel–Paxton smearing (the default) can give unphysical occupancies in a gap; phonon frequencies can be off by more than 20%.</p><p class="fix"><code>ISMEAR = 0</code>, or <code>-5</code> for static runs.</p></div>
+  <div class="bite"><p class="bite-k">No <code>ENCUT</code></p><p>The cutoff becomes the largest ENMAX of the POTCAR, so it changes with the elements: energies of different compounds are not comparable, and it is too low for cell relaxations.</p><p class="fix">Set it in every INCAR.</p></div>
+  <div class="bite"><p class="bite-k"><code>EDIFFG</code> left at its default</p><p>The default is 10 × EDIFF, positive, so the relaxation stops on a small energy change while forces can still be large.</p><p class="fix"><code>EDIFFG = -0.02</code> (a force criterion).</p></div>
+  <div class="bite"><p class="bite-k"><code>EDIFF = 1E-4</code></p><p>Loose for forces, stress and anything you report.</p><p class="fix"><code>EDIFF = 1E-6</code>; <code>1E-7</code> or tighter for phonons.</p></div>
+  <div class="bite"><p class="bite-k"><code>LASPH = .FALSE.</code></p><p>Stays off even when you set METAGGA, though meta-GGA, hybrids, DFT+U and 3d or f elements need the non-spherical terms.</p><p class="fix"><code>LASPH = .TRUE.</code></p></div>
+  <div class="bite"><p class="bite-k"><code>LMAXMIX = 2</code></p><p>A DOS or band run that reads CHGCAR (ICHARG = 11) of a d or f system can then differ from the self-consistent run.</p><p class="fix">4 for d, 6 for f elements, in both runs.</p></div>
+  <div class="bite"><p class="bite-k">No <code>MAGMOM</code></p><p>Every atom starts at 1 μB, all parallel: an antiferromagnetic or high-moment state may never be found.</p><p class="fix">Set one value per atom, in POSCAR order.</p></div>
+  <div class="bite"><p class="bite-k"><code>LWAVE = .TRUE.</code></p><p>WAVECAR is written at the end of every run, often gigabytes.</p><p class="fix"><code>LWAVE = .FALSE.</code> unless a later run reads it.</p></div>
+  <div class="bite"><p class="bite-k">No KPOINTS file</p><p>VASP falls back on KSPACING = 0.5 Å⁻¹, coarse for metals; and a stray KPOINTS file silently overrides KSPACING.</p><p class="fix">Write a KPOINTS file, or set KSPACING yourself.</p></div>
+  <div class="bite"><p class="bite-k"><code>NPAR</code> from an old template</p><p>If NPAR and NCORE are both set, NPAR wins.</p><p class="fix">Delete NPAR; keep NCORE.</p></div>
+  <div class="bite"><p class="bite-k">Symmetry kept by default</p><p>A relaxation keeps the symmetry of the starting structure, so a lower-symmetry minimum is out of reach.</p><p class="fix">Displace atoms slightly in POSCAR to break it.</p></div>
+</div>
+</section>
+
+<section class="sheet-sec" id="smearing">
+<h2>Choosing ISMEAR and SIGMA</h2>
+<p>Smearing decides how electrons occupy states near the Fermi level. It is the setting most often left at a bad default.</p>
+<div class="tagtable-wrap"><table class="choice smear">
+<thead><tr><th scope="col">System and task</th><th scope="col"><code>ISMEAR</code></th><th scope="col"><code>SIGMA</code> <span class="nt">(eV)</span></th><th scope="col">Why</th></tr></thead>
+<tbody>
+<tr><th scope="row">Not sure if it is a metal, or high-throughput</th><td data-label="ISMEAR">0</td><td data-label="SIGMA">0.03–0.1</td><td data-label="Why">Gaussian smearing is safe for both. With <code>EFERMI = MIDGAP</code> (VASP 6.4 and later) the Fermi level sits mid-gap. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Insulator or semiconductor: relaxation, phonons</th><td data-label="ISMEAR">0</td><td data-label="SIGMA">0.05</td><td data-label="Why">Never ISMEAR &gt; 0 for a gapped system. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Insulator: static energy, DOS</th><td data-label="ISMEAR">−5</td><td data-label="SIGMA">—</td><td data-label="Why">Tetrahedron method with Blöchl corrections: no SIGMA to converge. Needs a Γ-centred mesh with at least 4 k-points, otherwise use 0.</td></tr>
+<tr><th scope="row">Metal: relaxation, forces, phonons</th><td data-label="ISMEAR">1 or 2</td><td data-label="SIGMA">≈ 0.2</td><td data-label="Why">Methfessel–Paxton: as large a SIGMA as keeps “entropy T*S” in OUTCAR below 1 meV per atom. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Metal: total energy, DOS</th><td data-label="ISMEAR">−5</td><td data-label="SIGMA">—</td><td data-label="Why">Accurate energies and DOS on a dense mesh. Not for relaxing: its forces and stress in metals can be off by 5–10%.</td></tr>
+<tr><th scope="row">Band structure along a path</th><td data-label="ISMEAR">0</td><td data-label="SIGMA">0.05</td><td data-label="Why">Tetrahedra need a full mesh, and the Fermi energy cannot be computed on a path: take E-fermi from the self-consistent run.</td></tr>
+</tbody>
+</table></div>
+<figure class="code sh"><figcaption><span class="code-t">Check the smearing in a finished run</span></figcaption><pre><code>grep &quot;entropy T\*S&quot; OUTCAR | tail -1  <span class="c"> # last value, in eV for the whole cell: divide by the number of atoms</span>
+grep E-fermi OUTCAR | tail -1         <span class="c"> # Fermi energy of the last step</span></code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="recipes">
+<h2>Recipes by task</h2>
+<p>Each block is a complete starting INCAR. Replace the ENCUT of 520 eV with your converged value, and keep it the same across a workflow. The usual chain is: relax the cell → relax again from CONTCAR until the volume stops changing → static run → DOS and band structure from its CHGCAR.</p>
+
+<div class="recipes">
+<figure class="code incar"><figcaption><span class="code-t">Relax atoms and cell (ISIF = 3)</span></figcaption><pre><code><span class="k">ENCUT</span>  = 520          <span class="c">! at least 1.3 x the largest ENMAX: the cell changes (Pulay stress)</span>
+<span class="k">PREC</span>   = Accurate
+<span class="k">EDIFF</span>  = 1E-6
+<span class="k">ISMEAR</span> = 0 ; <span class="k">SIGMA</span> = 0.05   <span class="c">! insulator; for a metal use ISMEAR = 1 ; SIGMA = 0.2</span>
+<span class="k">IBRION</span> = 2            <span class="c">! conjugate gradient; 1 (RMM-DIIS) once close to the minimum</span>
+<span class="k">ISIF</span>   = 3            <span class="c">! atoms, cell shape and volume</span>
+<span class="k">NSW</span>    = 100
+<span class="k">EDIFFG</span> = -0.02        <span class="c">! stop when every force is below 0.02 eV/A</span>
+<span class="k">NELMIN</span> = 4            <span class="c">! at least 4 SCF steps per ionic step</span>
+<span class="k">LCHARG</span> = .FALSE. ; <span class="k">LWAVE</span> = .FALSE.</code></pre></figure>
+<p class="then"><b>Then:</b> <code>cp CONTCAR POSCAR</code> and run again until the volume stops changing (the basis was set up for the starting cell). Finish with a static run.</p>
+
+<figure class="code incar"><figcaption><span class="code-t">Relax atoms in a fixed cell (ISIF = 2)</span></figcaption><pre><code><span class="k">ENCUT</span>  = 520
+<span class="k">PREC</span>   = Accurate
+<span class="k">EDIFF</span>  = 1E-6
+<span class="k">ISMEAR</span> = 0 ; <span class="k">SIGMA</span> = 0.05   <span class="c">! insulator; for a metal use ISMEAR = 1 ; SIGMA = 0.2</span>
+<span class="k">IBRION</span> = 2
+<span class="k">ISIF</span>   = 2            <span class="c">! atoms only: surfaces, defects, molecules in a box</span>
+<span class="k">NSW</span>    = 100
+<span class="k">EDIFFG</span> = -0.02
+<span class="k">NELMIN</span> = 4            <span class="c">! 8 for complex surfaces</span>
+<span class="k">LCHARG</span> = .FALSE. ; <span class="k">LWAVE</span> = .FALSE.</code></pre></figure>
+
+<figure class="code incar"><figcaption><span class="code-t">Static run (also the SCF for DOS and bands)</span></figcaption><pre><code><span class="k">ENCUT</span>   = 520         <span class="c">! the same cutoff as the relaxation</span>
+<span class="k">PREC</span>    = Accurate
+<span class="k">EDIFF</span>   = 1E-6
+<span class="k">ISMEAR</span>  = -5          <span class="c">! tetrahedron: Gamma-centred mesh, at least 4 k-points</span>
+<span class="k">NSW</span>     = 0
+<span class="k">IBRION</span>  = -1
+<span class="k">LORBIT</span>  = 11          <span class="c">! projected DOS and site moments</span>
+<span class="k">LMAXMIX</span> = 4           <span class="c">! 4 for d, 6 for f elements; keep it in runs that read CHGCAR</span>
+<span class="k">LCHARG</span>  = .TRUE.      <span class="c">! CHGCAR feeds the DOS and band runs</span>
+<span class="k">LWAVE</span>   = .FALSE.</code></pre></figure>
+<p class="then">For the forces or stress of a metal in a static run, use <code>ISMEAR = 1 ; SIGMA = 0.2</code> instead of −5.</p>
+
+<figure class="code incar"><figcaption><span class="code-t">Density of states from CHGCAR</span></figcaption><pre><code><span class="k">ENCUT</span>   = 520         <span class="c">! the same as the run that wrote CHGCAR</span>
+<span class="k">PREC</span>    = Accurate
+<span class="k">ICHARG</span>  = 11          <span class="c">! read CHGCAR and keep the density fixed</span>
+<span class="k">ISMEAR</span>  = -5
+<span class="k">NEDOS</span>   = 2001        <span class="c">! a fine energy grid</span>
+<span class="k">LORBIT</span>  = 11
+<span class="k">NSW</span>     = 0
+<span class="k">LMAXMIX</span> = 4           <span class="c">! must match the self-consistent run</span>
+<span class="k">LCHARG</span>  = .FALSE. ; <span class="k">LWAVE</span> = .FALSE.</code></pre></figure>
+<p class="then">Copy CHGCAR from the static run and use a denser Γ-centred k-mesh than it had.</p>
+
+<figure class="code incar"><figcaption><span class="code-t">Band structure from CHGCAR</span></figcaption><pre><code><span class="k">ENCUT</span>   = 520
+<span class="k">PREC</span>    = Accurate
+<span class="k">ICHARG</span>  = 11
+<span class="k">ISMEAR</span>  = 0 ; <span class="k">SIGMA</span> = 0.05  <span class="c">! take E-fermi from the self-consistent run</span>
+<span class="k">LORBIT</span>  = 11          <span class="c">! orbital character of each band (PROCAR)</span>
+<span class="k">NSW</span>     = 0
+<span class="k">LMAXMIX</span> = 4
+<span class="k">LCHARG</span>  = .FALSE. ; <span class="k">LWAVE</span> = .FALSE.</code></pre></figure>
+<p class="then">KPOINTS holds the high-symmetry path in line mode; the <span class="lec-ref" title="VASP KPOINTS cheat sheet (in preparation)">KPOINTS sheet</span> covers the format.</p>
+
+<figure class="code incar"><figcaption><span class="code-t">Spin-polarized: ferromagnet and antiferromagnet</span></figcaption><pre><code><span class="k">ISPIN</span>  = 2
+<span class="k">MAGMOM</span> = 2*3.0              <span class="c">! ferromagnet: one value per atom, in POSCAR order</span>
+<span class="c"># MAGMOM = 2*4.0 2*-4.0 4*0.0   ! antiferromagnet, e.g. two Mn up, two Mn down, four O</span>
+<span class="k">LORBIT</span> = 11                 <span class="c">! moment of each site in OUTCAR</span>
+<span class="k">LASPH</span>  = .TRUE.
+<span class="k">LMAXMIX</span> = 4</code></pre></figure>
+<p class="then">Add these lines to any recipe above. Start the moments 1.2–1.5 × above the expected values; an antiferromagnet needs a cell that holds both sublattices, often a supercell. The <span class="lec-ref" title="VASP magnetism cheat sheet (in preparation)">magnetism sheet</span> goes further.</p>
+
+<figure class="code incar"><figcaption><span class="code-t">r2SCAN meta-GGA</span></figcaption><pre><code><span class="k">METAGGA</span> = R2SCAN      <span class="c">! VASP 6.2.0 or later; avoid 6.6.0 for spin-polarized forces</span>
+<span class="k">LASPH</span>   = .TRUE.
+<span class="k">ALGO</span>    = All
+<span class="k">ISEARCH</span> = 1           <span class="c">! VASP 6.5.1 or later; delete it on older versions</span>
+<span class="k">EDIFF</span>   = 1E-6</code></pre></figure>
+<p class="then">Add to a recipe above, with a converged ENCUT (Materials Project uses 680 eV for r²SCAN). Check that every POTCAR has kinetic-energy data: <code>grep kinetic POTCAR</code>. If the SCF struggles, start from a PBE WAVECAR; with <code>ALGO = Normal</code>, <code>LMIXTAU = .TRUE.</code> can help. Band structures and DOS with a meta-GGA follow the hybrid procedure below, not ICHARG = 11.</p>
+
+<figure class="code incar"><figcaption><span class="code-t">HSE06 hybrid, static run</span></figcaption><pre><code><span class="k">LHFCALC</span>  = .TRUE.
+<span class="k">HFSCREEN</span> = 0.2        <span class="c">! HSE06; the exact-exchange fraction AEXX is 0.25 by default</span>
+<span class="k">ALGO</span>     = All        <span class="c">! direct optimization: the recommended choice for hybrids</span>
+<span class="k">ISEARCH</span>  = 1          <span class="c">! VASP 6.5.1 or later; delete it on older versions</span>
+<span class="k">ENCUT</span>    = 520
+<span class="k">PREC</span>     = Accurate
+<span class="k">EDIFF</span>    = 1E-6
+<span class="k">ISMEAR</span>   = 0 ; <span class="k">SIGMA</span> = 0.05
+<span class="k">LASPH</span>    = .TRUE.
+<span class="k">NSW</span>      = 0 ; <span class="k">IBRION</span> = -1
+<span class="k">LWAVE</span>    = .TRUE.     <span class="c">! hybrids are expensive: keep WAVECAR for restarts</span></code></pre></figure>
+<p class="then">Start from a converged PBE WAVECAR. Never use ICHARG = 11 with hybrids: for a band structure, put the path in a KPOINTS_OPT file (VASP 6.3.0 and later) or as zero-weight k-points, and set <code>HFRCUT = -1</code>. To relax the cell with a hybrid, set ISIF explicitly: its default is 0, which moves the atoms but computes no stress.</p>
+</div>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The tags, group by group</h2>
+<p>Each tag name opens its page on the VASP Wiki. A version badge marks tags that need a recent VASP.</p>
+
+<h3 id="g-start">Start and restart</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-istart"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISTART" rel="noopener" title="ISTART on the VASP Wiki"><code>ISTART</code></a></th><td data-label="What it does">Read the orbitals from WAVECAR (1) or start from scratch (0).</td><td data-label="Default">1 if a WAVECAR file exists, otherwise 0</td><td data-label="What to use">Leave it unset: VASP restarts from a WAVECAR in the folder. Set 0 to force a fresh start.</td><td data-label="Watch out">A WAVECAR left in the folder is read automatically. That is a harmless starting guess, but delete it if it belongs to another system.</td></tr>
+<tr id="tag-icharg"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ICHARG" rel="noopener" title="ICHARG on the VASP Wiki"><code>ICHARG</code></a></th><td data-label="What it does">How the starting charge density is made.</td><td data-label="Default">2 if ISTART = 0, otherwise 0</td><td data-label="What to use">2: atomic densities (new runs). 1: read CHGCAR. 11: DOS or band structure from a converged CHGCAR, density kept fixed.</td><td data-label="Watch out">11 needs CHGCAR from a self-consistent run on a full k-mesh, with the same LMAXMIX. Never use 11 with hybrid functionals.</td></tr>
+<tr id="tag-lmaxmix"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LMAXMIX" rel="noopener" title="LMAXMIX on the VASP Wiki"><code>LMAXMIX</code></a></th><td data-label="What it does">Highest angular momentum ℓ of the on-site densities that are mixed and written to CHGCAR.</td><td data-label="Default">2</td><td data-label="What to use">4 for d elements, 6 for f elements: needed for DFT+U and noncollinear runs, and for DOS or band runs from CHGCAR.</td><td data-label="Watch out">Left at 2, a run that reads CHGCAR (ICHARG = 11) can differ from the self-consistent result; for DFT+U band structures 4 or 6 is strictly required.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-basis">Basis set and precision</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-encut"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ENCUT" rel="noopener" title="ENCUT on the VASP Wiki"><code>ENCUT</code></a></th><td data-label="What it does">Plane-wave cutoff in eV: the size of the basis set.</td><td data-label="Default">the largest ENMAX among the POTCAR files</td><td data-label="What to use">Always set it. Converge the quantity you report, raising ENCUT about 20% per step. Cell relaxations: at least 1.3 × the largest ENMAX.</td><td data-label="Watch out">Never go below the default. Energies are comparable only between runs with the same ENCUT.</td></tr>
+<tr id="tag-prec"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/PREC" rel="noopener" title="PREC on the VASP Wiki"><code>PREC</code></a></th><td data-label="What it does">Precision mode: sets the default FFT grids.</td><td data-label="Default">Normal (Medium in VASP 4)</td><td data-label="What to use">Normal for routine work; Accurate for accurate forces, stress and phonons.</td><td data-label="Watch out">Low, Medium and High are deprecated. High only raises the cutoff by 30%, so set ENCUT instead.</td></tr>
+<tr id="tag-lasph"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LASPH" rel="noopener" title="LASPH on the VASP Wiki"><code>LASPH</code></a></th><td data-label="What it does">Non-spherical gradient corrections inside the PAW spheres.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">.TRUE. for 3d and f elements and magnetic B–F atoms, and whenever you use DFT+U, hybrids, meta-GGA (r²SCAN) or vdW-DF.</td><td data-label="Watch out">It stays .FALSE. even when METAGGA is set: switch it on yourself.</td></tr>
+<tr id="tag-lreal"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LREAL" rel="noopener" title="LREAL on the VASP Wiki"><code>LREAL</code></a></th><td data-label="What it does">Evaluate the projection operators in real space, which is faster for large cells.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">Auto for more than about 30 atoms; .FALSE. for small cells and for final energies.</td><td data-label="Watch out">.TRUE. and On are not recommended. Compare energies only between runs with the same LREAL.</td></tr>
+<tr id="tag-addgrid"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ADDGRID" rel="noopener" title="ADDGRID on the VASP Wiki"><code>ADDGRID</code></a></th><td data-label="What it does">An extra, finer grid for the augmentation charges.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">Leave it off. Try it only if tests show it reduces noise in the forces.</td><td data-label="Watch out">Not meant as a default setting for every calculation.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-electronic">Electronic minimization</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-algo"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ALGO" rel="noopener" title="ALGO on the VASP Wiki"><code>ALGO</code></a></th><td data-label="What it does">Electronic minimization algorithm.</td><td data-label="Default">Normal (blocked Davidson)</td><td data-label="What to use">Normal: robust default. Fast: large cells and MD. All (with ISEARCH = 1): magnetic, DFT+U, meta-GGA and hybrid runs, or when Normal fails. Damped (with TIME): metals or small-gap systems with hybrids or meta-GGA, when the others fail.</td><td data-label="Watch out">VeryFast is not supported for hybrids. Fast and VeryFast were rewritten in VASP 6 ("Old Fast" selects the VASP 5 version).</td></tr>
+<tr id="tag-isearch"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISEARCH" rel="noopener" title="ISEARCH on the VASP Wiki"><code>ISEARCH</code></a> <span class="since" title="Needs VASP 6.5.1 or later">6.5.1+</span></th><td data-label="What it does">Line search used by ALGO = All.</td><td data-label="Default">0</td><td data-label="What to use">1 together with ALGO = All: it usually converges more stably.</td><td data-label="Watch out">The improved line search arrived in VASP 6.5.1; the default is still 0.</td></tr>
+<tr id="tag-ediff"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/EDIFF" rel="noopener" title="EDIFF on the VASP Wiki"><code>EDIFF</code></a></th><td data-label="What it does">SCF stopping criterion: the energy change between steps, in eV.</td><td data-label="Default">10<sup>−4</sup> eV</td><td data-label="What to use">1E-6 is the best general compromise; 1E-7 or tighter for phonons and other finite-difference runs.</td><td data-label="Watch out">The default is loose for anything you report.</td></tr>
+<tr id="tag-nelm"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NELM" rel="noopener" title="NELM on the VASP Wiki"><code>NELM</code></a></th><td data-label="What it does">Maximum number of SCF steps per ionic step.</td><td data-label="Default">60</td><td data-label="What to use">Keep it near the default.</td><td data-label="Watch out">An SCF that has not converged in about 40 steps usually needs a different ALGO or mixing, not a larger NELM.</td></tr>
+<tr id="tag-nelmin"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NELMIN" rel="noopener" title="NELMIN on the VASP Wiki"><code>NELMIN</code></a></th><td data-label="What it does">Minimum number of SCF steps per ionic step.</td><td data-label="Default">2</td><td data-label="What to use">4 for relaxations of simple bulk materials, 8 for complex surfaces.</td><td data-label="Watch out">Too few SCF steps per ionic step give inaccurate forces.</td></tr>
+<tr id="tag-nelmdl"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NELMDL" rel="noopener" title="NELMDL on the VASP Wiki"><code>NELMDL</code></a></th><td data-label="What it does">Non-self-consistent steps at the start, before the density is updated.</td><td data-label="Default">−12 if ISTART = 0, INIWAV = 1 and IALGO = 48 or 50; 0 if a WAVECAR is present; −5 otherwise</td><td data-label="What to use">Leave the default: a negative value delays only the first ionic step.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-nbands"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NBANDS" rel="noopener" title="NBANDS on the VASP Wiki"><code>NBANDS</code></a></th><td data-label="What it does">Number of bands (orbitals) per k-point.</td><td data-label="Default">max(nint(NELECT + 2)/2 + max(NIONS/2, 3), int(0.6 NELECT))</td><td data-label="What to use">The default is safe for ground states. Raise it for optics, GW and f-electron systems.</td><td data-label="Watch out">Before VASP 6.6.0 the default used the signed MAGMOM, so negative starting moments (as in antiferromagnets) could give too few bands. VASP rounds NBANDS up for parallel efficiency.</td></tr>
+<tr id="tag-lmixtau"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LMIXTAU" rel="noopener" title="LMIXTAU on the VASP Wiki"><code>LMIXTAU</code></a></th><td data-label="What it does">Also mix the kinetic-energy density (meta-GGA).</td><td data-label="Default">.FALSE.</td><td data-label="What to use">.TRUE. if a meta-GGA SCF with ALGO = Normal or Fast does not converge.</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-smearing">Smearing</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ismear"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISMEAR" rel="noopener" title="ISMEAR on the VASP Wiki"><code>ISMEAR</code></a></th><td data-label="What it does">How electrons are smeared over states near the Fermi level.</td><td data-label="Default">1</td><td data-label="What to use">Not sure: 0. Insulators: 0, or −5 for static runs and DOS. Metals: 1 or 2 for relaxations and phonons, −5 for total energies and DOS.</td><td data-label="Watch out">Never ISMEAR > 0 for insulators: phonon frequencies can be off by more than 20%. −5 needs a Γ-centred mesh with at least 4 k-points, and in metals its forces can be off by 5–10%.</td></tr>
+<tr id="tag-sigma"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SIGMA" rel="noopener" title="SIGMA on the VASP Wiki"><code>SIGMA</code></a></th><td data-label="What it does">Smearing width in eV.</td><td data-label="Default">0.2</td><td data-label="What to use">0.03–0.1 with ISMEAR = 0. Metals with ISMEAR = 1 or 2: as large as keeps "entropy T*S" in OUTCAR below 1 meV/atom (often 0.2).</td><td data-label="Watch out">Ignored by ISMEAR = −4 and −5. Forces belong to the smeared free energy, so converge them with SIGMA too.</td></tr>
+<tr id="tag-efermi"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/EFERMI" rel="noopener" title="EFERMI on the VASP Wiki"><code>EFERMI</code></a> <span class="since" title="Needs VASP 6.4 or later">6.4+</span></th><td data-label="What it does">How the Fermi energy is placed.</td><td data-label="Default">LEGACY</td><td data-label="What to use">MIDGAP puts it in the middle of the gap of a semiconductor; recommended with ISMEAR = 0.</td><td data-label="Watch out">Available from VASP 6.4.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-mixing">Density mixing, for SCF trouble</h3>
+<p>Touch these only when the SCF will not converge. For a stubborn magnetic system, VASP's own advice is to converge a non-magnetic density first and restart from it, to switch to nearly linear mixing with <code>BMIX = 0.0001 ; BMIX_MAG = 0.0001</code>, and to lower AMIX and AMIX_MAG. The <span class="lec-ref" title="VASP errors and fixes (in preparation)">errors sheet</span> covers this in detail.</p>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-amix"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/AMIX" rel="noopener" title="AMIX on the VASP Wiki"><code>AMIX</code></a></th><td data-label="What it does">Linear mixing parameter for the charge density.</td><td data-label="Default">0.4 (PAW)</td><td data-label="What to use">Lower it if the SCF oscillates.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-bmix"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/BMIX" rel="noopener" title="BMIX on the VASP Wiki"><code>BMIX</code></a></th><td data-label="What it does">Cutoff wave vector of the Kerker mixing for the charge density.</td><td data-label="Default">1.0</td><td data-label="What to use">A tiny value (0.0001) makes the mixing nearly linear, a step in the magnetic troubleshooting recipe.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-amix-mag"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/AMIX_MAG" rel="noopener" title="AMIX_MAG on the VASP Wiki"><code>AMIX_MAG</code></a></th><td data-label="What it does">Mixing parameter for the magnetization density.</td><td data-label="Default">1.6</td><td data-label="What to use">Lower it, together with BMIX_MAG, when a magnetic SCF will not settle.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-bmix-mag"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/BMIX_MAG" rel="noopener" title="BMIX_MAG on the VASP Wiki"><code>BMIX_MAG</code></a></th><td data-label="What it does">Kerker cutoff for the magnetization density.</td><td data-label="Default">1.0</td><td data-label="What to use">0.0001 for nearly linear mixing in hard magnetic cases.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-maxmix"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/MAXMIX" rel="noopener" title="MAXMIX on the VASP Wiki"><code>MAXMIX</code></a></th><td data-label="What it does">How many previous steps the Broyden mixer keeps.</td><td data-label="Default">−45</td><td data-label="What to use">A positive value keeps the mixer history across ionic steps, which can save SCF steps in relaxations and MD. In hard magnetic cases, a smaller |MAXMIX| can help.</td><td data-label="Watch out">Negative (the default) resets the mixer at every ionic step.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-ionic">Ionic motion</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-nsw"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NSW" rel="noopener" title="NSW on the VASP Wiki"><code>NSW</code></a></th><td data-label="What it does">Maximum number of ionic steps.</td><td data-label="Default">0</td><td data-label="What to use">0 for static runs; about 100 for relaxations.</td><td data-label="Watch out">With NSW > 0, always set IBRION too.</td></tr>
+<tr id="tag-ibrion"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/IBRION" rel="noopener" title="IBRION on the VASP Wiki"><code>IBRION</code></a></th><td data-label="What it does">How the atoms move.</td><td data-label="Default">−1 if NSW = −1 or 0, otherwise 0 (molecular dynamics)</td><td data-label="What to use">2 (conjugate gradient) far from the minimum; 1 (RMM-DIIS) close to it; 0 for MD; 6 or 8 for phonons.</td><td data-label="Watch out">NSW > 0 without IBRION gives IBRION = 0, molecular dynamics with no time step, and VASP stops at once.</td></tr>
+<tr id="tag-isif"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISIF" rel="noopener" title="ISIF on the VASP Wiki"><code>ISIF</code></a></th><td data-label="What it does">Which of atoms, cell shape and volume relax, and whether the stress is computed.</td><td data-label="Default">0 for molecular dynamics (IBRION = 0) or hybrid functionals (LHFCALC = .TRUE.), otherwise 2</td><td data-label="What to use">2: atoms only. 3: atoms, shape and volume. 4: atoms and shape at fixed volume. 7: volume only. 8: atoms and volume (VASP 6.4.1 and later).</td><td data-label="Watch out">Changing the cell gives Pulay stress: use ENCUT ≥ 1.3 × ENMAX and re-run from CONTCAR. Hybrids default to ISIF = 0, so no stress unless you set it.</td></tr>
+<tr id="tag-ediffg"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/EDIFFG" rel="noopener" title="EDIFFG on the VASP Wiki"><code>EDIFFG</code></a></th><td data-label="What it does">When a relaxation stops.</td><td data-label="Default">EDIFF × 10</td><td data-label="What to use">Negative = force criterion in eV/Å: −0.02 is a common choice; tighten it before phonon calculations.</td><td data-label="Watch out">Positive values (including the default) stop on an energy change, not on the forces.</td></tr>
+<tr id="tag-potim"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/POTIM" rel="noopener" title="POTIM on the VASP Wiki"><code>POTIM</code></a></th><td data-label="What it does">Step size: the time step in fs for MD, a step scaling for relaxations, the displacement in Å for finite differences.</td><td data-label="Default">0.5 for IBRION = 1, 2 and 3; 0.015 Å for IBRION = 5 and 6; none for molecular dynamics (must be set)</td><td data-label="What to use">Keep 0.5 for relaxations. MD: it must be set, and light atoms such as H need a smaller step.</td><td data-label="Watch out">IBRION = 1 is especially sensitive to POTIM.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-spin">Spin</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ispin"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISPIN" rel="noopener" title="ISPIN on the VASP Wiki"><code>ISPIN</code></a></th><td data-label="What it does">Spin polarization: 1 off, 2 collinear spin-polarized.</td><td data-label="Default">1</td><td data-label="What to use">2 for anything that may be magnetic.</td><td data-label="Watch out">Noncollinear runs ignore it; delete it there.</td></tr>
+<tr id="tag-magmom"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/MAGMOM" rel="noopener" title="MAGMOM on the VASP Wiki"><code>MAGMOM</code></a></th><td data-label="What it does">Starting magnetic moment of each atom in μB, in POSCAR order.</td><td data-label="Default">1.0 per atom for ISPIN = 2; 3 × 1.0 per atom for noncollinear runs</td><td data-label="What to use">Start 1.2–1.5 × the expected moment; give antiferromagnetic sublattices opposite signs; use N*value shorthand, e.g. 4*5.0 4*-5.0.</td><td data-label="Watch out">It also lowers the symmetry. Keep it on restarts, or the magnetization can be symmetrized away. The final state depends on the start.</td></tr>
+<tr id="tag-nupdown"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NUPDOWN" rel="noopener" title="NUPDOWN on the VASP Wiki"><code>NUPDOWN</code></a></th><td data-label="What it does">Fixes the difference between spin-up and spin-down electrons, i.e. the total moment.</td><td data-label="Default">not set (free)</td><td data-label="What to use">Only to impose a total moment, as in fixed-spin-moment scans.</td><td data-label="Watch out">A wrong value forces a wrong moment: leave it unset in normal runs.</td></tr>
+<tr id="tag-lnoncollinear"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LNONCOLLINEAR" rel="noopener" title="LNONCOLLINEAR on the VASP Wiki"><code>LNONCOLLINEAR</code></a></th><td data-label="What it does">Noncollinear magnetism: each moment can point anywhere.</td><td data-label="Default">.FALSE. (.TRUE. if LSORBIT = .TRUE.)</td><td data-label="What to use">Needs vasp_ncl; MAGMOM then takes three numbers per atom.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-lsorbit"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LSORBIT" rel="noopener" title="LSORBIT on the VASP Wiki"><code>LSORBIT</code></a></th><td data-label="What it does">Spin–orbit coupling.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">Magnetic anisotropy and heavy elements. Needs vasp_ncl and switches on LNONCOLLINEAR.</td><td data-label="Watch out">Set LMAXMIX (4 for d, 6 for f elements).</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-output">Output files</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-lwave"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LWAVE" rel="noopener" title="LWAVE on the VASP Wiki"><code>LWAVE</code></a></th><td data-label="What it does">Write WAVECAR at the end of the run.</td><td data-label="Default">.TRUE.</td><td data-label="What to use">.FALSE. unless a later run reads it (hybrid restarts, some post-processing).</td><td data-label="Watch out">WAVECAR can be gigabytes.</td></tr>
+<tr id="tag-lcharg"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LCHARG" rel="noopener" title="LCHARG on the VASP Wiki"><code>LCHARG</code></a></th><td data-label="What it does">Write CHGCAR and CHG at the end of the run.</td><td data-label="Default">.TRUE. (VASP 6.0–6.4.2: .NOT. LH5)</td><td data-label="What to use">.TRUE. for the self-consistent run that feeds a DOS, band-structure or charge analysis.</td><td data-label="Watch out">ICHARG = 11 cannot read the density from vaspwave.h5 yet; it needs CHGCAR.</td></tr>
+<tr id="tag-lorbit"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LORBIT" rel="noopener" title="LORBIT on the VASP Wiki"><code>LORBIT</code></a></th><td data-label="What it does">Projections onto atoms and orbitals: PROCAR, projected DOS and site moments.</td><td data-label="Default">0 (which needs RWIGS; from LORBIT = 10 on, RWIGS is ignored)</td><td data-label="What to use">11: s, p, d (lm-resolved) projections with no RWIGS needed.</td><td data-label="Watch out">Values below 10 need RWIGS. LORBIT = 12 is for qualitative work only.</td></tr>
+<tr id="tag-nedos"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NEDOS" rel="noopener" title="NEDOS on the VASP Wiki"><code>NEDOS</code></a></th><td data-label="What it does">Number of points on the DOS energy grid.</td><td data-label="Default">301</td><td data-label="What to use">2001 or more for a smooth DOS.</td><td data-label="Watch out">Too few points wash out sharp features.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-functional">Functional</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-gga"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/GGA" rel="noopener" title="GGA on the VASP Wiki"><code>GGA</code></a></th><td data-label="What it does">Exchange–correlation functional of the GGA family.</td><td data-label="Default">the functional given by LEXCH in the POTCAR, if METAGGA and XC are not set either</td><td data-label="What to use">PE = PBE, PS = PBEsol, RP = RPBE, 91 = PW91.</td><td data-label="Watch out">Never edit LEXCH inside the POTCAR.</td></tr>
+<tr id="tag-metagga"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/METAGGA" rel="noopener" title="METAGGA on the VASP Wiki"><code>METAGGA</code></a></th><td data-label="What it does">Meta-GGA functional, e.g. R2SCAN.</td><td data-label="Default">the functional given by LEXCH in the POTCAR</td><td data-label="What to use">R2SCAN (VASP 6.2.0 and later) with LASPH = .TRUE. and ALGO = All.</td><td data-label="Watch out">Check the POTCARs with grep kinetic POTCAR. Spin-polarized meta-GGA forces are wrong in VASP 6.6.0 (fixed in 6.6.1).</td></tr>
+<tr id="tag-lhfcalc"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LHFCALC" rel="noopener" title="LHFCALC on the VASP Wiki"><code>LHFCALC</code></a></th><td data-label="What it does">Switches on a hybrid functional with exact exchange.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">With HFSCREEN = 0.2 for HSE06, and ALGO = All with ISEARCH = 1.</td><td data-label="Watch out">Expensive. ISIF then defaults to 0 (atoms move, no stress). Never ICHARG = 11.</td></tr>
+<tr id="tag-hfscreen"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/HFSCREEN" rel="noopener" title="HFSCREEN on the VASP Wiki"><code>HFSCREEN</code></a></th><td data-label="What it does">Range-separation parameter of screened hybrids, in Å⁻¹.</td><td data-label="Default">0 (no screening)</td><td data-label="What to use">0.2 for HSE06.</td><td data-label="Watch out">0.3 gives HSE03.</td></tr>
+<tr id="tag-hfrcut"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/HFRCUT" rel="noopener" title="HFRCUT on the VASP Wiki"><code>HFRCUT</code></a></th><td data-label="What it does">Coulomb truncation for hybrid functionals.</td><td data-label="Default">0</td><td data-label="What to use">−1 for band structures of gapped systems: it converges best.</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-parallel">Parallelization</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ncore"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NCORE" rel="noopener" title="NCORE on the VASP Wiki"><code>NCORE</code></a></th><td data-label="What it does">Number of cores that work together on one band.</td><td data-label="Default">1</td><td data-label="What to use">Cores per NUMA domain is a good start; about 4 for ~100 atoms, 12–16 above 400 atoms. Benchmark.</td><td data-label="Watch out">Forced to 1 with OpenMP threads and on GPUs. Do not set NPAR as well.</td></tr>
+<tr id="tag-npar"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NPAR" rel="noopener" title="NPAR on the VASP Wiki"><code>NPAR</code></a></th><td data-label="What it does">Legacy: the number of band groups (MPI ranks ÷ NCORE).</td><td data-label="Default">the number of MPI ranks</td><td data-label="What to use">Use NCORE instead.</td><td data-label="Watch out">If both are set, NPAR wins.</td></tr>
+<tr id="tag-kpar"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KPAR" rel="noopener" title="KPAR on the VASP Wiki"><code>KPAR</code></a></th><td data-label="What it does">Number of k-point groups that run in parallel.</td><td data-label="Default">1</td><td data-label="What to use">A divisor of the MPI ranks, up to the number of irreducible k-points if memory allows; on GPUs often the number of GPUs.</td><td data-label="Watch out">Each group holds its own copy of the data: memory is not shared.</td></tr>
+<tr id="tag-nsim"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NSIM" rel="noopener" title="NSIM on the VASP Wiki"><code>NSIM</code></a></th><td data-label="What it does">Number of bands optimized at once in the blocked algorithms.</td><td data-label="Default">4</td><td data-label="What to use">Higher on GPUs (up to 32).</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="g-symmetry">Symmetry and the k-mesh from INCAR</h3>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-isym"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISYM" rel="noopener" title="ISYM on the VASP Wiki"><code>ISYM</code></a></th><td data-label="What it does">How symmetry is used.</td><td data-label="Default">2 for PAW; 3 with hybrids (LHFCALC); 1 with ultrasoft potentials</td><td data-label="What to use">Leave the default; 0 for molecular dynamics.</td><td data-label="Watch out">A relaxation keeps the starting symmetry: to reach a lower-symmetry minimum, break the symmetry in the starting structure.</td></tr>
+<tr id="tag-symprec"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SYMPREC" rel="noopener" title="SYMPREC on the VASP Wiki"><code>SYMPREC</code></a></th><td data-label="What it does">Tolerance for finding symmetry from the POSCAR positions.</td><td data-label="Default">1E-5</td><td data-label="What to use">Raise it only for imprecise coordinates.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-kspacing"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KSPACING" rel="noopener" title="KSPACING on the VASP Wiki"><code>KSPACING</code></a></th><td data-label="What it does">k-mesh from the INCAR: the largest allowed spacing between k-points, in Å⁻¹ (2π included).</td><td data-label="Default">0.5 (Γ-centred while KGAMMA = .TRUE., its default)</td><td data-label="What to use">Smaller is denser; converge it. Without a KPOINTS file it replaces one.</td><td data-label="Watch out">Ignored when a KPOINTS file is present. The default 0.5 is coarse for metals.</td></tr>
+<tr id="tag-kgamma"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KGAMMA" rel="noopener" title="KGAMMA on the VASP Wiki"><code>KGAMMA</code></a></th><td data-label="What it does">Γ-centred mesh for KSPACING.</td><td data-label="Default">.TRUE.</td><td data-label="What to use">Keep .TRUE.</td><td data-label="Watch out">Ignored when a KPOINTS file is present.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="check">
+<h2>Check what VASP read</h2>
+<p>VASP prints your INCAR and, further down, the value it used for every parameter, defaults included. Read them before trusting a result.</p>
+<figure class="code sh"><figcaption><span class="code-t">What VASP understood</span></figcaption><pre><code><span class="c"># your INCAR as VASP read it (printed near the top of OUTCAR by VASP 6.2 and later)</span>
+awk '/^ INCAR:/{f=1;next} f&amp;&amp;/^ +[A-Za-z0-9_]+ = /{print;next} f{exit}' OUTCAR
+
+<span class="c"># the values used, defaults included (VASP 5 and 6)</span>
+sed -n '/Startparameter for this run/,$p' OUTCAR | grep -E '^ +(PREC|ENCUT|EDIFF|EDIFFG|IBRION|ISIF|ISMEAR|ISPIN|LASPH) +='
+
+<span class="c"># the same from vasprun.xml: matches inside &lt;incar&gt; are your INCAR, those inside</span>
+<span class="c"># &lt;parameters&gt; the values used (there the cutoff is called ENMAX)</span>
+grep -E 'name=&quot;(ENCUT|ENMAX|ISMEAR|SIGMA|EDIFFG)&quot;' vasprun.xml</code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="versions">
+<h2>What changed between versions</h2>
+<div class="tagtable-wrap"><table class="choice versions">
+<thead><tr><th scope="col">VASP</th><th scope="col">Change that affects an INCAR</th></tr></thead>
+<tbody>
+<tr><th scope="row">6.0</th><td>ALGO = Fast and VeryFast rewritten; “Old Fast” and “Old VeryFast” select the VASP 5 algorithms.</td></tr>
+<tr><th scope="row">6.0 – 6.4.2</th><td>The LCHARG default was .NOT. LH5, the opposite of the HDF5 output switch; it is .TRUE. again afterwards.</td></tr>
+<tr><th scope="row">6.2.0</th><td>METAGGA = R2SCAN.</td></tr>
+<tr><th scope="row">6.3.0</th><td>KPOINTS_OPT files for band structures on top of a regular mesh.</td></tr>
+<tr><th scope="row">6.4</th><td>EFERMI = MIDGAP; the <code>--dry-run</code> option.</td></tr>
+<tr><th scope="row">6.4.1</th><td>ISIF = 8: atoms and volume relax, the cell shape stays fixed.</td></tr>
+<tr><th scope="row">6.5.1</th><td>ISEARCH = 1, the improved line search for ALGO = All.</td></tr>
+<tr><th scope="row">6.6.0</th><td>The default NBANDS uses the size of each MAGMOM; before, negative starting moments (as in antiferromagnets) could give too few bands.</td></tr>
+<tr><th scope="row">6.6.1</th><td>Fixes wrong forces in spin-polarized meta-GGA runs (r²SCAN with ISPIN = 2) in 6.6.0.</td></tr>
+</tbody>
+</table></div>
+<p>To see which version wrote a run: <code>head -1 OUTCAR</code>.</p>
+</section>
+
+<section class="sheet-sec" id="materials-project">
+<h2>Matching Materials Project settings</h2>
+<p>To compare your energies with Materials Project data, use their settings and the same POTCARs. Their input sets are high-throughput compromises, not the careful choices above: the PBE set relaxes metals with the tetrahedron method and stops on an energy change instead of forces.</p>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Tag</th><th scope="col">PBE relaxation (MPRelaxSet)</th><th scope="col">r²SCAN relaxation (MPScanRelaxSet)</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>ENCUT</code></th><td data-label="PBE">520</td><td data-label="r²SCAN">680</td></tr>
+<tr><th scope="row"><code>EDIFF</code></th><td data-label="PBE">5 × 10⁻⁵ eV per atom in the cell</td><td data-label="r²SCAN">1E-5</td></tr>
+<tr><th scope="row"><code>EDIFFG</code></th><td data-label="PBE">not set (energy criterion)</td><td data-label="r²SCAN">−0.02</td></tr>
+<tr><th scope="row"><code>ALGO</code></th><td data-label="PBE">Fast</td><td data-label="r²SCAN">All</td></tr>
+<tr><th scope="row"><code>ISMEAR</code> / <code>SIGMA</code></th><td data-label="PBE">−5 / 0.05</td><td data-label="r²SCAN">0 / 0.2 if the band gap is unknown; 2 / 0.2 for metals, −5 / 0.05 for insulators</td></tr>
+<tr><th scope="row">k-points</th><td data-label="PBE">64 k-points per Å⁻³ of reciprocal volume (reciprocal_density 64)</td><td data-label="r²SCAN">KSPACING 0.22 for metals or an unknown gap; coarser for insulators, set from the gap (at most 0.44)</td></tr>
+<tr><th scope="row">Also</th><td data-label="PBE">PREC = Accurate, ISPIN = 2, LASPH = .TRUE., LREAL = Auto, LORBIT = 11, NSW = 99, ISIF = 3, NELM = 100</td><td data-label="r²SCAN">PREC = Accurate, ISPIN = 2, LASPH = .TRUE., LREAL = Auto, LMIXTAU = .TRUE., NSW = 99, ISIF = 3, NELM = 200</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 12: Self-consistent field convergence <span class="muted">(in preparation)</span></li>
+<li>Lecture 16: Smearing: ISMEAR and SIGMA <span class="muted">(in preparation)</span></li>
+<li>Lecture 17: Plane waves and the ENCUT cutoff <span class="muted">(in preparation)</span></li>
+<li>Lecture 19: VASP input files and convergence tests <span class="muted">(in preparation)</span></li>
+<li>Lecture 21: Forces, stress and structural relaxation <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiINCAR">VASP Wiki, “INCAR” (file format, comments, line continuation, and a complete example). · <a href="https://www.vasp.at/wiki/INCAR" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiSmearing">VASP Wiki, “Smearing technique” (how to choose ISMEAR and SIGMA for insulators, metals and unknown systems). · <a href="https://www.vasp.at/wiki/Smearing_technique" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiElecMin">VASP Wiki, “Setting up an electronic minimization” (a minimal INCAR, the dry run, and converging ENCUT and k-points). · <a href="https://www.vasp.at/wiki/Setting_up_an_electronic_minimization" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiStructOpt">VASP Wiki, “Structure optimization” (choosing IBRION, POTIM and NELMIN, and the symmetry caveat). · <a href="https://www.vasp.at/wiki/Structure_optimization" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiVolumeRelax">VASP Wiki, “Volume relaxation” (Pulay stress, the 1.3 × cutoff rule and the restart protocol). · <a href="https://www.vasp.at/wiki/Volume_relaxation" rel="noopener">vasp.at/wiki</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <span></span>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <span></span>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

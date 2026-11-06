@@ -1,0 +1,297 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  Tag defaults, values and advice: verbatim VASP Wiki source of each tag page (saved in
+  dft/_research/wiki-cache and wiki-raw3: ALGO, EDIFF, EDIFFG, IBRION, ICHARG, ISIF, ISMEAR, ISPIN,
+  ISTART, ISYM, KPAR, KSPACING, LASPH, LCHARG, LORBIT, LREAL, LWAVE, MAGMOM, MAXMIX, METAGGA, NBANDS,
+  NCORE, NELM, NELMDL, NELMIN, NPAR, NSIM, NSW, NUPDOWN, POTIM, SIGMA, SYMPREC, EFERMI, AMIX, BMIX,
+  AMIX_MAG, BMIX_MAG, PREC, ENCUT, LMAXMIX, ISEARCH, GGA, LMIXTAU, ADDGRID, NEDOS, KGAMMA, LNONCOLLINEAR,
+  LSORBIT, HFSCREEN, HFRCUT, AEXX, LHFCALC, INCAR, Command-line arguments).
+  How-to pages: Smearing technique (unknown system ISMEAR=0 SIGMA=0.1 EFERMI=MIDGAP; tetrahedron >= 4 k;
+  MP forces 5-10% with tetrahedron in metals; MP on insulators: phonon errors > 20%; entropy < 1 meV/atom),
+  Structure optimization (NELMIN 4 bulk / 8 surfaces; IBRION choice), Volume relaxation (1.3x cutoff,
+  "lower recommended limit"; one degree of freedom at a time), Band-structure calculation using hybrid
+  functionals (never ICHARG = 11; HFRCUT = -1), Known issues 51 and 94, Changelog.
+  Materials Project values: pymatgen-core MPRelaxSet.yaml and MPSCANRelaxSet.yaml (commit 9874d2c).
+  Output commands tested on OUTCAR files written by VASP 5.2.2, 5.2.12, 6.1.1, 6.2.0 and 6.3.0 (6.1.1 and 5.x print no INCAR echo) (pymatgen test
+  files, dft/_research/testfiles). --dry-run: VASP 6.4.0 release notes.
+  Research brief: dft/_research/A2-incar.md.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Set <x-tag>ENCUT</x-tag> yourself, the same in every run you compare, and at least 1.3 × the largest ENMAX of your POTCAR when the cell relaxes.</li>
+  <li>Choose the smearing: <code>ISMEAR = 0 ; SIGMA = 0.05</code> for insulators, <code>ISMEAR = 1 ; SIGMA = 0.2</code> to relax metals, <code>ISMEAR = -5</code> for final energies and DOS. Not sure? <code>ISMEAR = 0 ; SIGMA = 0.1</code>.</li>
+  <li>Tighten <x-tag>EDIFF</x-tag> to <code>1E-6</code>.</li>
+  <li>Whenever <x-tag>NSW</x-tag> &gt; 0, set <x-tag>IBRION</x-tag> (2 to relax) and a negative <x-tag>EDIFFG</x-tag>, such as <code>-0.02</code> eV/Å.</li>
+  <li>Switch on <x-tag>LASPH</x-tag> for d and f elements, meta-GGA and hybrids, and set <x-tag>LMAXMIX</x-tag> to 4 (d) or 6 (f).</li>
+  <li>Read back what VASP understood: OUTCAR lists every value it used (<a href="#check">commands below</a>).</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="builder">
+<h2>Build or check an INCAR</h2>
+<p>Choose the task and describe the system, and the builder writes a commented INCAR from the rules on this sheet. Paste an INCAR you already have into the checker to catch the common traps. Both run in your browser; nothing is uploaded.</p>
+<div class="tool" data-tool="incar-builder">
+  <noscript><p class="callout">The builder needs JavaScript. The <a href="#recipes">recipes</a> below give the same INCARs.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="syntax">
+<h2>How VASP reads the INCAR</h2>
+<div class="two-col">
+<ul class="tight">
+  <li>Each statement is <code>TAG = value</code>. Put several on one line with <code>;</code> between them.</li>
+  <li><code>#</code> or <code>!</code> starts a comment.</li>
+  <li>A <code>\</code> at the end of a line continues the statement on the next line. Leave no space after it.</li>
+  <li><code>N*value</code> repeats a value in array tags such as <x-tag>MAGMOM</x-tag>: <code>4*5.0</code> is four atoms at 5 μB.</li>
+  <li>Logical values are <code>.TRUE.</code> and <code>.FALSE.</code></li>
+  <li>Avoid tabs: lines with tabs have broken the parsing with some compilers.</li>
+  <li>VASP acts only on the tags it knows. Check that every tag you set appears in OUTCAR with the value you meant (<a href="#check">how</a>), or run <code>vasp_std --dry-run</code> first (VASP 6.4 and later): it parses the input and stops before computing anything.</li>
+</ul>
+<pre class="incar" data-title="INCAR syntax in one example" data-allow="encut-missing">
+SYSTEM = bcc Fe, two-atom cubic cell   # comments start with # or !
+ISPIN  = 2
+MAGMOM = 1*3.0 \
+         1*3.0                         ! one value per atom, continued with a backslash
+ISMEAR = 1 ; SIGMA = 0.2               ! two statements on one line
+</pre>
+</div>
+</section>
+
+<section class="sheet-sec" id="defaults">
+<h2>Defaults that bite</h2>
+<p>VASP runs without most tags, using its defaults. These are the defaults that most often give a wrong or wasteful result.</p>
+<div class="bites">
+  <div class="bite"><p class="bite-k"><code>NSW &gt; 0</code> with no <code>IBRION</code></p><p>IBRION then defaults to 0, molecular dynamics, which has no default time step: VASP stops at once.</p><p class="fix">Set <code>IBRION = 2</code> to relax.</p></div>
+  <div class="bite"><p class="bite-k"><code>ISMEAR = 1</code> on an insulator</p><p>Methfessel–Paxton smearing (the default) can give unphysical occupancies in a gap; phonon frequencies can be off by more than 20%.</p><p class="fix"><code>ISMEAR = 0</code>, or <code>-5</code> for static runs.</p></div>
+  <div class="bite"><p class="bite-k">No <code>ENCUT</code></p><p>The cutoff becomes the largest ENMAX of the POTCAR, so it changes with the elements: energies of different compounds are not comparable, and it is too low for cell relaxations.</p><p class="fix">Set it in every INCAR.</p></div>
+  <div class="bite"><p class="bite-k"><code>EDIFFG</code> left at its default</p><p>The default is 10 × EDIFF, positive, so the relaxation stops on a small energy change while forces can still be large.</p><p class="fix"><code>EDIFFG = -0.02</code> (a force criterion).</p></div>
+  <div class="bite"><p class="bite-k"><code>EDIFF = 1E-4</code></p><p>Loose for forces, stress and anything you report.</p><p class="fix"><code>EDIFF = 1E-6</code>; <code>1E-7</code> or tighter for phonons.</p></div>
+  <div class="bite"><p class="bite-k"><code>LASPH = .FALSE.</code></p><p>Stays off even when you set METAGGA, though meta-GGA, hybrids, DFT+U and 3d or f elements need the non-spherical terms.</p><p class="fix"><code>LASPH = .TRUE.</code></p></div>
+  <div class="bite"><p class="bite-k"><code>LMAXMIX = 2</code></p><p>A DOS or band run that reads CHGCAR (ICHARG = 11) of a d or f system can then differ from the self-consistent run.</p><p class="fix">4 for d, 6 for f elements, in both runs.</p></div>
+  <div class="bite"><p class="bite-k">No <code>MAGMOM</code></p><p>Every atom starts at 1 μB, all parallel: an antiferromagnetic or high-moment state may never be found.</p><p class="fix">Set one value per atom, in POSCAR order.</p></div>
+  <div class="bite"><p class="bite-k"><code>LWAVE = .TRUE.</code></p><p>WAVECAR is written at the end of every run, often gigabytes.</p><p class="fix"><code>LWAVE = .FALSE.</code> unless a later run reads it.</p></div>
+  <div class="bite"><p class="bite-k">No KPOINTS file</p><p>VASP falls back on KSPACING = 0.5 Å⁻¹, coarse for metals; and a stray KPOINTS file silently overrides KSPACING.</p><p class="fix">Write a KPOINTS file, or set KSPACING yourself.</p></div>
+  <div class="bite"><p class="bite-k"><code>NPAR</code> from an old template</p><p>If NPAR and NCORE are both set, NPAR wins.</p><p class="fix">Delete NPAR; keep NCORE.</p></div>
+  <div class="bite"><p class="bite-k">Symmetry kept by default</p><p>A relaxation keeps the symmetry of the starting structure, so a lower-symmetry minimum is out of reach.</p><p class="fix">Displace atoms slightly in POSCAR to break it.</p></div>
+</div>
+</section>
+
+<section class="sheet-sec" id="smearing">
+<h2>Choosing ISMEAR and SIGMA</h2>
+<p>Smearing decides how electrons occupy states near the Fermi level. It is the setting most often left at a bad default.</p>
+<div class="tagtable-wrap"><table class="choice smear">
+<thead><tr><th scope="col">System and task</th><th scope="col"><code>ISMEAR</code></th><th scope="col"><code>SIGMA</code> <span class="nt">(eV)</span></th><th scope="col">Why</th></tr></thead>
+<tbody>
+<tr><th scope="row">Not sure if it is a metal, or high-throughput</th><td data-label="ISMEAR">0</td><td data-label="SIGMA">0.03–0.1</td><td data-label="Why">Gaussian smearing is safe for both. With <code>EFERMI = MIDGAP</code> (VASP 6.4 and later) the Fermi level sits mid-gap. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Insulator or semiconductor: relaxation, phonons</th><td data-label="ISMEAR">0</td><td data-label="SIGMA">0.05</td><td data-label="Why">Never ISMEAR &gt; 0 for a gapped system. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Insulator: static energy, DOS</th><td data-label="ISMEAR">−5</td><td data-label="SIGMA">—</td><td data-label="Why">Tetrahedron method with Blöchl corrections: no SIGMA to converge. Needs a Γ-centred mesh with at least 4 k-points, otherwise use 0.</td></tr>
+<tr><th scope="row">Metal: relaxation, forces, phonons</th><td data-label="ISMEAR">1 or 2</td><td data-label="SIGMA">≈ 0.2</td><td data-label="Why">Methfessel–Paxton: as large a SIGMA as keeps “entropy T*S” in OUTCAR below 1 meV per atom. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Metal: total energy, DOS</th><td data-label="ISMEAR">−5</td><td data-label="SIGMA">—</td><td data-label="Why">Accurate energies and DOS on a dense mesh. Not for relaxing: its forces and stress in metals can be off by 5–10%.</td></tr>
+<tr><th scope="row">Band structure along a path</th><td data-label="ISMEAR">0</td><td data-label="SIGMA">0.05</td><td data-label="Why">Tetrahedra need a full mesh, and the Fermi energy cannot be computed on a path: take E-fermi from the self-consistent run.</td></tr>
+</tbody>
+</table></div>
+<pre class="sh" data-title="Check the smearing in a finished run">
+grep "entropy T\*S" OUTCAR | tail -1   # last value, in eV for the whole cell: divide by the number of atoms
+grep E-fermi OUTCAR | tail -1          # Fermi energy of the last step
+</pre>
+</section>
+
+<section class="sheet-sec" id="recipes">
+<h2>Recipes by task</h2>
+<p>Each block is a complete starting INCAR. Replace the ENCUT of 520 eV with your converged value, and keep it the same across a workflow. The usual chain is: relax the cell → relax again from CONTCAR until the volume stops changing → static run → DOS and band structure from its CHGCAR.</p>
+
+<div class="recipes">
+<pre class="incar" data-title="Relax atoms and cell (ISIF = 3)">
+ENCUT  = 520          ! at least 1.3 x the largest ENMAX: the cell changes (Pulay stress)
+PREC   = Accurate
+EDIFF  = 1E-6
+ISMEAR = 0 ; SIGMA = 0.05   ! insulator; for a metal use ISMEAR = 1 ; SIGMA = 0.2
+IBRION = 2            ! conjugate gradient; 1 (RMM-DIIS) once close to the minimum
+ISIF   = 3            ! atoms, cell shape and volume
+NSW    = 100
+EDIFFG = -0.02        ! stop when every force is below 0.02 eV/A
+NELMIN = 4            ! at least 4 SCF steps per ionic step
+LCHARG = .FALSE. ; LWAVE = .FALSE.
+</pre>
+<p class="then"><b>Then:</b> <code>cp CONTCAR POSCAR</code> and run again until the volume stops changing (the basis was set up for the starting cell). Finish with a static run.</p>
+
+<pre class="incar" data-title="Relax atoms in a fixed cell (ISIF = 2)">
+ENCUT  = 520
+PREC   = Accurate
+EDIFF  = 1E-6
+ISMEAR = 0 ; SIGMA = 0.05   ! insulator; for a metal use ISMEAR = 1 ; SIGMA = 0.2
+IBRION = 2
+ISIF   = 2            ! atoms only: surfaces, defects, molecules in a box
+NSW    = 100
+EDIFFG = -0.02
+NELMIN = 4            ! 8 for complex surfaces
+LCHARG = .FALSE. ; LWAVE = .FALSE.
+</pre>
+
+<pre class="incar" data-title="Static run (also the SCF for DOS and bands)">
+ENCUT   = 520         ! the same cutoff as the relaxation
+PREC    = Accurate
+EDIFF   = 1E-6
+ISMEAR  = -5          ! tetrahedron: Gamma-centred mesh, at least 4 k-points
+NSW     = 0
+IBRION  = -1
+LORBIT  = 11          ! projected DOS and site moments
+LMAXMIX = 4           ! 4 for d, 6 for f elements; keep it in runs that read CHGCAR
+LCHARG  = .TRUE.      ! CHGCAR feeds the DOS and band runs
+LWAVE   = .FALSE.
+</pre>
+<p class="then">For the forces or stress of a metal in a static run, use <code>ISMEAR = 1 ; SIGMA = 0.2</code> instead of −5.</p>
+
+<pre class="incar" data-title="Density of states from CHGCAR">
+ENCUT   = 520         ! the same as the run that wrote CHGCAR
+PREC    = Accurate
+ICHARG  = 11          ! read CHGCAR and keep the density fixed
+ISMEAR  = -5
+NEDOS   = 2001        ! a fine energy grid
+LORBIT  = 11
+NSW     = 0
+LMAXMIX = 4           ! must match the self-consistent run
+LCHARG  = .FALSE. ; LWAVE = .FALSE.
+</pre>
+<p class="then">Copy CHGCAR from the static run and use a denser Γ-centred k-mesh than it had.</p>
+
+<pre class="incar" data-title="Band structure from CHGCAR">
+ENCUT   = 520
+PREC    = Accurate
+ICHARG  = 11
+ISMEAR  = 0 ; SIGMA = 0.05  ! take E-fermi from the self-consistent run
+LORBIT  = 11          ! orbital character of each band (PROCAR)
+NSW     = 0
+LMAXMIX = 4
+LCHARG  = .FALSE. ; LWAVE = .FALSE.
+</pre>
+<p class="then">KPOINTS holds the high-symmetry path in line mode; the <x-sheet slug="kpoints">KPOINTS sheet</x-sheet> covers the format.</p>
+
+<pre class="incar" data-title="Spin-polarized: ferromagnet and antiferromagnet" data-allow="encut-missing">
+ISPIN  = 2
+MAGMOM = 2*3.0              ! ferromagnet: one value per atom, in POSCAR order
+# MAGMOM = 2*4.0 2*-4.0 4*0.0   ! antiferromagnet, e.g. two Mn up, two Mn down, four O
+LORBIT = 11                 ! moment of each site in OUTCAR
+LASPH  = .TRUE.
+LMAXMIX = 4
+</pre>
+<p class="then">Add these lines to any recipe above. Start the moments 1.2–1.5 × above the expected values; an antiferromagnet needs a cell that holds both sublattices, often a supercell. The <x-sheet slug="magnetism-magmom">magnetism sheet</x-sheet> goes further.</p>
+
+<pre class="incar" data-title="r2SCAN meta-GGA" data-allow="encut-missing">
+METAGGA = R2SCAN      ! VASP 6.2.0 or later; avoid 6.6.0 for spin-polarized forces
+LASPH   = .TRUE.
+ALGO    = All
+ISEARCH = 1           ! VASP 6.5.1 or later; delete it on older versions
+EDIFF   = 1E-6
+</pre>
+<p class="then">Add to a recipe above, with a converged ENCUT (Materials Project uses 680 eV for r²SCAN). Check that every POTCAR has kinetic-energy data: <code>grep kinetic POTCAR</code>. If the SCF struggles, start from a PBE WAVECAR; with <code>ALGO = Normal</code>, <code>LMIXTAU = .TRUE.</code> can help. Band structures and DOS with a meta-GGA follow the hybrid procedure below, not ICHARG = 11.</p>
+
+<pre class="incar" data-title="HSE06 hybrid, static run">
+LHFCALC  = .TRUE.
+HFSCREEN = 0.2        ! HSE06; the exact-exchange fraction AEXX is 0.25 by default
+ALGO     = All        ! direct optimization: the recommended choice for hybrids
+ISEARCH  = 1          ! VASP 6.5.1 or later; delete it on older versions
+ENCUT    = 520
+PREC     = Accurate
+EDIFF    = 1E-6
+ISMEAR   = 0 ; SIGMA = 0.05
+LASPH    = .TRUE.
+NSW      = 0 ; IBRION = -1
+LWAVE    = .TRUE.     ! hybrids are expensive: keep WAVECAR for restarts
+</pre>
+<p class="then">Start from a converged PBE WAVECAR. Never use ICHARG = 11 with hybrids: for a band structure, put the path in a KPOINTS_OPT file (VASP 6.3.0 and later) or as zero-weight k-points, and set <code>HFRCUT = -1</code>. To relax the cell with a hybrid, set ISIF explicitly: its default is 0, which moves the atoms but computes no stress.</p>
+</div>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The tags, group by group</h2>
+<p>Each tag name opens its page on the VASP Wiki. A version badge marks tags that need a recent VASP.</p>
+
+<h3 id="g-start">Start and restart</h3>
+<x-tags names="ISTART ICHARG LMAXMIX"></x-tags>
+
+<h3 id="g-basis">Basis set and precision</h3>
+<x-tags names="ENCUT PREC LASPH LREAL ADDGRID"></x-tags>
+
+<h3 id="g-electronic">Electronic minimization</h3>
+<x-tags names="ALGO ISEARCH EDIFF NELM NELMIN NELMDL NBANDS LMIXTAU"></x-tags>
+
+<h3 id="g-smearing">Smearing</h3>
+<x-tags names="ISMEAR SIGMA EFERMI"></x-tags>
+
+<h3 id="g-mixing">Density mixing, for SCF trouble</h3>
+<p>Touch these only when the SCF will not converge. For a stubborn magnetic system, VASP's own advice is to converge a non-magnetic density first and restart from it, to switch to nearly linear mixing with <code>BMIX = 0.0001 ; BMIX_MAG = 0.0001</code>, and to lower AMIX and AMIX_MAG. The <x-sheet slug="errors-and-fixes">errors sheet</x-sheet> covers this in detail.</p>
+<x-tags names="AMIX BMIX AMIX_MAG BMIX_MAG MAXMIX"></x-tags>
+
+<h3 id="g-ionic">Ionic motion</h3>
+<x-tags names="NSW IBRION ISIF EDIFFG POTIM"></x-tags>
+
+<h3 id="g-spin">Spin</h3>
+<x-tags names="ISPIN MAGMOM NUPDOWN LNONCOLLINEAR LSORBIT"></x-tags>
+
+<h3 id="g-output">Output files</h3>
+<x-tags names="LWAVE LCHARG LORBIT NEDOS"></x-tags>
+
+<h3 id="g-functional">Functional</h3>
+<x-tags names="GGA METAGGA LHFCALC HFSCREEN HFRCUT"></x-tags>
+
+<h3 id="g-parallel">Parallelization</h3>
+<x-tags names="NCORE NPAR KPAR NSIM"></x-tags>
+
+<h3 id="g-symmetry">Symmetry and the k-mesh from INCAR</h3>
+<x-tags names="ISYM SYMPREC KSPACING KGAMMA"></x-tags>
+</section>
+
+<section class="sheet-sec" id="check">
+<h2>Check what VASP read</h2>
+<p>VASP prints your INCAR and, further down, the value it used for every parameter, defaults included. Read them before trusting a result.</p>
+<pre class="sh" data-title="What VASP understood">
+# your INCAR as VASP read it (printed near the top of OUTCAR by VASP 6.2 and later)
+awk '/^ INCAR:/{f=1;next} f&&/^ +[A-Za-z0-9_]+ = /{print;next} f{exit}' OUTCAR
+
+# the values used, defaults included (VASP 5 and 6)
+sed -n '/Startparameter for this run/,$p' OUTCAR | grep -E '^ +(PREC|ENCUT|EDIFF|EDIFFG|IBRION|ISIF|ISMEAR|ISPIN|LASPH) +='
+
+# the same from vasprun.xml: matches inside <incar> are your INCAR, those inside
+# <parameters> the values used (there the cutoff is called ENMAX)
+grep -E 'name="(ENCUT|ENMAX|ISMEAR|SIGMA|EDIFFG)"' vasprun.xml
+</pre>
+</section>
+
+<section class="sheet-sec" id="versions">
+<h2>What changed between versions</h2>
+<div class="tagtable-wrap"><table class="choice versions">
+<thead><tr><th scope="col">VASP</th><th scope="col">Change that affects an INCAR</th></tr></thead>
+<tbody>
+<tr><th scope="row">6.0</th><td>ALGO = Fast and VeryFast rewritten; “Old Fast” and “Old VeryFast” select the VASP 5 algorithms.</td></tr>
+<tr><th scope="row">6.0 – 6.4.2</th><td>The LCHARG default was .NOT. LH5, the opposite of the HDF5 output switch; it is .TRUE. again afterwards.</td></tr>
+<tr><th scope="row">6.2.0</th><td>METAGGA = R2SCAN.</td></tr>
+<tr><th scope="row">6.3.0</th><td>KPOINTS_OPT files for band structures on top of a regular mesh.</td></tr>
+<tr><th scope="row">6.4</th><td>EFERMI = MIDGAP; the <code>--dry-run</code> option.</td></tr>
+<tr><th scope="row">6.4.1</th><td>ISIF = 8: atoms and volume relax, the cell shape stays fixed.</td></tr>
+<tr><th scope="row">6.5.1</th><td>ISEARCH = 1, the improved line search for ALGO = All.</td></tr>
+<tr><th scope="row">6.6.0</th><td>The default NBANDS uses the size of each MAGMOM; before, negative starting moments (as in antiferromagnets) could give too few bands.</td></tr>
+<tr><th scope="row">6.6.1</th><td>Fixes wrong forces in spin-polarized meta-GGA runs (r²SCAN with ISPIN = 2) in 6.6.0.</td></tr>
+</tbody>
+</table></div>
+<p>To see which version wrote a run: <code>head -1 OUTCAR</code>.</p>
+</section>
+
+<section class="sheet-sec" id="materials-project">
+<h2>Matching Materials Project settings</h2>
+<p>To compare your energies with Materials Project data, use their settings and the same POTCARs. Their input sets are high-throughput compromises, not the careful choices above: the PBE set relaxes metals with the tetrahedron method and stops on an energy change instead of forces.</p>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Tag</th><th scope="col">PBE relaxation (MPRelaxSet)</th><th scope="col">r²SCAN relaxation (MPScanRelaxSet)</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>ENCUT</code></th><td data-label="PBE">520</td><td data-label="r²SCAN">680</td></tr>
+<tr><th scope="row"><code>EDIFF</code></th><td data-label="PBE">5 × 10⁻⁵ eV per atom in the cell</td><td data-label="r²SCAN">1E-5</td></tr>
+<tr><th scope="row"><code>EDIFFG</code></th><td data-label="PBE">not set (energy criterion)</td><td data-label="r²SCAN">−0.02</td></tr>
+<tr><th scope="row"><code>ALGO</code></th><td data-label="PBE">Fast</td><td data-label="r²SCAN">All</td></tr>
+<tr><th scope="row"><code>ISMEAR</code> / <code>SIGMA</code></th><td data-label="PBE">−5 / 0.05</td><td data-label="r²SCAN">0 / 0.2 if the band gap is unknown; 2 / 0.2 for metals, −5 / 0.05 for insulators</td></tr>
+<tr><th scope="row">k-points</th><td data-label="PBE">64 k-points per Å⁻³ of reciprocal volume (reciprocal_density 64)</td><td data-label="r²SCAN">KSPACING 0.22 for metals or an unknown gap; coarser for insulators, set from the gap (at most 0.44)</td></tr>
+<tr><th scope="row">Also</th><td data-label="PBE">PREC = Accurate, ISPIN = 2, LASPH = .TRUE., LREAL = Auto, LORBIT = 11, NSW = 99, ISIF = 3, NELM = 100</td><td data-label="r²SCAN">PREC = Accurate, ISPIN = 2, LASPH = .TRUE., LREAL = Auto, LMIXTAU = .TRUE., NSW = 99, ISIF = 3, NELM = 200</td></tr>
+</tbody>
+</table></div>
+</section>

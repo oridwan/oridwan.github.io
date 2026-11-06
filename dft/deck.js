@@ -189,6 +189,13 @@ let hoverTimer = 0;
 function popContent(a) {
   const target = document.getElementById(decodeURIComponent(a.hash.slice(1)));
   if (!target) return null;
+  if (target.tagName === 'TR') {
+    // a row of a cheat-sheet tag table: tag, what it does, default, what to use, watch out
+    const c = [...target.cells];
+    const row = (k, i) => (c[i] && c[i].textContent.trim() ? `<p><b>${k}</b> ${c[i].innerHTML}</p>` : '');
+    return `<p class="pop-k">VASP tag</p><p class="pop-title">${c[0].innerHTML}</p><div class="pop-body"><p>${c[1].innerHTML}</p>${row('Default:', 2)}${row('Use:', 3)}</div>`
+      + `<a class="pop-more" href="#${target.id}">Go to the table</a>`;
+  }
   if (target.tagName === 'DT') {
     const dd = target.nextElementSibling;
     const kind = a.classList.contains('vtag') ? 'VASP tag' : 'Key term';

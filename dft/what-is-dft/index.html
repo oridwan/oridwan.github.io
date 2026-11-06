@@ -819,19 +819,19 @@ Gamma
 <dt id="tag-nsw"><code>NSW</code></dt>
 <dd>Maximum number of ionic steps. With NSW = 0 the nuclei are not moved: a single-point (static) calculation.<span class="tag-meta">Default: 0 · <a href="https://www.vasp.at/wiki/NSW" rel="noopener">VASP Wiki: NSW</a></span></dd>
 <dt id="tag-ibrion"><code>IBRION</code></dt>
-<dd>How the nuclei are moved between ionic steps: −1 not at all, 0 molecular dynamics, 1 relaxation with RMM-DIIS, 2 relaxation with conjugate gradients, 3 relaxation with damped molecular dynamics.<span class="tag-meta">Default: −1 if NSW = −1 or 0, otherwise 0 · <a href="https://www.vasp.at/wiki/IBRION" rel="noopener">VASP Wiki: IBRION</a></span></dd>
+<dd>How the nuclei are moved between ionic steps: −1 not at all, 0 molecular dynamics, 1 relaxation with RMM-DIIS, 2 relaxation with conjugate gradients, 3 relaxation with damped molecular dynamics.<span class="tag-meta">Default: −1 if NSW = −1 or 0, otherwise 0 (molecular dynamics) · <a href="https://www.vasp.at/wiki/IBRION" rel="noopener">VASP Wiki: IBRION</a></span></dd>
 <dt id="tag-potim"><code>POTIM</code></dt>
-<dd>In ionic relaxations (IBRION = 1, 2, 3), a scaling constant for the step widths; in molecular dynamics, the time step in fs.<span class="tag-meta">Default: 0.5 for IBRION = 1, 2 and 3 · <a href="https://www.vasp.at/wiki/POTIM" rel="noopener">VASP Wiki: POTIM</a></span></dd>
+<dd>In ionic relaxations (IBRION = 1, 2, 3), a scaling constant for the step widths; in molecular dynamics, the time step in fs.<span class="tag-meta">Default: 0.5 for IBRION = 1, 2 and 3; 0.015 Å for IBRION = 5 and 6; none for molecular dynamics (must be set) · <a href="https://www.vasp.at/wiki/POTIM" rel="noopener">VASP Wiki: POTIM</a></span></dd>
 <dt id="tag-ediffg"><code>EDIFFG</code></dt>
 <dd>Stopping criterion of an ionic relaxation. A positive value stops when the total energy changes by less than EDIFFG between ionic steps; a negative value stops when the norms of all forces are below |EDIFFG|. It is not used in molecular dynamics.<span class="tag-meta">Default: EDIFF × 10 · <a href="https://www.vasp.at/wiki/EDIFFG" rel="noopener">VASP Wiki: EDIFFG</a></span></dd>
 <dt id="tag-lcharg"><code>LCHARG</code></dt>
-<dd>Whether the charge density is written to CHGCAR at the end of the run.<span class="tag-meta">Default: .TRUE. (in VASP 6.0 to 6.4.2 it is tied to LH5) · <a href="https://www.vasp.at/wiki/LCHARG" rel="noopener">VASP Wiki: LCHARG</a></span></dd>
+<dd>Whether the charge density is written to CHGCAR at the end of the run.<span class="tag-meta">Default: .TRUE. (VASP 6.0–6.4.2: .NOT. LH5) · <a href="https://www.vasp.at/wiki/LCHARG" rel="noopener">VASP Wiki: LCHARG</a></span></dd>
 <dt id="tag-lwave"><code>LWAVE</code></dt>
 <dd>Whether the orbitals are written to WAVECAR at the end of the run.<span class="tag-meta">Default: .TRUE. · <a href="https://www.vasp.at/wiki/LWAVE" rel="noopener">VASP Wiki: LWAVE</a></span></dd>
 <dt id="tag-ismear"><code>ISMEAR</code></dt>
 <dd>How partial occupancies are assigned to the electronic states. ISMEAR = 0 is Gaussian smearing; ISMEAR = N &gt; 0 is Methfessel–Paxton smearing of order N, which can give erroneous results for insulators.<span class="tag-meta">Default: 1 · <a href="https://www.vasp.at/wiki/ISMEAR" rel="noopener">VASP Wiki: ISMEAR</a></span></dd>
 <dt id="tag-sigma"><code>SIGMA</code></dt>
-<dd>Width of the smearing, in eV. For semiconductors and insulators, the VASP Wiki's page on the default smearing method strongly recommends ISMEAR = 0 with SIGMA = 0.05.<span class="tag-meta">Default: 0.2 · <a href="https://www.vasp.at/wiki/SIGMA" rel="noopener">VASP Wiki: SIGMA</a></span></dd>
+<dd>Width of the smearing, in eV. With Gaussian smearing (ISMEAR = 0) values of 0.03–0.1 are typical; for metals with Methfessel–Paxton smearing, SIGMA can be as large as keeps the entropy term below about 1 meV per atom.<span class="tag-meta">Default: 0.2 · <a href="https://www.vasp.at/wiki/SIGMA" rel="noopener">VASP Wiki: SIGMA</a></span></dd>
 <dt id="tag-pstress"><code>PSTRESS</code></dt>
 <dd>A pressure added in relaxations that change the cell. Its unit is kB (kilobar); 1 kB = 0.1 GPa.<span class="tag-meta"><a href="https://www.vasp.at/wiki/PSTRESS" rel="noopener">VASP Wiki: PSTRESS</a></span></dd>
 </dl>

@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /dft/_src/
 Disallow: /dft/PLAN.md
+Disallow: /dft/PLAN-cheatsheets.md
+Disallow: /dft/_cheat/
 
 Sitemap: https://oridwan.github.io/sitemap.xml

@@ -749,6 +749,9 @@ methods paragraph. Template page plus downloadable checklist.
 - **Glossary** (`/dft/glossary/`, aimed at "what is …" searches) · **VASP tag index**
   (`/dft/vasp-tags/`, aimed at "INCAR tags explained" searches) · **References** · **Errata**. All of
   these are generated from `terms.json`, the same data the popups use.
+- **VASP cheat sheets** (`/dft/vasp-cheat-sheets/`, 12 task-based sheets, interactive tools; the hub's
+  A–Z tag index replaces the separate tag page, and the Slurm sheet replaces toolkit T6): see
+  `dft/PLAN-cheatsheets.md`.
 
 ## 10. Build order and per-lecture workflow
 

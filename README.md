@@ -54,7 +54,13 @@ per lecture (`dft/<slug>/index.html`). The plan and syllabus are in `dft/PLAN.md
 | `dft/deck.js`, `dft/dft.css` | Slide rail, presentation mode (`P`), popovers, equation legends, lazy figures. |
 | `dft/figs/<slug>.js` | Interactive figures of one lecture, one exported function per `<figure data-fig>`. |
 | `dft/index.html`, `dft/<slug>/index.html` | **Generated** — do not edit by hand. |
+| `dft/cheatsheets.json` | VASP cheat sheets: hub metadata, the task list and the ordered sheet list (slug, title, description, keywords, status, dates, related lectures, further reading). Plan: `dft/PLAN-cheatsheets.md`. |
+| `dft/_cheat/<slug>.html` | The authored body of each cheat sheet; its INCAR blocks are checked at build time. |
+| `dft/cheat-tools.js`, `dft/cheat.js`, `dft/cheat.css` | Tool logic (INCAR parser, checker and builder; no DOM, tested under Node), the page script, and the sheet styles. |
+| `dft/vasp-cheat-sheets/` | **Generated** hub and sheets — do not edit by hand. |
 
 Build after any change: `npm install` once, then `node scripts/build_dft.mjs` (renders math with KaTeX,
 writes the pages and refreshes `sitemap.xml`). `node scripts/build_dft.mjs --demo` also builds a local
-component demo at `dft/_demo/` (git-ignored).
+component demo at `dft/_demo/` (git-ignored). Tests: `node scripts/test_dft.mjs` (lecture figures) and
+`node scripts/test_cheat.mjs` (cheat-sheet rules, builder and commands; the command tests run on the local,
+git-ignored VASP test outputs in `dft/_research/testfiles/` when present).

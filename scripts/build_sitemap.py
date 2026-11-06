@@ -6,7 +6,7 @@ symmetry tutorial, each space-group page, the DFT course, and future
 tutorials). Template files, asset folders and any folder whose name starts
 with "_" (sources, local demos) are skipped. The home page carries a <lastmod>
 taken from the last publications update; the DFT course pages carry theirs from
-dft/course.json; other pages are listed without one.
+dft/course.json and dft/cheatsheets.json; other pages are listed without one.
 
 Uses only the Python standard library.
 """
@@ -49,6 +49,14 @@ def course_lastmod() -> dict[str, str]:
     for lec in course["lectures"]:
         if lec.get("status") == "published" and lec.get("modified"):
             out[f"{course['base']}{lec['slug']}/"] = lec["modified"]
+    cs = ROOT / "dft" / "cheatsheets.json"
+    if cs.exists():
+        cheats = json.loads(cs.read_text())
+        pub = [s for s in cheats["sheets"] if s.get("status") == "published"]
+        for s in pub:
+            out[f"{cheats['base']}{s['slug']}/"] = s["modified"]
+        if pub:
+            out[cheats["base"]] = max([cheats["hub"]["modified"], *(s["modified"] for s in pub)])
     home = max(out.values(), default=course.get("published"))
     if home:
         out[course["base"]] = home

@@ -5,3 +5,5 @@ node_modules/
 dft/_demo/
 dft/_src/_demo*
 dft/figs/_demo.js
+# local research notes, parser sources and public VASP test outputs for the cheat sheets (not published)
+dft/_research/

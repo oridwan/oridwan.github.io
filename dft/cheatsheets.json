@@ -1,0 +1,69 @@
+{
+  "base": "https://oridwan.github.io/dft/vasp-cheat-sheets/",
+  "dir": "vasp-cheat-sheets",
+  "vasp": "6.6.1",
+  "checked": "2026-11-06",
+  "hub": {
+    "title": "VASP Cheat Sheets: INCAR, KPOINTS, POTCAR, Slurm",
+    "h1": "VASP cheat sheets",
+    "short": "VASP cheat sheets",
+    "description": "VASP cheat sheets for VASP 6: INCAR tags and recipes, KPOINTS, POTCAR, Slurm scripts, output commands, errors, relaxation, magnetism, NEB and AIMD.",
+    "lede": "What to type, how to check that it worked, and what usually goes wrong, for the everyday jobs of a VASP calculation. Each sheet is organized by task, gives the default and the recommended value side by side, and says why, with a link to the lecture that explains the physics.",
+    "keywords": ["VASP cheat sheet", "VASP INCAR tags", "VASP tutorial", "VASP 6", "INCAR recipes", "KPOINTS", "POTCAR", "VASP Slurm script", "VASP errors"],
+    "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+    "imageAlt": "The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.",
+    "published": "2026-11-06",
+    "modified": "2026-11-06"
+  },
+  "tasks": [
+    { "text": "Write an INCAR for a new calculation", "sheet": "incar-tags", "anchor": "builder" },
+    { "text": "Choose ISMEAR and SIGMA", "sheet": "incar-tags", "anchor": "smearing" },
+    { "text": "Relax a structure, then run a static calculation", "sheet": "incar-tags", "anchor": "recipes" },
+    { "text": "Check what VASP actually read from my INCAR", "sheet": "incar-tags", "anchor": "check" },
+    { "text": "Choose a k-point mesh", "sheet": "kpoints" },
+    { "text": "Pick the right POTCAR", "sheet": "potcar" },
+    { "text": "Fix a POSCAR that VASP will not read", "sheet": "poscar" },
+    { "text": "Write a Slurm job script", "sheet": "slurm-job-script" },
+    { "text": "Get the energy, forces and moments from the output", "sheet": "outcar-oszicar-grep" },
+    { "text": "My SCF will not converge", "sheet": "errors-and-fixes" },
+    { "text": "Set up an antiferromagnet", "sheet": "magnetism-magmom" },
+    { "text": "Find out what VASP can calculate", "sheet": "properties" },
+    { "text": "Compute a migration barrier", "sheet": "neb" },
+    { "text": "Run molecular dynamics or train a force field", "sheet": "aimd-mlff" }
+  ],
+  "groups": [
+    { "id": "essentials", "title": "Essentials", "blurb": "The input files, the job script, the output, and what to do when it fails." },
+    { "id": "applications", "title": "Applications", "blurb": "Research workflows, step by step." }
+  ],
+  "sheets": [
+    {
+      "slug": "incar-tags",
+      "group": "essentials",
+      "short": "INCAR",
+      "title": "VASP INCAR Cheat Sheet: Tags, Defaults and Recipes",
+      "h1": "VASP INCAR cheat sheet",
+      "card": "The tags to set yourself, their defaults, smearing choices and copy-ready INCARs for each task.",
+      "description": "VASP INCAR cheat sheet for VASP 6: every key tag with its default and recommended value, smearing choices, copy-ready recipes and an INCAR builder.",
+      "lede": "The INCAR tells VASP what to calculate and how carefully. This sheet lists the tags you should set yourself, with the default VASP uses if you do not, the value to use instead and the mistake each one invites. Build an INCAR for your task below, or check one you already have.",
+      "keywords": ["VASP INCAR", "INCAR tags", "INCAR cheat sheet", "ENCUT", "ISMEAR", "SIGMA", "IBRION", "ISIF", "EDIFFG", "VASP relaxation INCAR", "VASP static calculation"],
+      "sample": ["ENCUT", "ISMEAR", "IBRION"],
+      "tool": "INCAR builder and checker",
+      "lectures": [12, 16, 17, 19, 21],
+      "reading": ["VASPwikiINCAR", "VASPwikiSmearing", "VASPwikiElecMin", "VASPwikiStructOpt", "VASPwikiVolumeRelax"],
+      "status": "published",
+      "published": "2026-11-06",
+      "modified": "2026-11-06"
+    },
+    { "slug": "kpoints", "group": "essentials", "short": "KPOINTS", "title": "VASP KPOINTS: Gamma, Monkhorst-Pack, KSPACING, Bands", "h1": "VASP KPOINTS cheat sheet", "card": "Every KPOINTS format, which mesh suits which lattice, KSPACING and band-structure paths.", "sample": ["KSPACING", "KGAMMA"], "tool": "k-mesh calculator", "status": "planned" },
+    { "slug": "potcar", "group": "essentials", "short": "POTCAR", "title": "Which POTCAR to Use in VASP: _pv, _sv, _3 Explained", "h1": "VASP POTCAR cheat sheet", "card": "Suffixes decoded, building and checking a POTCAR without printing it, and the rare-earth choice.", "sample": ["ENCUT", "LASPH"], "tool": "POTCAR command generator", "status": "planned" },
+    { "slug": "poscar", "group": "essentials", "short": "POSCAR", "title": "VASP POSCAR Format: Selective Dynamics, Direct vs Cartesian", "h1": "VASP POSCAR cheat sheet", "card": "The format line by line, selective dynamics, CONTCAR reuse and the mistakes that stop a run.", "sample": [], "tool": "POSCAR checker", "status": "planned" },
+    { "slug": "slurm-job-script", "group": "essentials", "short": "Slurm job script", "title": "VASP Slurm Job Script: srun, NCORE, KPAR, GPU", "h1": "VASP Slurm job script cheat sheet", "card": "CPU and GPU job scripts, MPI ranks and threads, NCORE and KPAR, chained jobs and monitoring.", "sample": ["NCORE", "KPAR"], "tool": "Job script generator", "status": "planned" },
+    { "slug": "outcar-oszicar-grep", "group": "essentials", "short": "Reading the output", "title": "Read VASP Output: grep OUTCAR and OSZICAR", "h1": "Reading VASP output", "card": "Which file holds what, one-line commands for energy, forces, stress, moments and convergence.", "sample": [], "tool": "Command picker", "status": "planned" },
+    { "slug": "errors-and-fixes", "group": "essentials", "short": "Errors and fixes", "title": "VASP Errors and Fixes: ZBRENT, EDDDAV, BRMIX, SGRCON", "h1": "VASP errors and fixes", "card": "Each error message with its cause and fix, and what to try when the SCF or a relaxation will not converge.", "sample": ["ALGO", "AMIX"], "tool": "Error lookup", "status": "planned" },
+    { "slug": "relaxation-workflow", "group": "applications", "short": "Relaxation", "title": "VASP Relaxation Workflow: IBRION, ISIF, Relax to Static", "h1": "VASP relaxation workflow", "card": "From a starting structure to converged geometry, static energy, DOS and band structure.", "sample": ["IBRION", "ISIF", "EDIFFG"], "status": "planned" },
+    { "slug": "magnetism-magmom", "group": "applications", "short": "Magnetism", "title": "VASP Magnetism: MAGMOM, AFM, NUPDOWN, SOC and DFT+U", "h1": "VASP magnetism cheat sheet", "card": "Ferro-, antiferro- and ferrimagnetic setups, moments, spin–orbit coupling, anisotropy and DFT+U.", "sample": ["MAGMOM", "ISPIN", "NUPDOWN"], "tool": "MAGMOM builder", "status": "planned" },
+    { "slug": "properties", "group": "applications", "short": "Properties", "title": "What Can VASP Calculate? Properties and How to Get Them", "h1": "What VASP can calculate", "card": "Every major property with the tags, earlier steps, output files and analysis tools it needs.", "sample": ["LORBIT", "LOPTICS"], "status": "planned" },
+    { "slug": "neb", "group": "applications", "short": "NEB", "title": "VASP NEB Cheat Sheet: IMAGES, Climbing Image, VTST", "h1": "VASP NEB cheat sheet", "card": "Migration barriers with stock VASP and with VTST: setup, climbing image and checks.", "sample": ["IMAGES", "SPRING"], "status": "planned" },
+    { "slug": "aimd-mlff", "group": "applications", "short": "AIMD and ML force fields", "title": "VASP AIMD Cheat Sheet: MDALGO, NVT, NpT and ML Force Fields", "h1": "VASP AIMD and machine-learned force fields", "card": "Thermostats and ensembles, time steps, analysis, and on-the-fly machine-learned force fields.", "sample": ["MDALGO", "POTIM"], "status": "planned" }
+  ]
+}

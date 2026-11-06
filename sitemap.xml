@@ -6,7 +6,7 @@
   </url>
   <url>
     <loc>https://oridwan.github.io/dft/</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-11-06</lastmod>
   </url>
   <url>
     <loc>https://oridwan.github.io/symmetry/</loc>
@@ -30,6 +30,10 @@
   <url>
     <loc>https://oridwan.github.io/dft/variational-principle-basis-sets/</loc>
     <lastmod>2026-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/</loc>
+    <lastmod>2026-11-06</lastmod>
   </url>
   <url>
     <loc>https://oridwan.github.io/dft/wavefunctions-operators-eigenvalues/</loc>
@@ -728,5 +732,9 @@
   </url>
   <url>
     <loc>https://oridwan.github.io/symmetry/230/</loc>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/incar-tags/</loc>
+    <lastmod>2026-11-06</lastmod>
   </url>
 </urlset>

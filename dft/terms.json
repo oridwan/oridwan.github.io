@@ -261,57 +261,88 @@
       "def": "Cutoff energy of the plane-wave basis set, in eV. The VASP Wiki strongly recommends setting it explicitly in every INCAR, and checking the convergence of the quantity you report.",
       "default": "the largest ENMAX among the POTCAR files",
       "wiki": "https://www.vasp.at/wiki/ENCUT",
-      "checked": "2026-10-30",
-      "lecture": 17
+      "checked": "2026-11-06",
+      "lecture": 17,
+      "group": "basis",
+      "short": "Plane-wave cutoff in eV: the size of the basis set.",
+      "use": "Always set it. Converge the quantity you report, raising ENCUT about 20% per step. Cell relaxations: at least 1.3 × the largest ENMAX.",
+      "pitfall": "Never go below the default. Energies are comparable only between runs with the same ENCUT."
     },
     "ISMEAR": {
       "def": "How partial occupancies are assigned to the electronic states. ISMEAR = 0 is Gaussian smearing; ISMEAR = N &gt; 0 is Methfessel–Paxton smearing of order N, which can give erroneous results for insulators.",
       "default": "1",
       "wiki": "https://www.vasp.at/wiki/ISMEAR",
-      "checked": "2026-10-30",
-      "lecture": 16
+      "checked": "2026-11-06",
+      "lecture": 16,
+      "group": "smearing",
+      "short": "How electrons are smeared over states near the Fermi level.",
+      "use": "Not sure: 0. Insulators: 0, or −5 for static runs and DOS. Metals: 1 or 2 for relaxations and phonons, −5 for total energies and DOS.",
+      "pitfall": "Never ISMEAR > 0 for insulators: phonon frequencies can be off by more than 20%. −5 needs a Γ-centred mesh with at least 4 k-points, and in metals its forces can be off by 5–10%."
     },
     "SIGMA": {
-      "def": "Width of the smearing, in eV. For semiconductors and insulators, the VASP Wiki's page on the default smearing method strongly recommends ISMEAR = 0 with SIGMA = 0.05.",
+      "def": "Width of the smearing, in eV. With Gaussian smearing (ISMEAR = 0) values of 0.03–0.1 are typical; for metals with Methfessel–Paxton smearing, SIGMA can be as large as keeps the entropy term below about 1 meV per atom.",
       "default": "0.2",
       "wiki": "https://www.vasp.at/wiki/SIGMA",
-      "checked": "2026-10-30",
-      "lecture": 16
+      "checked": "2026-11-06",
+      "lecture": 16,
+      "group": "smearing",
+      "short": "Smearing width in eV.",
+      "use": "0.03–0.1 with ISMEAR = 0. Metals with ISMEAR = 1 or 2: as large as keeps \"entropy T*S\" in OUTCAR below 1 meV/atom (often 0.2).",
+      "pitfall": "Ignored by ISMEAR = −4 and −5. Forces belong to the smeared free energy, so converge them with SIGMA too."
     },
     "EDIFF": {
       "def": "Stopping criterion of the electronic self-consistency loop, in eV. The loop stops when both the change of the free energy and the change of the band-structure energy between two steps fall below EDIFF.",
       "default": "10<sup>−4</sup> eV",
       "wiki": "https://www.vasp.at/wiki/EDIFF",
-      "checked": "2026-10-30",
-      "lecture": 12
+      "checked": "2026-11-06",
+      "lecture": 12,
+      "group": "electronic",
+      "short": "SCF stopping criterion: the energy change between steps, in eV.",
+      "use": "1E-6 is the best general compromise; 1E-7 or tighter for phonons and other finite-difference runs.",
+      "pitfall": "The default is loose for anything you report."
     },
     "NELM": {
       "def": "Maximum number of electronic self-consistency steps.",
       "default": "60",
       "wiki": "https://www.vasp.at/wiki/NELM",
-      "checked": "2026-10-30",
-      "lecture": 12
+      "checked": "2026-11-06",
+      "lecture": 12,
+      "group": "electronic",
+      "short": "Maximum number of SCF steps per ionic step.",
+      "use": "Keep it near the default.",
+      "pitfall": "An SCF that has not converged in about 40 steps usually needs a different ALGO or mixing, not a larger NELM."
     },
     "NELMDL": {
       "def": "Number of non-self-consistent steps at the start, during which the Hamiltonian built from the initial density is kept fixed while the orbitals settle. A negative value applies the delay only in the first ionic step.",
       "default": "−12 if ISTART = 0, INIWAV = 1 and IALGO = 48 or 50; 0 if a WAVECAR is present; −5 otherwise",
       "wiki": "https://www.vasp.at/wiki/NELMDL",
-      "checked": "2026-10-30",
-      "lecture": 12
+      "checked": "2026-11-06",
+      "lecture": 12,
+      "group": "electronic",
+      "short": "Non-self-consistent steps at the start, before the density is updated.",
+      "use": "Leave the default: a negative value delays only the first ionic step."
     },
     "ISTART": {
       "def": "Whether the run starts from scratch (0) or reads the orbitals from an existing WAVECAR (1 or higher).",
       "default": "1 if a WAVECAR file exists, otherwise 0",
       "wiki": "https://www.vasp.at/wiki/ISTART",
-      "checked": "2026-10-30",
-      "lecture": 12
+      "checked": "2026-11-06",
+      "lecture": 12,
+      "group": "start",
+      "short": "Read the orbitals from WAVECAR (1) or start from scratch (0).",
+      "use": "Leave it unset: VASP restarts from a WAVECAR in the folder. Set 0 to force a fresh start.",
+      "pitfall": "A WAVECAR left in the folder is read automatically. That is a harmless starting guess, but delete it if it belongs to another system."
     },
     "ICHARG": {
       "def": "How the initial charge density is built: 2 takes a superposition of atomic charge densities, 1 reads CHGCAR, 0 computes it from the initial orbitals, and 11 keeps a CHGCAR density fixed to obtain band structures or densities of states.",
       "default": "2 if ISTART = 0, otherwise 0",
       "wiki": "https://www.vasp.at/wiki/ICHARG",
-      "checked": "2026-10-30",
-      "lecture": 12
+      "checked": "2026-11-06",
+      "lecture": 12,
+      "group": "start",
+      "short": "How the starting charge density is made.",
+      "use": "2: atomic densities (new runs). 1: read CHGCAR. 11: DOS or band structure from a converged CHGCAR, density kept fixed.",
+      "pitfall": "11 needs CHGCAR from a self-consistent run on a full k-mesh, with the same LMAXMIX. Never use 11 with hybrid functionals."
     },
     "INIWAV": {
       "def": "How the orbitals are initialized when no WAVECAR is read. INIWAV = 1 fills them with random numbers.",
@@ -324,36 +355,56 @@
       "def": "Maximum number of ionic steps. With NSW = 0 the nuclei are not moved: a single-point (static) calculation.",
       "default": "0",
       "wiki": "https://www.vasp.at/wiki/NSW",
-      "checked": "2026-10-30",
-      "lecture": 21
+      "checked": "2026-11-06",
+      "lecture": 21,
+      "group": "ionic",
+      "short": "Maximum number of ionic steps.",
+      "use": "0 for static runs; about 100 for relaxations.",
+      "pitfall": "With NSW > 0, always set IBRION too."
     },
     "IBRION": {
       "def": "How the nuclei are moved between ionic steps: −1 not at all, 0 molecular dynamics, 1 relaxation with RMM-DIIS, 2 relaxation with conjugate gradients, 3 relaxation with damped molecular dynamics.",
-      "default": "−1 if NSW = −1 or 0, otherwise 0",
+      "default": "−1 if NSW = −1 or 0, otherwise 0 (molecular dynamics)",
       "wiki": "https://www.vasp.at/wiki/IBRION",
-      "checked": "2026-10-30",
-      "lecture": 21
+      "checked": "2026-11-06",
+      "lecture": 21,
+      "group": "ionic",
+      "short": "How the atoms move.",
+      "use": "2 (conjugate gradient) far from the minimum; 1 (RMM-DIIS) close to it; 0 for MD; 6 or 8 for phonons.",
+      "pitfall": "NSW > 0 without IBRION gives IBRION = 0, molecular dynamics with no time step, and VASP stops at once."
     },
     "EDIFFG": {
       "def": "Stopping criterion of an ionic relaxation. A positive value stops when the total energy changes by less than EDIFFG between ionic steps; a negative value stops when the norms of all forces are below |EDIFFG|. It is not used in molecular dynamics.",
       "default": "EDIFF × 10",
       "wiki": "https://www.vasp.at/wiki/EDIFFG",
-      "checked": "2026-10-30",
-      "lecture": 21
+      "checked": "2026-11-06",
+      "lecture": 21,
+      "group": "ionic",
+      "short": "When a relaxation stops.",
+      "use": "Negative = force criterion in eV/Å: −0.02 is a common choice; tighten it before phonon calculations.",
+      "pitfall": "Positive values (including the default) stop on an energy change, not on the forces."
     },
     "GGA": {
       "def": "Selects the exchange–correlation functional of the GGA family; GGA = PE is PBE.",
       "default": "the functional given by LEXCH in the POTCAR, if METAGGA and XC are not set either",
       "wiki": "https://www.vasp.at/wiki/GGA",
-      "checked": "2026-10-30",
-      "lecture": 11
+      "checked": "2026-11-06",
+      "lecture": 11,
+      "group": "functional",
+      "short": "Exchange–correlation functional of the GGA family.",
+      "use": "PE = PBE, PS = PBEsol, RP = RPBE, 91 = PW91.",
+      "pitfall": "Never edit LEXCH inside the POTCAR."
     },
     "KSPACING": {
       "def": "Smallest allowed spacing between k-points, in Å<sup>−1</sup>. When there is no KPOINTS file, VASP builds the k-point mesh from it.",
       "default": "0.5 (Γ-centred while KGAMMA = .TRUE., its default)",
       "wiki": "https://www.vasp.at/wiki/KSPACING",
-      "checked": "2026-10-30",
-      "lecture": 15
+      "checked": "2026-11-06",
+      "lecture": 15,
+      "group": "symmetry",
+      "short": "k-mesh from the INCAR: the largest allowed spacing between k-points, in Å⁻¹ (2π included).",
+      "use": "Smaller is denser; converge it. Without a KPOINTS file it replaces one.",
+      "pitfall": "Ignored when a KPOINTS file is present. The default 0.5 is coarse for metals."
     },
     "PSTRESS": {
       "def": "A pressure added in relaxations that change the cell. Its unit is kB (kilobar); 1 kB = 0.1 GPa.",
@@ -365,43 +416,67 @@
       "def": "Whether the orbitals are written to WAVECAR at the end of the run.",
       "default": ".TRUE.",
       "wiki": "https://www.vasp.at/wiki/LWAVE",
-      "checked": "2026-10-30",
-      "lecture": 12
+      "checked": "2026-11-06",
+      "lecture": 12,
+      "group": "output",
+      "short": "Write WAVECAR at the end of the run.",
+      "use": ".FALSE. unless a later run reads it (hybrid restarts, some post-processing).",
+      "pitfall": "WAVECAR can be gigabytes."
     },
     "LCHARG": {
       "def": "Whether the charge density is written to CHGCAR at the end of the run.",
-      "default": ".TRUE. (in VASP 6.0 to 6.4.2 it is tied to LH5)",
+      "default": ".TRUE. (VASP 6.0–6.4.2: .NOT. LH5)",
       "wiki": "https://www.vasp.at/wiki/LCHARG",
-      "checked": "2026-10-30",
-      "lecture": 12
+      "checked": "2026-11-06",
+      "lecture": 12,
+      "group": "output",
+      "short": "Write CHGCAR and CHG at the end of the run.",
+      "use": ".TRUE. for the self-consistent run that feeds a DOS, band-structure or charge analysis.",
+      "pitfall": "ICHARG = 11 cannot read the density from vaspwave.h5 yet; it needs CHGCAR."
     },
     "POTIM": {
       "def": "In ionic relaxations (IBRION = 1, 2, 3), a scaling constant for the step widths; in molecular dynamics, the time step in fs.",
-      "default": "0.5 for IBRION = 1, 2 and 3",
+      "default": "0.5 for IBRION = 1, 2 and 3; 0.015 Å for IBRION = 5 and 6; none for molecular dynamics (must be set)",
       "wiki": "https://www.vasp.at/wiki/POTIM",
-      "checked": "2026-10-30",
-      "lecture": 21
+      "checked": "2026-11-06",
+      "lecture": 21,
+      "group": "ionic",
+      "short": "Step size: the time step in fs for MD, a step scaling for relaxations, the displacement in Å for finite differences.",
+      "use": "Keep 0.5 for relaxations. MD: it must be set, and light atoms such as H need a smaller step.",
+      "pitfall": "IBRION = 1 is especially sensitive to POTIM."
     },
     "ISIF": {
       "def": "Which degrees of freedom may change and whether the stress tensor is calculated. ISIF = 2: the atoms move, the cell shape and volume stay fixed, and the stress is calculated; ISIF = 3: atoms, cell shape and volume all change.",
       "default": "0 for molecular dynamics (IBRION = 0) or hybrid functionals (LHFCALC = .TRUE.), otherwise 2",
       "wiki": "https://www.vasp.at/wiki/ISIF",
-      "checked": "2026-10-30",
-      "lecture": 21
+      "checked": "2026-11-06",
+      "lecture": 21,
+      "group": "ionic",
+      "short": "Which of atoms, cell shape and volume relax, and whether the stress is computed.",
+      "use": "2: atoms only. 3: atoms, shape and volume. 4: atoms and shape at fixed volume. 7: volume only. 8: atoms and volume (VASP 6.4.1 and later).",
+      "pitfall": "Changing the cell gives Pulay stress: use ENCUT ≥ 1.3 × ENMAX and re-run from CONTCAR. Hybrids default to ISIF = 0, so no stress unless you set it."
     },
     "LSORBIT": {
       "def": "Switches on spin–orbit coupling, which VASP leaves out by default. It requires vasp_ncl and sets LNONCOLLINEAR = .TRUE.",
       "default": ".FALSE.",
       "wiki": "https://www.vasp.at/wiki/LSORBIT",
-      "checked": "2026-10-30",
-      "lecture": 24
+      "checked": "2026-11-06",
+      "lecture": 24,
+      "group": "spin",
+      "short": "Spin–orbit coupling.",
+      "use": "Magnetic anisotropy and heavy elements. Needs vasp_ncl and switches on LNONCOLLINEAR.",
+      "pitfall": "Set LMAXMIX (4 for d, 6 for f elements)."
     },
     "NBANDS": {
       "def": "Total number of Kohn–Sham orbitals (bands) per k-point. VASP needs at least all occupied bands plus one empty one, and on several cores it raises NBANDS to a convenient multiple.",
       "default": "max(nint(NELECT + 2)/2 + max(NIONS/2, 3), int(0.6 NELECT))",
       "wiki": "https://www.vasp.at/wiki/NBANDS",
-      "checked": "2026-10-30",
-      "lecture": 2
+      "checked": "2026-11-06",
+      "lecture": 2,
+      "group": "electronic",
+      "short": "Number of bands (orbitals) per k-point.",
+      "use": "The default is safe for ground states. Raise it for optics, GW and f-electron systems.",
+      "pitfall": "Before VASP 6.6.0 the default used the signed MAGMOM, so negative starting moments (as in antiferromagnets) could give too few bands. VASP rounds NBANDS up for parallel efficiency."
     },
     "NELECT": {
       "def": "Number of electrons. By default it is set from the POTCARs (ZVAL of each species times its number of atoms) for a neutral cell; set it only for a charged calculation.",
@@ -414,29 +489,45 @@
       "def": "Selects a method to project the Kohn–Sham orbitals onto local quantum numbers (ℓ, m) around each atom, giving s-, p-, d- and f-resolved information in PROCAR and DOSCAR.",
       "default": "0 (which needs RWIGS; from LORBIT = 10 on, RWIGS is ignored)",
       "wiki": "https://www.vasp.at/wiki/LORBIT",
-      "checked": "2026-10-30",
-      "lecture": 29
+      "checked": "2026-11-06",
+      "lecture": 29,
+      "group": "output",
+      "short": "Projections onto atoms and orbitals: PROCAR, projected DOS and site moments.",
+      "use": "11: s, p, d (lm-resolved) projections with no RWIGS needed.",
+      "pitfall": "Values below 10 need RWIGS. LORBIT = 12 is for qualitative work only."
     },
     "ISPIN": {
       "def": "1: no spin polarization (spin-up and spin-down electrons share one density). 2: spin-polarized collinear calculation, with separate spin-up and spin-down orbitals and densities.",
       "default": "1",
       "wiki": "https://www.vasp.at/wiki/ISPIN",
-      "checked": "2026-10-30",
-      "lecture": 23
+      "checked": "2026-11-06",
+      "lecture": 23,
+      "group": "spin",
+      "short": "Spin polarization: 1 off, 2 collinear spin-polarized.",
+      "use": "2 for anything that may be magnetic.",
+      "pitfall": "Noncollinear runs ignore it; delete it there."
     },
     "MAGMOM": {
       "def": "Initial magnetic moment of each atom, used when no magnetization density is present yet; it also lowers the symmetry if it breaks it.",
-      "default": "1.0 per atom for ISPIN = 2",
+      "default": "1.0 per atom for ISPIN = 2; 3 × 1.0 per atom for noncollinear runs",
       "wiki": "https://www.vasp.at/wiki/MAGMOM",
-      "checked": "2026-10-30",
-      "lecture": 23
+      "checked": "2026-11-06",
+      "lecture": 23,
+      "group": "spin",
+      "short": "Starting magnetic moment of each atom in μB, in POSCAR order.",
+      "use": "Start 1.2–1.5 × the expected moment; give antiferromagnetic sublattices opposite signs; use N*value shorthand, e.g. 4*5.0 4*-5.0.",
+      "pitfall": "It also lowers the symmetry. Keep it on restarts, or the magnetization can be symmetrized away. The final state depends on the start."
     },
     "LHFCALC": {
       "def": "Switches on a Hartree–Fock/DFT hybrid-functional calculation with exact exchange; without further tags VASP uses the PBE0 hybrid.",
       "default": ".FALSE.",
       "wiki": "https://www.vasp.at/wiki/LHFCALC",
-      "checked": "2026-10-30",
-      "lecture": 27
+      "checked": "2026-11-06",
+      "lecture": 27,
+      "group": "functional",
+      "short": "Switches on a hybrid functional with exact exchange.",
+      "use": "With HFSCREEN = 0.2 for HSE06, and ALGO = All with ISEARCH = 1.",
+      "pitfall": "Expensive. ISIF then defaults to 0 (atoms move, no stress). Never ICHARG = 11."
     },
     "AEXX": {
       "def": "Fraction of exact (Hartree–Fock) exchange in a hybrid-functional calculation. With AEXX = 1.0 VASP switches off correlation and runs a full Hartree–Fock calculation.",
@@ -444,6 +535,293 @@
       "wiki": "https://www.vasp.at/wiki/AEXX",
       "checked": "2026-10-30",
       "lecture": 27
+    },
+    "LMAXMIX": {
+      "def": "Highest angular momentum ℓ of the on-site densities that are mixed and written to CHGCAR.",
+      "default": "2",
+      "wiki": "https://www.vasp.at/wiki/LMAXMIX",
+      "checked": "2026-11-06",
+      "group": "start",
+      "short": "Highest angular momentum ℓ of the on-site densities that are mixed and written to CHGCAR.",
+      "use": "4 for d elements, 6 for f elements: needed for DFT+U and noncollinear runs, and for DOS or band runs from CHGCAR.",
+      "pitfall": "Left at 2, a run that reads CHGCAR (ICHARG = 11) can differ from the self-consistent result; for DFT+U band structures 4 or 6 is strictly required."
+    },
+    "PREC": {
+      "def": "Precision mode: sets the default FFT grids (and ENCUT, if you do not).",
+      "default": "Normal (Medium in VASP 4)",
+      "wiki": "https://www.vasp.at/wiki/PREC",
+      "checked": "2026-11-06",
+      "group": "basis",
+      "short": "Precision mode: sets the default FFT grids.",
+      "use": "Normal for routine work; Accurate for accurate forces, stress and phonons.",
+      "pitfall": "Low, Medium and High are deprecated. High only raises the cutoff by 30%, so set ENCUT instead."
+    },
+    "LASPH": {
+      "def": "Non-spherical gradient corrections inside the PAW spheres.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LASPH",
+      "checked": "2026-11-06",
+      "group": "basis",
+      "short": "Non-spherical gradient corrections inside the PAW spheres.",
+      "use": ".TRUE. for 3d and f elements and magnetic B–F atoms, and whenever you use DFT+U, hybrids, meta-GGA (r²SCAN) or vdW-DF.",
+      "pitfall": "It stays .FALSE. even when METAGGA is set: switch it on yourself."
+    },
+    "LREAL": {
+      "def": "Evaluate the projection operators in real space, which is faster for large cells.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LREAL",
+      "checked": "2026-11-06",
+      "group": "basis",
+      "short": "Evaluate the projection operators in real space, which is faster for large cells.",
+      "use": "Auto for more than about 30 atoms; .FALSE. for small cells and for final energies.",
+      "pitfall": ".TRUE. and On are not recommended. Compare energies only between runs with the same LREAL."
+    },
+    "ADDGRID": {
+      "def": "An extra, finer grid for the augmentation charges.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/ADDGRID",
+      "checked": "2026-11-06",
+      "group": "basis",
+      "short": "An extra, finer grid for the augmentation charges.",
+      "use": "Leave it off. Try it only if tests show it reduces noise in the forces.",
+      "pitfall": "Not meant as a default setting for every calculation."
+    },
+    "ALGO": {
+      "def": "Electronic minimization algorithm.",
+      "default": "Normal (blocked Davidson)",
+      "wiki": "https://www.vasp.at/wiki/ALGO",
+      "checked": "2026-11-06",
+      "group": "electronic",
+      "short": "Electronic minimization algorithm.",
+      "use": "Normal: robust default. Fast: large cells and MD. All (with ISEARCH = 1): magnetic, DFT+U, meta-GGA and hybrid runs, or when Normal fails. Damped (with TIME): metals or small-gap systems with hybrids or meta-GGA, when the others fail.",
+      "pitfall": "VeryFast is not supported for hybrids. Fast and VeryFast were rewritten in VASP 6 (\"Old Fast\" selects the VASP 5 version)."
+    },
+    "ISEARCH": {
+      "def": "Line search used by ALGO = All.",
+      "default": "0",
+      "wiki": "https://www.vasp.at/wiki/ISEARCH",
+      "checked": "2026-11-06",
+      "group": "electronic",
+      "short": "Line search used by ALGO = All.",
+      "use": "1 together with ALGO = All: it usually converges more stably.",
+      "pitfall": "The improved line search arrived in VASP 6.5.1; the default is still 0.",
+      "since": "6.5.1"
+    },
+    "NELMIN": {
+      "def": "Minimum number of SCF steps per ionic step.",
+      "default": "2",
+      "wiki": "https://www.vasp.at/wiki/NELMIN",
+      "checked": "2026-11-06",
+      "group": "electronic",
+      "short": "Minimum number of SCF steps per ionic step.",
+      "use": "4 for relaxations of simple bulk materials, 8 for complex surfaces.",
+      "pitfall": "Too few SCF steps per ionic step give inaccurate forces."
+    },
+    "LMIXTAU": {
+      "def": "Also mix the kinetic-energy density (meta-GGA).",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LMIXTAU",
+      "checked": "2026-11-06",
+      "group": "electronic",
+      "short": "Also mix the kinetic-energy density (meta-GGA).",
+      "use": ".TRUE. if a meta-GGA SCF with ALGO = Normal or Fast does not converge."
+    },
+    "EFERMI": {
+      "def": "How the Fermi energy is placed.",
+      "default": "LEGACY",
+      "wiki": "https://www.vasp.at/wiki/EFERMI",
+      "checked": "2026-11-06",
+      "group": "smearing",
+      "short": "How the Fermi energy is placed.",
+      "use": "MIDGAP puts it in the middle of the gap of a semiconductor; recommended with ISMEAR = 0.",
+      "pitfall": "Available from VASP 6.4.",
+      "since": "6.4"
+    },
+    "AMIX": {
+      "def": "Linear mixing parameter for the charge density.",
+      "default": "0.4 (PAW)",
+      "wiki": "https://www.vasp.at/wiki/AMIX",
+      "checked": "2026-11-06",
+      "group": "mixing",
+      "short": "Linear mixing parameter for the charge density.",
+      "use": "Lower it if the SCF oscillates."
+    },
+    "BMIX": {
+      "def": "Cutoff wave vector of the Kerker mixing for the charge density.",
+      "default": "1.0",
+      "wiki": "https://www.vasp.at/wiki/BMIX",
+      "checked": "2026-11-06",
+      "group": "mixing",
+      "short": "Cutoff wave vector of the Kerker mixing for the charge density.",
+      "use": "A tiny value (0.0001) makes the mixing nearly linear, a step in the magnetic troubleshooting recipe."
+    },
+    "AMIX_MAG": {
+      "def": "Mixing parameter for the magnetization density.",
+      "default": "1.6",
+      "wiki": "https://www.vasp.at/wiki/AMIX_MAG",
+      "checked": "2026-11-06",
+      "group": "mixing",
+      "short": "Mixing parameter for the magnetization density.",
+      "use": "Lower it, together with BMIX_MAG, when a magnetic SCF will not settle."
+    },
+    "BMIX_MAG": {
+      "def": "Kerker cutoff for the magnetization density.",
+      "default": "1.0",
+      "wiki": "https://www.vasp.at/wiki/BMIX_MAG",
+      "checked": "2026-11-06",
+      "group": "mixing",
+      "short": "Kerker cutoff for the magnetization density.",
+      "use": "0.0001 for nearly linear mixing in hard magnetic cases."
+    },
+    "MAXMIX": {
+      "def": "How many previous steps the Broyden mixer keeps.",
+      "default": "−45",
+      "wiki": "https://www.vasp.at/wiki/MAXMIX",
+      "checked": "2026-11-06",
+      "group": "mixing",
+      "short": "How many previous steps the Broyden mixer keeps.",
+      "use": "A positive value keeps the mixer history across ionic steps, which can save SCF steps in relaxations and MD. In hard magnetic cases, a smaller |MAXMIX| can help.",
+      "pitfall": "Negative (the default) resets the mixer at every ionic step."
+    },
+    "NUPDOWN": {
+      "def": "Fixes the difference between spin-up and spin-down electrons, i.e. the total moment.",
+      "default": "not set (free)",
+      "wiki": "https://www.vasp.at/wiki/NUPDOWN",
+      "checked": "2026-11-06",
+      "group": "spin",
+      "short": "Fixes the difference between spin-up and spin-down electrons, i.e. the total moment.",
+      "use": "Only to impose a total moment, as in fixed-spin-moment scans.",
+      "pitfall": "A wrong value forces a wrong moment: leave it unset in normal runs."
+    },
+    "LNONCOLLINEAR": {
+      "def": "Noncollinear magnetism: each moment can point anywhere.",
+      "default": ".FALSE. (.TRUE. if LSORBIT = .TRUE.)",
+      "wiki": "https://www.vasp.at/wiki/LNONCOLLINEAR",
+      "checked": "2026-11-06",
+      "group": "spin",
+      "short": "Noncollinear magnetism: each moment can point anywhere.",
+      "use": "Needs vasp_ncl; MAGMOM then takes three numbers per atom."
+    },
+    "NEDOS": {
+      "def": "Number of points on the DOS energy grid.",
+      "default": "301",
+      "wiki": "https://www.vasp.at/wiki/NEDOS",
+      "checked": "2026-11-06",
+      "group": "output",
+      "short": "Number of points on the DOS energy grid.",
+      "use": "2001 or more for a smooth DOS.",
+      "pitfall": "Too few points wash out sharp features."
+    },
+    "METAGGA": {
+      "def": "Meta-GGA functional, e.g. R2SCAN.",
+      "default": "the functional given by LEXCH in the POTCAR",
+      "wiki": "https://www.vasp.at/wiki/METAGGA",
+      "checked": "2026-11-06",
+      "group": "functional",
+      "short": "Meta-GGA functional, e.g. R2SCAN.",
+      "use": "R2SCAN (VASP 6.2.0 and later) with LASPH = .TRUE. and ALGO = All.",
+      "pitfall": "Check the POTCARs with grep kinetic POTCAR. Spin-polarized meta-GGA forces are wrong in VASP 6.6.0 (fixed in 6.6.1)."
+    },
+    "HFSCREEN": {
+      "def": "Range-separation parameter of screened hybrids, in Å⁻¹.",
+      "default": "0 (no screening)",
+      "wiki": "https://www.vasp.at/wiki/HFSCREEN",
+      "checked": "2026-11-06",
+      "group": "functional",
+      "short": "Range-separation parameter of screened hybrids, in Å⁻¹.",
+      "use": "0.2 for HSE06.",
+      "pitfall": "0.3 gives HSE03."
+    },
+    "HFRCUT": {
+      "def": "Coulomb truncation for hybrid functionals.",
+      "default": "0",
+      "wiki": "https://www.vasp.at/wiki/HFRCUT",
+      "checked": "2026-11-06",
+      "group": "functional",
+      "short": "Coulomb truncation for hybrid functionals.",
+      "use": "−1 for band structures of gapped systems: it converges best."
+    },
+    "NCORE": {
+      "def": "Number of cores that work together on one band.",
+      "default": "1",
+      "wiki": "https://www.vasp.at/wiki/NCORE",
+      "checked": "2026-11-06",
+      "group": "parallel",
+      "short": "Number of cores that work together on one band.",
+      "use": "Cores per NUMA domain is a good start; about 4 for ~100 atoms, 12–16 above 400 atoms. Benchmark.",
+      "pitfall": "Forced to 1 with OpenMP threads and on GPUs. Do not set NPAR as well."
+    },
+    "NPAR": {
+      "def": "Legacy: the number of band groups (MPI ranks ÷ NCORE).",
+      "default": "the number of MPI ranks",
+      "wiki": "https://www.vasp.at/wiki/NPAR",
+      "checked": "2026-11-06",
+      "group": "parallel",
+      "short": "Legacy: the number of band groups (MPI ranks ÷ NCORE).",
+      "use": "Use NCORE instead.",
+      "pitfall": "If both are set, NPAR wins."
+    },
+    "KPAR": {
+      "def": "Number of k-point groups that run in parallel.",
+      "default": "1",
+      "wiki": "https://www.vasp.at/wiki/KPAR",
+      "checked": "2026-11-06",
+      "group": "parallel",
+      "short": "Number of k-point groups that run in parallel.",
+      "use": "A divisor of the MPI ranks, up to the number of irreducible k-points if memory allows; on GPUs often the number of GPUs.",
+      "pitfall": "Each group holds its own copy of the data: memory is not shared."
+    },
+    "NSIM": {
+      "def": "Number of bands optimized at once in the blocked algorithms.",
+      "default": "4",
+      "wiki": "https://www.vasp.at/wiki/NSIM",
+      "checked": "2026-11-06",
+      "group": "parallel",
+      "short": "Number of bands optimized at once in the blocked algorithms.",
+      "use": "Higher on GPUs (up to 32)."
+    },
+    "ISYM": {
+      "def": "How symmetry is used.",
+      "default": "2 for PAW; 3 with hybrids (LHFCALC); 1 with ultrasoft potentials",
+      "wiki": "https://www.vasp.at/wiki/ISYM",
+      "checked": "2026-11-06",
+      "group": "symmetry",
+      "short": "How symmetry is used.",
+      "use": "Leave the default; 0 for molecular dynamics.",
+      "pitfall": "A relaxation keeps the starting symmetry: to reach a lower-symmetry minimum, break the symmetry in the starting structure."
+    },
+    "SYMPREC": {
+      "def": "Tolerance for finding symmetry from the POSCAR positions.",
+      "default": "1E-5",
+      "wiki": "https://www.vasp.at/wiki/SYMPREC",
+      "checked": "2026-11-06",
+      "group": "symmetry",
+      "short": "Tolerance for finding symmetry from the POSCAR positions.",
+      "use": "Raise it only for imprecise coordinates."
+    },
+    "KGAMMA": {
+      "def": "Γ-centred mesh for KSPACING.",
+      "default": ".TRUE.",
+      "wiki": "https://www.vasp.at/wiki/KGAMMA",
+      "checked": "2026-11-06",
+      "group": "symmetry",
+      "short": "Γ-centred mesh for KSPACING.",
+      "use": "Keep .TRUE.",
+      "pitfall": "Ignored when a KPOINTS file is present."
+    },
+    "SYSTEM": {
+      "def": "A free-text title for the run, printed in the output files.",
+      "default": "unknown system",
+      "wiki": "https://www.vasp.at/wiki/SYSTEM",
+      "checked": "2026-11-06",
+      "short": "A free-text title for the run, printed in the output files."
+    },
+    "TIME": {
+      "def": "Trial time step of the damped and conjugate-gradient electronic algorithms (ALGO = Damped, All).",
+      "default": "0.4",
+      "wiki": "https://www.vasp.at/wiki/TIME",
+      "checked": "2026-11-06",
+      "short": "Trial time step of the electronic algorithms ALGO = Damped and All."
     }
   },
   "refs": {
@@ -943,6 +1321,41 @@
       "doi": "10.1103/PhysRev.35.210.2",
       "readNote": "Crossref metadata checked; original not read (history as summarized in standard accounts)",
       "read": "2026-10-30"
+    },
+    "VASPwikiINCAR": {
+      "cite": "VASP Wiki: INCAR",
+      "text": "VASP Wiki, “INCAR” (file format, comments, line continuation, and a complete example).",
+      "url": "https://www.vasp.at/wiki/INCAR",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiSmearing": {
+      "cite": "VASP Wiki: smearing technique",
+      "text": "VASP Wiki, “Smearing technique” (how to choose ISMEAR and SIGMA for insulators, metals and unknown systems).",
+      "url": "https://www.vasp.at/wiki/Smearing_technique",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiElecMin": {
+      "cite": "VASP Wiki: setting up an electronic minimization",
+      "text": "VASP Wiki, “Setting up an electronic minimization” (a minimal INCAR, the dry run, and converging ENCUT and k-points).",
+      "url": "https://www.vasp.at/wiki/Setting_up_an_electronic_minimization",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiStructOpt": {
+      "cite": "VASP Wiki: structure optimization",
+      "text": "VASP Wiki, “Structure optimization” (choosing IBRION, POTIM and NELMIN, and the symmetry caveat).",
+      "url": "https://www.vasp.at/wiki/Structure_optimization",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiVolumeRelax": {
+      "cite": "VASP Wiki: volume relaxation",
+      "text": "VASP Wiki, “Volume relaxation” (Pulay stress, the 1.3 × cutoff rule and the restart protocol).",
+      "url": "https://www.vasp.at/wiki/Volume_relaxation",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
     }
   }
 }
