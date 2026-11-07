@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP Relaxation Workflow: IBRION, ISIF, Relax to Static</title>
+  <meta name="description" content="VASP structure relaxation workflow: IBRION and ISIF choices, EDIFFG, Pulay stress and ENCUT, relax then static then DOS, slabs, 2D sheets and E-V curves.">
+  <meta name="keywords" content="VASP relaxation, IBRION, ISIF, EDIFFG, Pulay stress, VASP static calculation, relax then static, VASP slab relaxation, LATTICE_CONSTRAINTS, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/relaxation-workflow/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP Relaxation Workflow: IBRION, ISIF, Relax to Static">
+  <meta property="og:description" content="VASP structure relaxation workflow: IBRION and ISIF choices, EDIFFG, Pulay stress and ENCUT, relax then static then DOS, slabs, 2D sheets and E-V curves.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/relaxation-workflow/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP Relaxation Workflow: IBRION, ISIF, Relax to Static">
+  <meta name="twitter:description" content="VASP structure relaxation workflow: IBRION and ISIF choices, EDIFFG, Pulay stress and ENCUT, relax then static then DOS, slabs, 2D sheets and E-V curves.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "VASP Relaxation Workflow: IBRION, ISIF, Relax to Static",
+  "name": "VASP relaxation workflow",
+  "description": "VASP structure relaxation workflow: IBRION and ISIF choices, EDIFFG, Pulay stress and ENCUT, relax then static then DOS, slabs, 2D sheets and E-V curves.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/relaxation-workflow/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP relaxation, IBRION, ISIF, EDIFFG, Pulay stress, VASP static calculation, relax then static, VASP slab relaxation, LATTICE_CONSTRAINTS, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “Structure optimization” (choosing IBRION, POTIM and NELMIN, and the symmetry caveat).",
+    "VASP Wiki, “ISIF” (which degrees of freedom relax, and the stress).",
+    "VASP Wiki, “Volume relaxation” (Pulay stress, the 1.3 × cutoff rule and the restart protocol).",
+    "VASP Wiki, “Pulay stress”."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Relaxation",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/relaxation-workflow/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="relaxation-workflow">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>Relaxation</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Applications</p>
+    <h1>VASP relaxation workflow</h1>
+    <p class="sheet-lede">How to take a structure from its starting guess to a converged geometry and a trustworthy energy: which optimizer and ISIF to use, when the relaxation really is finished, why the cutoff matters for the cell, and the static and DOS runs that follow.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#workflow">The workflow, step by step</a></li>
+        <li><a href="#isif">What moves: ISIF</a></li>
+        <li><a href="#optimizer">Which optimizer</a></li>
+        <li><a href="#stop">When it stops: EDIFFG</a></li>
+        <li><a href="#pulay">Pulay stress and the cutoff</a></li>
+        <li><a href="#special">Slabs, 2D sheets, E–V curves and magnets</a></li>
+        <li><a href="#check">Check it worked</a></li>
+        <li><a href="#materials-project">How Materials Project does it</a></li>
+        <li><a href="#tags">The relaxation tags</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Relax with <code>IBRION = 2</code>, <code>ISIF = 3</code> (bulk) or <code>ISIF = 2</code> (slabs, defects), and a force criterion such as <code>EDIFFG = -0.02</code>.</li>
+  <li>When the cell changes, use ENCUT ≥ 1.3 × the largest ENMAX and relax again from CONTCAR until the volume stops changing (Pulay stress).</li>
+  <li>Relax metals with <code>ISMEAR = 1 ; SIGMA = 0.2</code>, insulators with <code>ISMEAR = 0 ; SIGMA = 0.05</code>; keep <code>ISMEAR = -5</code> for the final static run.</li>
+  <li>Take the energy you report from a static run at the relaxed geometry, not from the relaxation.</li>
+  <li>A relaxation keeps the symmetry of its starting structure. To reach a lower-symmetry minimum, displace atoms in POSCAR.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="workflow">
+<h2>The workflow, step by step</h2>
+<ol class="steps">
+  <li><b>Pre-relax (optional).</b> A machine-learned potential (MACE, CHGNet, VASP's own MLFF) or a coarse VASP run (PREC = Normal, fewer k-points, EDIFFG = −0.1) gets the structure close cheaply.</li>
+  <li><b>Relax atoms and cell</b> with the INCAR below.</li>
+  <li><b>Relax again</b> from CONTCAR (<code>cp CONTCAR POSCAR</code>), with a fresh basis set (a new run, or ISTART = 1), until the volume changes by less than about 1%. For magnets, seed MAGMOM with the final moments.</li>
+  <li><b>Static run</b> at the final geometry: the energy you report, and CHGCAR for the next step.</li>
+  <li><b>DOS and band structure</b> from that CHGCAR (see the <a href="../incar-tags/#recipes">INCAR recipes</a> and the <a href="../kpoints/#bands">KPOINTS sheet</a>).</li>
+</ol>
+<div class="recipes">
+<figure class="code incar"><figcaption><span class="code-t">Step 2-3: relax atoms and cell</span></figcaption><pre><code><span class="k">PREC</span>   = Accurate
+<span class="k">ENCUT</span>  = 520            <span class="c">! at least 1.3 x the largest ENMAX; keep it fixed for the whole project</span>
+<span class="k">EDIFF</span>  = 1E-6
+<span class="k">IBRION</span> = 2              <span class="c">! conjugate gradient</span>
+<span class="k">ISIF</span>   = 3              <span class="c">! atoms, cell shape and volume</span>
+<span class="k">NSW</span>    = 99
+<span class="k">EDIFFG</span> = -0.02          <span class="c">! every force below 0.02 eV/A</span>
+<span class="k">NELMIN</span> = 4
+<span class="k">ISMEAR</span> = 1 ; <span class="k">SIGMA</span> = 0.2        <span class="c">! metal; insulator: ISMEAR = 0 ; SIGMA = 0.05</span>
+<span class="k">ISPIN</span>  = 2 ; <span class="k">MAGMOM</span> = 2*4.0 ; <span class="k">LORBIT</span> = 11   <span class="c">! magnets: high-spin start, one value per atom</span>
+<span class="k">LASPH</span>  = .TRUE. ; <span class="k">LMAXMIX</span> = 4
+<span class="k">LWAVE</span>  = .FALSE. ; <span class="k">LCHARG</span> = .FALSE.</code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">Step 4: static run at the relaxed geometry</span></figcaption><pre><code><span class="k">PREC</span>    = Accurate
+<span class="k">ENCUT</span>   = 520           <span class="c">! the same as the relaxation</span>
+<span class="k">EDIFF</span>   = 1E-6
+<span class="k">NSW</span>     = 0 ; <span class="k">IBRION</span> = -1
+<span class="k">ISMEAR</span>  = -5            <span class="c">! tetrahedron: Gamma-centred mesh, at least 4 k-points</span>
+<span class="k">ISPIN</span>   = 2 ; <span class="k">MAGMOM</span> = 2*2.2 ; <span class="k">LORBIT</span> = 11   <span class="c">! relaxed moments; keep MAGMOM in every later run</span>
+<span class="k">LASPH</span>   = .TRUE. ; <span class="k">LMAXMIX</span> = 4
+<span class="k">LCHARG</span>  = .TRUE.        <span class="c">! CHGCAR for the DOS and band runs</span>
+<span class="k">LWAVE</span>   = .FALSE.</code></pre></figure>
+</div>
+</section>
+
+<section class="sheet-sec" id="isif">
+<h2>What moves: ISIF</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">ISIF</th><th scope="col">Atoms</th><th scope="col">Cell shape</th><th scope="col">Volume</th><th scope="col">Use for</th></tr></thead>
+<tbody>
+<tr><th scope="row">0</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">no</td><td data-label="Use for">No stress computed (the default for MD and hybrids).</td></tr>
+<tr><th scope="row">1</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">no</td><td data-label="Use for">Only the pressure (trace of the stress) is valid.</td></tr>
+<tr><th scope="row">2</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">no</td><td data-label="Use for">Slabs, defects, molecules: the default otherwise.</td></tr>
+<tr><th scope="row">3</th><td data-label="Atoms">yes</td><td data-label="Cell shape">yes</td><td data-label="Volume">yes</td><td data-label="Use for">Full relaxation of bulk crystals.</td></tr>
+<tr><th scope="row">4</th><td data-label="Atoms">yes</td><td data-label="Cell shape">yes</td><td data-label="Volume">no</td><td data-label="Use for">Fixed-volume points of an energy–volume curve.</td></tr>
+<tr><th scope="row">5</th><td data-label="Atoms">no</td><td data-label="Cell shape">yes</td><td data-label="Volume">no</td><td data-label="Use for">Cell shape only.</td></tr>
+<tr><th scope="row">6</th><td data-label="Atoms">no</td><td data-label="Cell shape">yes</td><td data-label="Volume">yes</td><td data-label="Use for">Cell only, atoms fixed in fractional coordinates.</td></tr>
+<tr><th scope="row">7</th><td data-label="Atoms">no</td><td data-label="Cell shape">no</td><td data-label="Volume">yes</td><td data-label="Use for">Volume only.</td></tr>
+<tr><th scope="row">8</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">yes</td><td data-label="Use for">Atoms and volume, shape fixed (VASP 6.4.1 and later).</td></tr>
+</tbody>
+</table></div>
+<p>The stress tensor is computed for ISIF 2 to 8. In OUTCAR a positive diagonal stress means the cell is compressed and wants to expand. VASP's own volume-relaxation guide recommends relaxing one degree of freedom at a time (its example uses ISIF = 7); ISIF = 3 in one go is the common practice.</p>
+</section>
+
+<section class="sheet-sec" id="optimizer">
+<h2>Which optimizer</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">IBRION</th><th scope="col">Method</th><th scope="col">When</th></tr></thead>
+<tbody>
+<tr><th scope="row">2</th><td data-label="Method">Conjugate gradient</td><td data-label="When">The robust default, also far from the minimum. Fine-tune the step: optimal POTIM ≈ POTIM × the <code>trialstep</code> printed in the output. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">1</th><td data-label="Method">RMM-DIIS (quasi-Newton)</td><td data-label="When">Close to the minimum and with more than about 20 degrees of freedom; needs accurate forces (NELMIN 4 for bulk, 8 for surfaces) and is sensitive to POTIM. NFREE 10–20 for complex cases. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">3</th><td data-label="Method">Damped molecular dynamics</td><td data-label="When">Far from the minimum or for soft systems; start with SMASS ≈ 0.4 and a POTIM about twice the smallest conjugate-gradient step. <span class="lbl adv">VASP advice</span></td></tr>
+</tbody>
+</table></div>
+<p>Without IBRION, NSW &gt; 0 runs molecular dynamics and stops at once (no default time step). With IBRION = −1 and NSW &gt; 0 the same structure is computed NSW times.</p>
+</section>
+
+<section class="sheet-sec" id="stop">
+<h2>When it stops: EDIFFG</h2>
+<ul class="tight">
+  <li>A negative EDIFFG stops when every force is below |EDIFFG| (eV/Å): <code>-0.02</code> for most work, <code>-0.01</code> or tighter before phonons.</li>
+  <li>A positive value (and the default, 10 × EDIFF) stops on the energy change between ionic steps, which can leave large forces.</li>
+  <li>For ISIF = 3, VASP's developers state that the test also includes the stress; the documentation does not spell this out.</li>
+  <li>EDIFF must be much tighter than the forces you ask for: 1E-6 or smaller, otherwise the forces are noise.</li>
+  <li>Hitting NSW is not convergence: OUTCAR must say <code>reached required accuracy</code>.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="pulay">
+<h2>Pulay stress and the cutoff</h2>
+<p>VASP keeps the number of plane waves fixed while the cell changes, so the effective cutoff drifts with the volume and the stress comes out too negative; volumes then end up too small. Two remedies:</p>
+<ul class="tight">
+  <li>Use ENCUT ≥ 1.3 × the largest ENMAX for any relaxation that changes the cell; VASP calls this the lower recommended limit. <span class="lbl adv">VASP advice</span></li>
+  <li>Restart from CONTCAR with a fresh basis set (a new run, or <code>ISTART = 1</code>) until the cell stops changing. <code>ISTART = 2</code> keeps the old basis and therefore the error. <span class="lbl adv">VASP advice</span></li>
+</ul>
+<p>An energy–volume curve at fixed volumes avoids the problem and works with the default cutoff. PSTRESS can absorb a measured Pulay stress, but VASP's PSTRESS and Volume-relaxation pages give opposite signs for that correction; a higher cutoff is the safer route.</p>
+</section>
+
+<section class="sheet-sec" id="special">
+<h2>Slabs, 2D sheets, E–V curves and magnets</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Case</th><th scope="col">How</th></tr></thead>
+<tbody>
+<tr><th scope="row">Slab with vacuum</th><td data-label="How"><code>ISIF = 2</code> with the bottom layers fixed by selective dynamics (<code>F F F</code>). Never ISIF = 3: the vacuum collapses.</td></tr>
+<tr><th scope="row">2D sheet</th><td data-label="How"><code>ISIF = 3</code> with <code>LATTICE_CONSTRAINTS = .TRUE. .TRUE. .FALSE.</code>, the vacuum along a3 parallel to z (VASP 6.5.0 or later in practice).</td></tr>
+<tr><th scope="row">Energy–volume curve</th><td data-label="How">5–10 volumes spanning about ±5–10% in volume, each with <code>ISIF = 4</code> (atoms and shape relax at fixed volume; a negative POSCAR scale sets the volume), then fit an equation of state.</td></tr>
+<tr><th scope="row">Magnet</th><td data-label="How">Start high-spin; reseed MAGMOM from the final moments for the next run, and keep MAGMOM in every restart so the magnetic symmetry is not lost.</td></tr>
+<tr><th scope="row">r²SCAN</th><td data-label="How">Pre-relax with PBE or PBEsol and start from its WAVECAR. Use VASP 6.6.1, not 6.6.0, for spin-polarized r²SCAN.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="check">
+<h2>Check it worked</h2>
+<figure class="code sh"><figcaption><span class="code-t">Relaxation checks</span></figcaption><pre><code>grep -c &quot;reached required accuracy&quot; OUTCAR   <span class="c"> # 1 = EDIFFG met</span>
+grep -c &quot; F= &quot; OSZICAR                       <span class="c"> # ionic steps used: must be below NSW</span>
+grep &quot;volume of cell&quot; OUTCAR | awk 'NR==1{v0=$5} END{printf &quot;start %s  end %s  change %.2f %%\n&quot;, v0, $5, 100*($5-v0)/v0}'
+grep &quot;external pressure&quot; OUTCAR | tail -1    <span class="c"> # near 0 kB after a converged ISIF = 3 run</span></code></pre></figure>
+<p>Also check that the last SCF converged, that the largest force is below |EDIFFG| (<a href="../outcar-oszicar-grep/#forces">command</a>), that the moments did not collapse, and that CONTCAR has the space group you expect (spglib or pymatgen).</p>
+</section>
+
+<section class="sheet-sec" id="materials-project">
+<h2>How Materials Project does it</h2>
+<p>Materials Project relaxes every structure twice in a row (cell and atoms, starting high-spin ferromagnetic), then runs a static calculation on a finer mesh. Its newest r²SCAN workflow first relaxes with PBEsol, which gives a cheap starting structure and density, then relaxes with r²SCAN. Workflow packages such as atomate2 also offer a machine-learned pre-relaxation before the VASP relaxation.</p>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The relaxation tags</h2>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ibrion"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/IBRION" rel="noopener" title="IBRION on the VASP Wiki"><code>IBRION</code></a></th><td data-label="What it does">How the atoms move.</td><td data-label="Default">−1 if NSW = −1 or 0, otherwise 0 (molecular dynamics)</td><td data-label="What to use">2 (conjugate gradient) far from the minimum; 1 (RMM-DIIS) close to it; 0 for MD; 6 or 8 for phonons.</td><td data-label="Watch out">NSW > 0 without IBRION gives IBRION = 0, molecular dynamics with no time step, and VASP stops at once.</td></tr>
+<tr id="tag-isif"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISIF" rel="noopener" title="ISIF on the VASP Wiki"><code>ISIF</code></a></th><td data-label="What it does">Which of atoms, cell shape and volume relax, and whether the stress is computed.</td><td data-label="Default">0 for molecular dynamics (IBRION = 0) or hybrid functionals (LHFCALC = .TRUE.), otherwise 2</td><td data-label="What to use">2: atoms only. 3: atoms, shape and volume. 4: atoms and shape at fixed volume. 7: volume only. 8: atoms and volume (VASP 6.4.1 and later).</td><td data-label="Watch out">Changing the cell gives Pulay stress: use ENCUT ≥ 1.3 × ENMAX and re-run from CONTCAR. Hybrids default to ISIF = 0, so no stress unless you set it.</td></tr>
+<tr id="tag-nsw"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NSW" rel="noopener" title="NSW on the VASP Wiki"><code>NSW</code></a></th><td data-label="What it does">Maximum number of ionic steps.</td><td data-label="Default">0</td><td data-label="What to use">0 for static runs; about 100 for relaxations.</td><td data-label="Watch out">With NSW > 0, always set IBRION too.</td></tr>
+<tr id="tag-ediffg"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/EDIFFG" rel="noopener" title="EDIFFG on the VASP Wiki"><code>EDIFFG</code></a></th><td data-label="What it does">When a relaxation stops.</td><td data-label="Default">EDIFF × 10</td><td data-label="What to use">Negative = force criterion in eV/Å: −0.02 is a common choice; tighten it before phonon calculations.</td><td data-label="Watch out">Positive values (including the default) stop on an energy change, not on the forces.</td></tr>
+<tr id="tag-potim"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/POTIM" rel="noopener" title="POTIM on the VASP Wiki"><code>POTIM</code></a></th><td data-label="What it does">Step size: the time step in fs for MD, a step scaling for relaxations, the displacement in Å for finite differences.</td><td data-label="Default">0.5 for IBRION = 1, 2 and 3; 0.015 Å for IBRION = 5 and 6; none for molecular dynamics (must be set)</td><td data-label="What to use">Keep 0.5 for relaxations. MD: it must be set, and light atoms such as H need a smaller step.</td><td data-label="Watch out">IBRION = 1 is especially sensitive to POTIM.</td></tr>
+<tr id="tag-nfree"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NFREE" rel="noopener" title="NFREE on the VASP Wiki"><code>NFREE</code></a></th><td data-label="What it does">IBRION = 1: how many previous steps the quasi-Newton optimizer remembers; IBRION = 5, 6: displacements per direction.</td><td data-label="Default">2 for IBRION = 5 and 6, otherwise 0</td><td data-label="What to use">10 to 20 for complex relaxations with IBRION = 1.</td><td data-label="Watch out">Very large values rarely help.</td></tr>
+<tr id="tag-pstress"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/PSTRESS" rel="noopener" title="PSTRESS on the VASP Wiki"><code>PSTRESS</code></a></th><td data-label="What it does">An external pressure in kB (1 kB = 0.1 GPa) that relaxations and NpT runs target.</td><td data-label="Default">0</td><td data-label="What to use">Relax under pressure. It can also absorb the Pulay stress, but a higher ENCUT is the cleaner fix.</td><td data-label="Watch out">The VASP Wiki's PSTRESS and Volume relaxation pages give opposite signs for the Pulay correction: test it on your system.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>NSW set and IBRION forgotten: molecular dynamics, stopping at once.</li>
+  <li>One ISIF = 3 run at the default ENCUT, and its energy reported.</li>
+  <li>Restarting a cell relaxation with ISTART = 2.</li>
+  <li>ISIF = 3 on a slab; ISMEAR = −5 in a metal relaxation; ISMEAR &gt; 0 for an insulator.</li>
+  <li>EDIFF too loose for the EDIFFG asked for.</li>
+  <li>Expecting a symmetry-lowering distortion without breaking the symmetry in POSCAR.</li>
+  <li>Dropping MAGMOM, or changing ENCUT, between the relaxation, static and DOS runs.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 21: Forces, stress and structural relaxation <span class="muted">(in preparation)</span></li>
+<li>Lecture 22: Equations of state and elastic constants <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiStructOpt">VASP Wiki, “Structure optimization” (choosing IBRION, POTIM and NELMIN, and the symmetry caveat). · <a href="https://www.vasp.at/wiki/Structure_optimization" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiISIF">VASP Wiki, “ISIF” (which degrees of freedom relax, and the stress). · <a href="https://www.vasp.at/wiki/ISIF" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiVolumeRelax">VASP Wiki, “Volume relaxation” (Pulay stress, the 1.3 × cutoff rule and the restart protocol). · <a href="https://www.vasp.at/wiki/Volume_relaxation" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiPulay">VASP Wiki, “Pulay stress”. · <a href="https://www.vasp.at/wiki/Pulay_stress" rel="noopener">www.vasp.at</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../errors-and-fixes/"><span>Previous sheet</span>Errors and fixes</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <a class="pn-next" href="../magnetism-magmom/"><span>Next sheet</span>Magnetism</a>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

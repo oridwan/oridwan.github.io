@@ -1,0 +1,195 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  VASP Wiki raw source (dft/_research): ISPIN, MAGMOM (defaults; 1.2-1.5x; lowers symmetry from 4.4.4;
+  restart keeps symmetry; final state depends on start), NUPDOWN, LORBIT, RWIGS, LNONCOLLINEAR, LSORBIT,
+  SAXIS, GGA_COMPAT (strongly recommend .FALSE. for anisotropy), LORBMOM, LMAXMIX, I_CONSTRAINED_M (4 from
+  6.4.0), LAMBDA (ramp), M_CONSTR, LSPIRAL, QSPIRAL, LZEROZ, ENINI, LDAU, LDAUTYPE (1|2|4, default 2), LDAUL,
+  LDAUU, LDAUJ, LDAUPRINT (0|1), Determining the magnetic anisotropy (micro-eV differences), Troubleshooting
+  electronic convergence (magnetic and DFT+U recipes), AMIX_MAG/BMIX_MAG (linear mixing values), Changelog
+  (6.4.3 noncollinear site moments; 6.5.1 LNONCOLLINEAR precedence; 6.6.0 noncollinear stability; 6.6.1
+  meta-GGA forces). VASP magnetism tutorials (bcc Cr AFM cell, NiO orderings and J mapping, FeO MAE: same
+  ENCUT and k-mesh, NBANDS doubled, CHGCAR not WAVECAR, LMAXMIX and GGA_COMPAT in both steps).
+  Horton et al., npj Comput. Mater. 5, 64 (2019): high-spin start relaxes to low spin, not the reverse;
+  enumeration success rates; rare earths not yet reliable. Alling et al. PRB 82, 184430 (2010): magnetic SQS.
+  Meredig et al. PRB 82, 195128 (2010): DFT+U metastable states, U ramping. pymatgen MagneticStructureEnumerator.
+  Forum: NUPDOWN Fermi level per spin channel (p=12817); MAE restart from CHGCAR (p=26512).
+  Brief: dft/_research/C-magnetism-relaxation.md sheet 1.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li><code>ISPIN = 2</code> switches spin polarization on; without it MAGMOM does nothing for the moments.</li>
+  <li>MAGMOM is one value per atom in POSCAR order. Start above the expected moments (1.2–1.5 ×): a high-spin start can relax down to low spin, but not the other way.</li>
+  <li>An antiferromagnet needs opposite signs on its sublattices and a cell that holds them all, often a supercell.</li>
+  <li>MAGMOM also sets the magnetic symmetry: keep it in every restart, or the order can be symmetrized away.</li>
+  <li>Site moments need LORBIT ≥ 10 (<code>LORBIT = 11</code> is the usual choice); they are integrated in spheres and do not add up to the cell moment <code>mag=</code>.</li>
+  <li>Spin–orbit coupling and noncollinear runs use <code>vasp_ncl</code>, three MAGMOM numbers per atom and <code>GGA_COMPAT = .FALSE.</code></li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="builder">
+<h2>Build MAGMOM from your POSCAR</h2>
+<p>Paste a POSCAR, give each species a starting moment, and choose a pattern: ferromagnetic, or antiferromagnetic planes alternating along one lattice vector. Flip any site by hand. The builder writes MAGMOM in the POSCAR order, compressed with <code>N*value</code>.</p>
+<div class="tool" data-tool="magmom">
+  <noscript><p class="callout">The builder needs JavaScript. MAGMOM is one value per atom, in the order of the POSCAR.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="basics">
+<h2>Spin on, moments set</h2>
+<x-tags names="ISPIN MAGMOM NUPDOWN"></x-tags>
+<ul class="tight">
+  <li>A new magnetic run (ISTART = 0) drops every symmetry operation that the MAGMOM pattern breaks, so different starting patterns can converge to different states.</li>
+  <li>The default, 1 μB on every atom, is a ferromagnetic start: it will not find an antiferromagnet.</li>
+  <li>Not magnetic is not paramagnetic: ISPIN = 1 removes the local moments altogether. Paramagnets above T<sub>C</sub> are modelled with disordered local moments, for example a magnetic special quasirandom structure.</li>
+  <li>NUPDOWN fixes the total moment (fixed-spin-moment scans of E(M)). With it set, the Fermi energy in OUTCAR belongs to one spin channel only.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="orderings">
+<h2>Finding the magnetic ground state</h2>
+<ol class="tight">
+  <li>Start high-spin ferromagnetic and relax. If every moment ends below about 0.02 μB per site, the material is probably not magnetic in DFT.</li>
+  <li>Enumerate collinear orderings (ferro-, antiferro-, ferrimagnetic) in supercells; pymatgen's MagneticStructureEnumerator does this, keeping the most symmetric candidates.</li>
+  <li>Relax each ordering with the same ENCUT, POTCARs and k-point density, then run a static calculation on a finer mesh.</li>
+  <li>Compare energies per formula unit. Such workflows find a non-ferromagnetic ground state correctly in most cases and the exact experimental ordering in a majority, and are less reliable for rare-earth compounds.</li>
+</ol>
+<pre class="incar" data-title="Ferromagnetic and antiferromagnetic starts" data-allow="encut-missing">
+ISPIN  = 2
+MAGMOM = 2*4.0 4*0.0          ! ferromagnetic: two magnetic atoms, then four others
+# MAGMOM = 4.0 -4.0 4*0.0     ! antiferromagnetic: opposite signs on the two sublattices
+LORBIT = 11                   ! site moments in OUTCAR
+LASPH  = .TRUE.
+LMAXMIX = 4                   ! 6 if f electrons are in the valence
+</pre>
+<p class="then">An antiferromagnet whose magnetic cell is larger than the crystallographic one needs a supercell: bcc Cr needs the 2-atom cubic cell, rocksalt NiO a rhombohedral cell doubled along [111].</p>
+</section>
+
+<section class="sheet-sec" id="moments">
+<h2>Reading the moments</h2>
+<pre class="sh" data-title="Moments after a run">
+grep " F= " OSZICAR | tail -1 | grep -o "mag= *[-0-9.E+]*"   # total moment of the cell
+grep -A 9 "magnetization (x)" OUTCAR | tail -10             # site moments, last block: for N atoms use -A N+5 and tail -(N+6)
+</pre>
+<ul class="tight">
+  <li>The site table is printed with LORBIT ≥ 10 (or RWIGS). It is labelled “magnetization (x)” even in collinear runs, where moments have no direction.</li>
+  <li>Site moments are spin moments inside spheres; the space between the spheres is missing, so they do not sum to <code>mag=</code>.</li>
+  <li>Spin–orbit runs print the orbital moments separately with <code>LORBMOM = .TRUE.</code>; noncollinear runs add (y) and (z) tables.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="soc">
+<h2>Spin–orbit coupling and magnetic anisotropy</h2>
+<x-tags names="LNONCOLLINEAR LSORBIT SAXIS GGA_COMPAT LORBMOM"></x-tags>
+<p>The magnetic anisotropy energy (MAE) is the energy difference between magnetization directions, often micro-eV to meV. The usual route freezes a collinear density and adds spin–orbit coupling for each direction:</p>
+<div class="recipes">
+<pre class="incar" data-title="MAE step 1: collinear run with vasp_std, writes CHGCAR">
+ISPIN      = 2
+MAGMOM     = 2*3.0
+PREC       = Accurate
+ENCUT      = 520          ! keep it for every direction
+LREAL      = .FALSE.
+EDIFF      = 1E-7
+ISYM       = -1           ! the same k-point set for every direction
+GGA_COMPAT = .FALSE.
+LASPH      = .TRUE.
+LMAXMIX    = 4            ! 6 with f electrons
+ISMEAR     = -5
+LCHARG     = .TRUE.
+LWAVE      = .FALSE.
+</pre>
+<pre class="incar" data-title="MAE step 2: one vasp_ncl run per direction, from that CHGCAR">
+ICHARG     = 11           ! density fixed from step 1; do not copy WAVECAR
+LSORBIT    = .TRUE.
+MAGMOM     = 0 0 3.0  0 0 3.0   ! three numbers per atom, along the spin axis
+SAXIS      = 1 0 0        ! the direction tested: 0 0 1, 1 0 0, 1 1 0 ...
+NBANDS     = 64           ! twice the collinear NBANDS
+ENCUT      = 520
+ISYM       = -1
+GGA_COMPAT = .FALSE.
+LASPH      = .TRUE.
+LMAXMIX    = 4
+ISMEAR     = -5
+LORBMOM    = .TRUE.
+LORBIT     = 11
+LCHARG     = .FALSE.
+</pre>
+</div>
+<p>The MAE is E(direction) − E(easy axis), from the free energies of the step-2 runs. Converge the MAE itself, not just the total energy, with respect to the k-points; it usually needs far denser meshes than the energy. Where spin–orbit coupling is strong (open 4f shells), compare with self-consistent spin–orbit runs.</p>
+</section>
+
+<section class="sheet-sec" id="constraints">
+<h2>Constrained moments, spirals and exchange constants</h2>
+<x-tags names="I_CONSTRAINED_M LAMBDA M_CONSTR RWIGS LSPIRAL QSPIRAL"></x-tags>
+<pre class="incar" data-title="Constrain moment directions (vasp_ncl)" data-allow="encut-missing">
+LNONCOLLINEAR   = .TRUE.
+ISYM            = 0
+MAGMOM          = 0 0 3  0 0 3
+M_CONSTR        = 0 0 1  0 0 1
+I_CONSTRAINED_M = 1        ! constrain the direction
+RWIGS           = 1.0      ! one value per species
+LAMBDA          = 1        ! then 5, 10, 25 ... restarting each time
+</pre>
+<p class="then">The penalty energy (E_p in OSZICAR) must end up small before the energy means anything.</p>
+<p><b>Exchange constants J</b> come from mapping the energies of several orderings onto a Heisenberg model, E = E<sub>0</sub> − Σ J<sub>ij</sub> e<sub>i</sub> · e<sub>j</sub>, and solving (or least-squares fitting) for the J. State the convention you used: unit vectors or spins S, each pair counted once or twice, and which sign means ferromagnetic. Each configuration must be converged in k-points on its own.</p>
+</section>
+
+<section class="sheet-sec" id="dftu">
+<h2>DFT+U</h2>
+<x-tags names="LDAU LDAUTYPE LDAUL LDAUU LDAUJ LDAUPRINT"></x-tags>
+<pre class="incar" data-title="DFT+U on Fe d states (Dudarev), Fe first in POSCAR" data-allow="encut-missing">
+LDAU      = .TRUE.
+LDAUTYPE  = 2            ! only U - J matters
+LDAUL     = 2 -1         ! d on Fe, nothing on the second species
+LDAUU     = 5.3 0        ! eV, one value per species
+LDAUJ     = 0 0
+LMAXMIX   = 4            ! 6 for f states
+LDAUPRINT = 1            ! print the occupation matrices
+ISPIN     = 2
+MAGMOM    = 2*5.0 2*0.0
+</pre>
+<ul class="tight">
+  <li>DFT+U has many self-consistent solutions, which can differ by hundreds of meV per atom. Ramping U up gradually, or trying several starts, helps find the lowest.</li>
+  <li>For a hard magnetic DFT+U case, VASP's recipe runs three steps from the previous WAVECAR: ICHARG = 12 with ALGO = Normal and no U; then ALGO = All with TIME = 0.05; then the U tags.</li>
+  <li>Energies with different U values cannot be compared; formation energies mixing +U and plain GGA need a correction scheme.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="rare-earths">
+<h2>Rare-earth magnets</h2>
+<ul class="tight">
+  <li>With f-in-core potentials (<code>Nd_3</code>, <code>Sm_3</code>) the 4f moment and the 4f single-ion anisotropy, the dominant part of the MAE in Nd₂Fe₁₄B or SmCo₅, are absent; the result is essentially the transition-metal part.</li>
+  <li>Studies that need the 4f contribution put the f electrons in the valence (potpaw.64 <code>Nd</code> or <code>Nd_h</code>), add U on the 4f states and spin–orbit coupling, and handle the many metastable 4f occupations explicitly.</li>
+  <li>Use <code>LMAXMIX = 6</code> and <code>LASPH = .TRUE.</code> with valence f electrons. The <x-sheet slug="potcar#rare-earths">POTCAR sheet</x-sheet> covers the choice.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="versions">
+<h2>Version notes</h2>
+<div class="tagtable-wrap"><table class="choice versions">
+<thead><tr><th scope="col">VASP</th><th scope="col">Change</th></tr></thead>
+<tbody>
+<tr><th scope="row">6.4.0</th><td>I_CONSTRAINED_M = 4: constrain direction and sign.</td></tr>
+<tr><th scope="row">6.4.3</th><td>Noncollinear site moments (LORBIT = 11) printed every few SCF steps, for every algorithm.</td></tr>
+<tr><th scope="row">6.5</th><td>ISPIN = 2 combined with LNONCOLLINEAR: rejected in 6.5.0, LNONCOLLINEAR takes precedence from 6.5.1. Simply leave ISPIN out of noncollinear runs.</td></tr>
+<tr><th scope="row">6.6.0</th><td>Default NBANDS uses the size of each MAGMOM; more stable noncollinear GGA and meta-GGA runs.</td></tr>
+<tr><th scope="row">6.6.1</th><td>Correct forces for spin-polarized meta-GGA (r²SCAN) runs, wrong in 6.6.0.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>MAGMOM without ISPIN = 2; MAGMOM count or order not matching POSCAR after building a supercell.</li>
+  <li>An antiferromagnet in a cell too small to hold its order.</li>
+  <li>Dropping MAGMOM on a restart or in the DOS run.</li>
+  <li>Reading the “tot” row of the site table as the cell moment.</li>
+  <li>Comparing energies with different U, POTCARs, ENCUT or k-point density.</li>
+  <li>MAE runs with the default GGA_COMPAT, LMAXMIX = 2, symmetry on, a copied WAVECAR, or NBANDS not doubled.</li>
+  <li>Writing MAGMOM in Cartesian x, y, z when SAXIS is not 0 0 1.</li>
+  <li>Expecting a 4f moment or rare-earth anisotropy from <code>_3</code> potentials.</li>
+  <li>Taking the Fermi energy from a NUPDOWN run as the Fermi level of the material.</li>
+</ul>
+</section>

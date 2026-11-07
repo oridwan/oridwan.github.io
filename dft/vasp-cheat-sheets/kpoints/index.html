@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP KPOINTS: Gamma, Monkhorst-Pack, KSPACING, Bands</title>
+  <meta name="description" content="VASP KPOINTS cheat sheet: Gamma vs Monkhorst-Pack, which mesh for which lattice, KSPACING, k-point density, band paths, KPOINTS_OPT and a k-mesh calculator.">
+  <meta name="keywords" content="VASP KPOINTS, KPOINTS file, Gamma-centered mesh, Monkhorst-Pack, KSPACING, k-point convergence, band structure path, line mode, KPOINTS_OPT, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/kpoints/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP KPOINTS: Gamma, Monkhorst-Pack, KSPACING, Bands">
+  <meta property="og:description" content="VASP KPOINTS cheat sheet: Gamma vs Monkhorst-Pack, which mesh for which lattice, KSPACING, k-point density, band paths, KPOINTS_OPT and a k-mesh calculator.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/kpoints/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP KPOINTS: Gamma, Monkhorst-Pack, KSPACING, Bands">
+  <meta name="twitter:description" content="VASP KPOINTS cheat sheet: Gamma vs Monkhorst-Pack, which mesh for which lattice, KSPACING, k-point density, band paths, KPOINTS_OPT and a k-mesh calculator.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "VASP KPOINTS: Gamma, Monkhorst-Pack, KSPACING, Bands",
+  "name": "VASP KPOINTS cheat sheet",
+  "description": "VASP KPOINTS cheat sheet: Gamma vs Monkhorst-Pack, which mesh for which lattice, KSPACING, k-point density, band paths, KPOINTS_OPT and a k-mesh calculator.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/kpoints/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP KPOINTS, KPOINTS file, Gamma-centered mesh, Monkhorst-Pack, KSPACING, k-point convergence, band structure path, line mode, KPOINTS_OPT, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “KPOINTS” (every format, the mesh formulas, and which mesh suits which lattice).",
+    "VASP Wiki, “Number of k points and method for smearing” (k-point density for insulators and metals, and comparing meshes).",
+    "VASP Wiki, “Band-structure calculation using density-functional theory” (KPOINTS_OPT and the ICHARG = 11 route).",
+    "VASP Wiki, “Band-structure calculation using hybrid functionals” (zero-weight k-points, KPOINTS_OPT and HFRCUT)."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "KPOINTS",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/kpoints/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="kpoints">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>KPOINTS</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Essentials</p>
+    <h1>VASP KPOINTS cheat sheet</h1>
+    <p class="sheet-lede">KPOINTS sets where VASP samples the Brillouin zone. This sheet covers every format, the mesh each lattice needs, how dense a mesh has to be, and band-structure paths; the calculator turns your POSCAR and a spacing into a KPOINTS file.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#calculator">k-mesh from your POSCAR</a></li>
+        <li><a href="#formats">The ways to write KPOINTS</a></li>
+        <li><a href="#which-mesh">Which mesh for which lattice</a></li>
+        <li><a href="#density">How dense</a></li>
+        <li><a href="#bands">Band structures and dense DOS</a></li>
+        <li><a href="#tags">The k-point tags</a></li>
+        <li><a href="#check">Check the mesh VASP used</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Use a Γ-centred mesh unless you have a reason not to. It is required for fcc and rhombohedral cells and for the tetrahedron method (<code>ISMEAR = -5</code>); hexagonal cells take a Γ-centred mesh or one shifted by 1/3 in the plane.</li>
+  <li>Make the subdivisions proportional to the reciprocal-lattice lengths: a long real-space axis gets few k-points, a short one many. <a class="vtag" href="#tag-kspacing">KSPACING</a> does this for you.</li>
+  <li>Converge the mesh for the quantity you report. Compare meshes by the number of irreducible k-points VASP finds, not by N.</li>
+  <li>Metals need about ten times more k-points than insulators.</li>
+  <li>With no KPOINTS file, VASP uses <code>KSPACING = 0.5</code>, which is coarse for metals.</li>
+  <li>Band structures: a path in line mode, read with <code>ICHARG = 11</code> for LDA/GGA, or a KPOINTS_OPT file (VASP 6.3.0 and later). Hybrids never use ICHARG = 11.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="calculator">
+<h2>k-mesh from your POSCAR</h2>
+<p>Paste a POSCAR and choose a spacing. The calculator applies the same rule as <a class="vtag" href="#tag-kspacing">KSPACING</a>, guesses the lattice type from the cell shape, and writes the KPOINTS file. It runs in your browser.</p>
+<div class="tool" data-tool="kmesh">
+  <noscript><p class="callout">The calculator needs JavaScript. The rule it applies is in <a href="#density">How dense</a>.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="formats">
+<h2>The ways to write KPOINTS</h2>
+<p>Line 1 is a comment. Line 2 is 0 for an automatic mesh, or the number of k-points (or points per segment). Only the first character of line 3 matters: <code>G</code> Γ-centred, <code>M</code> Monkhorst–Pack, <code>L</code> line mode, <code>A</code> fully automatic; for lists and generating vectors, <code>C</code> or <code>K</code> means Cartesian and anything else fractional (reciprocal).</p>
+<div class="recipes">
+<figure class="code kpoints"><figcaption><span class="code-t">Γ-centred mesh: the default choice</span></figcaption><pre><code>Regular k-point mesh
+0              <span class="c">! 0 = generate the mesh automatically</span>
+Gamma          <span class="c">! Gamma-centred</span>
+4  4  4        <span class="c">! subdivisions N1 N2 N3 along b1 b2 b3</span>
+0  0  0        <span class="c">! optional shift</span></code></pre></figure>
+<figure class="code kpoints"><figcaption><span class="code-t">Monkhorst–Pack mesh</span></figcaption><pre><code>Automatic generation
+0
+Monkhorst-Pack <span class="c">! odd N: same as Gamma-centred; even N: shifted, no Gamma point</span>
+4  4  4
+0  0  0</code></pre></figure>
+<figure class="code kpoints"><figcaption><span class="code-t">Hexagonal cell, mesh shifted by 1/3 in the plane (a1, a2 at 120 degrees)</span></figcaption><pre><code>Hexagonal mesh shifted by 1/3 in the plane
+0
+Gamma          <span class="c">! keep Gamma mode: Monkhorst-Pack would add another shift</span>
+6  6  4
+0.3333333333  0.3333333333  0.0</code></pre></figure>
+<figure class="code kpoints"><figcaption><span class="code-t">Explicit list with weights</span></figcaption><pre><code>Explicit k-point list
+4              <span class="c">! number of k-points</span>
+Cartesian      <span class="c">! units of 2pi/a, a = the POSCAR scale; &quot;Reciprocal&quot; for fractions of b1 b2 b3</span>
+0.0  0.0  0.0   1
+0.0  0.0  0.5   1
+0.0  0.5  0.5   2
+0.5  0.5  0.5   4</code></pre></figure>
+<figure class="code kpoints"><figcaption><span class="code-t">Line mode for a band structure (fcc path)</span></figcaption><pre><code>k-points along high-symmetry lines
+40             <span class="c">! points per segment, end points included</span>
+Line-mode
+Reciprocal     <span class="c">! fractional coordinates of b1 b2 b3</span>
+  0    0    0     Gamma
+  0.5  0.5  0     X
+
+  0.5  0.5  0     X
+  0.5  0.75 0.25  W
+
+  0.5  0.75 0.25  W
+  0    0    0     Gamma</code></pre></figure>
+<figure class="code kpoints"><figcaption><span class="code-t">Fully automatic (deprecated; KSPACING does the same)</span></figcaption><pre><code>Fully automatic mesh
+0
+Auto
+20             <span class="c">! length R_k in Angstrom: about 10 for large-gap insulators, up to 100 for d metals</span></code></pre></figure>
+</div>
+<p>VASP writes the irreducible points of every automatic mesh to IBZKPT, in the explicit-list format; edit a copy of it rather than typing a list by hand. Generating vectors (line 3 <code>Reciprocal</code> or <code>Cartesian</code> with three vectors and a shift) give generalized meshes, such as a conventional-cell mesh on a primitive cell.</p>
+</section>
+
+<section class="sheet-sec" id="which-mesh">
+<h2>Which mesh for which lattice</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Lattice</th><th scope="col">Mesh</th><th scope="col">Why</th></tr></thead>
+<tbody>
+<tr><th scope="row">fcc, face-centred orthorhombic</th><td data-label="Mesh">Γ-centred only</td><td data-label="Why">A Monkhorst–Pack mesh breaks their symmetry and the generating lattice no longer matches the reciprocal lattice. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Hexagonal (incl. SmCo₅-type)</th><td data-label="Mesh">Γ-centred, or a 1/3 shift in the plane</td><td data-label="Why">Never Monkhorst–Pack with even in-plane subdivisions: it breaks the hexagonal symmetry. Use N1 = N2. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Rhombohedral</th><td data-label="Mesh">Γ-centred only</td><td data-label="Why"><span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Body-centred tetragonal or orthorhombic, primitive cell</th><td data-label="Mesh">N1 = N2 = N3, or ratios 1/|a1| : 1/|a2| : 1/|a3|</td><td data-label="Why">KSPACING follows |b_i|, which may not suit these cells. Alternatively use the conventional cell. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Cubic, tetragonal, orthorhombic (primitive), monoclinic, triclinic</th><td data-label="Mesh">Γ-centred or Monkhorst–Pack</td><td data-label="Why">Either works; Γ-centred is the safe default.</td></tr>
+</tbody>
+</table></div>
+<p>The tetrahedron method (<code>ISMEAR = -5</code>) needs a Γ-centred mesh with at least 4 k-points, whatever the lattice. When a mesh does not fit the lattice symmetry, VASP reports it in a message from its routine IBZKPT about the “generating k-lattice”; change the mesh rather than ignoring it.</p>
+</section>
+
+<section class="sheet-sec" id="density">
+<h2>How dense</h2>
+<p>For a spacing Δk = <a class="vtag" href="#tag-kspacing">KSPACING</a> in Å⁻¹ (2π included), VASP takes N<sub>i</sub> = max(1, ⌈|b<sub>i</sub>| · 2π / Δk⌉), where b<sub>i</sub> are the reciprocal vectors without the 2π (b<sub>i</sub> · a<sub>j</sub> = δ<sub>ij</sub>). For an orthogonal cell, |b<sub>i</sub>| = 1/a<sub>i</sub>: silicon's 5.43 Å cubic cell at Δk = 0.25 Å⁻¹ gets ⌈1.157 / 0.25⌉ = 5 subdivisions per axis.</p>
+<div class="two-col">
+<div>
+<h3>Rules of thumb for the full Brillouin zone</h3>
+<ul class="tight">
+  <li>Insulators: about 100 k-points per atom bring the energy error below 10 meV.</li>
+  <li>Metals: about 1000 per atom for the same accuracy.</li>
+  <li>Transition metals with a steep DOS at the Fermi level: up to 5000 per atom for about 1 meV per atom.</li>
+  <li>Even meshes (8 × 8 × 8) are efficient up to N = 8; beyond that, odd meshes (11 × 11 × 11).</li>
+  <li>Compare an energy difference between cells only with consistent meshes: for commensurate supercells, use the same k-point set.</li>
+</ul>
+<p class="then">Count “k-points per atom” as N1 × N2 × N3 × (atoms in the cell).</p>
+</div>
+<div>
+<h3>Converting between conventions</h3>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Where</th><th scope="col">Setting</th><th scope="col">Same as KSPACING</th></tr></thead>
+<tbody>
+<tr><th scope="row">KPOINTS <code>Auto</code></th><td data-label="Setting">length R_k (Å)</td><td data-label="Same as KSPACING">2π / R_k (it rounds instead of rounding up)</td></tr>
+<tr><th scope="row">VASPKIT</th><td data-label="Setting">resolution in units of 2π Å⁻¹</td><td data-label="Same as KSPACING">2π × the resolution: 0.04 ≈ 0.25</td></tr>
+<tr><th scope="row">pymatgen</th><td data-label="Setting">reciprocal_density ρ, k-points per Å⁻³ of reciprocal volume</td><td data-label="Same as KSPACING">about ρ<sup>−1/3</sup> for a cubic cell: 64 ≈ 0.25, 100 ≈ 0.22, 200 ≈ 0.17</td></tr>
+</tbody>
+</table></div>
+<p class="then">Materials Project uses ρ = 64 to relax, 100 for static and DOS runs, and KSPACING 0.22–0.44 (from the band gap) for r²SCAN.</p>
+</div>
+</div>
+</section>
+
+<section class="sheet-sec" id="bands">
+<h2>Band structures and dense DOS</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Functional</th><th scope="col">How</th></tr></thead>
+<tbody>
+<tr><th scope="row">LDA, GGA (PBE)</th><td data-label="How">Either one run with the regular mesh in KPOINTS and the path in a KPOINTS_OPT file (VASP 6.3.0 and later), or two runs: a self-consistent one, then the path in KPOINTS (line mode) with <code>ICHARG = 11</code> reading its CHGCAR.</td></tr>
+<tr><th scope="row">Meta-GGA (r²SCAN)</th><td data-label="How">Before VASP 6.6.0: as for hybrids. From 6.6.0 the ICHARG = 11 route also works. KPOINTS_OPT works on every version from 6.3.0.</td></tr>
+<tr><th scope="row">Hybrid (HSE06)</th><td data-label="How">Never ICHARG = 11. Run self-consistently with the regular mesh in KPOINTS and the path in KPOINTS_OPT, or append the path to an IBZKPT copy as zero-weight k-points. For gapped systems set <code>HFRCUT = -1</code>.</td></tr>
+</tbody>
+</table></div>
+<ul class="tight">
+  <li>Take the Fermi energy from the self-consistent run: it cannot be computed from points on a path. With KPOINTS_OPT, set <a class="vtag" href="#tag-efermi">EFERMI</a> or pass the Fermi energy to the plotting tool.</li>
+  <li>Set <a class="vtag" href="#tag-lmaxmix">LMAXMIX</a> to 4 (d) or 6 (f) in both the self-consistent and the ICHARG = 11 run.</li>
+  <li>Paths come from SeeK-path, pymatgen's HighSymmKpath or VASPKIT (task 303). Each tool's path belongs to <em>its</em> standardized primitive cell: run on that cell, or the labels are wrong.</li>
+  <li>A zero-weight hybrid run should not restart from a converged hybrid WAVECAR: the SCF can stop before the zero-weight states converge.</li>
+  <li>Spin-polarized projected DOS from KPOINTS_OPT lost the second spin channel in VASP 6.6.0 (fixed in 6.6.1); PROCAR_OPT was broken in 6.5.0 and 6.5.1.</li>
+</ul>
+<figure class="code kpoints"><figcaption><span class="code-t">KPOINTS_OPT: the path, used next to a regular KPOINTS</span></figcaption><pre><code>k-points for the band structure
+40
+Line-mode
+Reciprocal
+  0.0  0.0  0.0   Gamma
+  0.5  0.0  0.5   X</code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The k-point tags</h2>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-kspacing"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KSPACING" rel="noopener" title="KSPACING on the VASP Wiki"><code>KSPACING</code></a></th><td data-label="What it does">k-mesh from the INCAR: the largest allowed spacing between k-points, in Å⁻¹ (2π included).</td><td data-label="Default">0.5 (Γ-centred while KGAMMA = .TRUE., its default)</td><td data-label="What to use">Smaller is denser; converge it. Without a KPOINTS file it replaces one.</td><td data-label="Watch out">Ignored when a KPOINTS file is present. The default 0.5 is coarse for metals.</td></tr>
+<tr id="tag-kgamma"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KGAMMA" rel="noopener" title="KGAMMA on the VASP Wiki"><code>KGAMMA</code></a></th><td data-label="What it does">Γ-centred mesh for KSPACING.</td><td data-label="Default">.TRUE.</td><td data-label="What to use">Keep .TRUE.</td><td data-label="Watch out">Ignored when a KPOINTS file is present.</td></tr>
+<tr id="tag-kspacing-opt"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KSPACING_OPT" rel="noopener" title="KSPACING_OPT on the VASP Wiki"><code>KSPACING_OPT</code></a> <span class="since" title="Needs VASP 6.6.0 or later">6.6.0+</span></th><td data-label="What it does">k-spacing (Å⁻¹, 2π included) of an extra non-self-consistent mesh, used when there is no KPOINTS_OPT file.</td><td data-label="Default">0.5</td><td data-label="What to use">A denser mesh for the DOS in the same run as the self-consistent one.</td><td data-label="Watch out">Needs VASP 6.6.0 or later; with older versions write a KPOINTS_OPT file instead.</td></tr>
+<tr id="tag-lkpoints-opt"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LKPOINTS_OPT" rel="noopener" title="LKPOINTS_OPT on the VASP Wiki"><code>LKPOINTS_OPT</code></a></th><td data-label="What it does">Whether VASP reads the KPOINTS_OPT file.</td><td data-label="Default">.TRUE. if a KPOINTS_OPT file is present</td><td data-label="What to use">Set .FALSE. to ignore a KPOINTS_OPT left in the folder.</td><td data-label="Watch out">A stray KPOINTS_OPT file silently adds an extra non-self-consistent step.</td></tr>
+<tr id="tag-kpoints-opt-nkbatch"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KPOINTS_OPT_NKBATCH" rel="noopener" title="KPOINTS_OPT_NKBATCH on the VASP Wiki"><code>KPOINTS_OPT_NKBATCH</code></a></th><td data-label="What it does">Batch size of k-points in the KPOINTS_OPT step.</td><td data-label="Default">the number of irreducible k-points of the self-consistent run</td><td data-label="What to use">Lower it to save memory; raise it for speed.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-kpoints-opt-mode"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KPOINTS_OPT_MODE" rel="noopener" title="KPOINTS_OPT_MODE on the VASP Wiki"><code>KPOINTS_OPT_MODE</code></a> <span class="since" title="Needs VASP 6.5.0 or later">6.5.0+</span></th><td data-label="What it does">Diagonalizer for the KPOINTS_OPT step: 0 skip, 1 blocked Davidson, 2 exact.</td><td data-label="Default">1</td><td data-label="What to use">Use 2 if the Davidson step struggles.</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="check">
+<h2>Check the mesh VASP used</h2>
+<figure class="code sh"><figcaption><span class="code-t">Irreducible k-points</span></figcaption><pre><code>grep &quot;irreducible k-points&quot; OUTCAR  <span class="c"> # how many points the mesh reduced to by symmetry</span>
+grep NKPTS OUTCAR                   <span class="c"> # the same number, with the number of bands</span>
+head -3 IBZKPT                      <span class="c"> # line 2: number of irreducible k-points</span>
+vasp_std --dry-run                  <span class="c"> # VASP 6.4 and later: writes IBZKPT and stops</span></code></pre></figure>
+<p>The irreducible count sets the cost and suggests <a class="vtag" href="#tag-kpar">KPAR</a>: choose a divisor of the number of MPI ranks that is at most this count.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>Monkhorst–Pack with even N for fcc or hexagonal cells: lower symmetry, slower convergence, or an IBZKPT error.</li>
+  <li>No KPOINTS file, so VASP silently uses KSPACING = 0.5 Å⁻¹; or a forgotten KPOINTS file that silently overrides KSPACING.</li>
+  <li>Mixing conventions: a VASPKIT 0.04 is a KSPACING of 0.25; pymatgen's reciprocal_density is a density, not a spacing.</li>
+  <li>Judging convergence by N when comparing even and odd meshes: compare irreducible counts instead.</li>
+  <li>A line-mode KPOINTS in a self-consistent run.</li>
+  <li>A path from one tool used on a differently oriented or non-standard cell.</li>
+  <li>The tetrahedron method with fewer than 4 k-points, a shifted mesh, or for forces in metals.</li>
+  <li>A KPOINTS_OPT file left in the folder: VASP reads it automatically.</li>
+  <li>With spin–orbit coupling, a k-point set that depends on the spin direction: test <code>ISYM = -1</code>.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="key-terms">
+<h2>Other tags on this sheet</h2>
+<dl class="terms tags">
+<dt id="tag-efermi"><code>EFERMI</code></dt>
+<dd>How the Fermi energy is placed.<span class="tag-meta">Default: LEGACY · <a href="https://www.vasp.at/wiki/EFERMI" rel="noopener">VASP Wiki: EFERMI</a></span></dd>
+<dt id="tag-lmaxmix"><code>LMAXMIX</code></dt>
+<dd>Highest angular momentum ℓ of the on-site densities that are mixed and written to CHGCAR.<span class="tag-meta">Default: 2 · <a href="https://www.vasp.at/wiki/LMAXMIX" rel="noopener">VASP Wiki: LMAXMIX</a></span></dd>
+<dt id="tag-kpar"><code>KPAR</code></dt>
+<dd>Number of k-point groups that run in parallel.<span class="tag-meta">Default: 1 · <a href="https://www.vasp.at/wiki/KPAR" rel="noopener">VASP Wiki: KPAR</a></span></dd>
+</dl>
+</section>
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 13: The reciprocal lattice and the Brillouin zone <span class="muted">(in preparation)</span></li>
+<li>Lecture 14: Bloch's theorem and band structure <span class="muted">(in preparation)</span></li>
+<li>Lecture 15: k-point sampling and Monkhorst–Pack grids <span class="muted">(in preparation)</span></li>
+<li>Lecture 29: Band structure, DOS and projected DOS <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiKPOINTS">VASP Wiki, “KPOINTS” (every format, the mesh formulas, and which mesh suits which lattice). · <a href="https://www.vasp.at/wiki/KPOINTS" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiKpointsSmear">VASP Wiki, “Number of k points and method for smearing” (k-point density for insulators and metals, and comparing meshes). · <a href="https://www.vasp.at/wiki/Number_of_k_points_and_method_for_smearing" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiBandDFT">VASP Wiki, “Band-structure calculation using density-functional theory” (KPOINTS_OPT and the ICHARG = 11 route). · <a href="https://www.vasp.at/wiki/Band-structure_calculation_using_density-functional_theory" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiBandHybrid">VASP Wiki, “Band-structure calculation using hybrid functionals” (zero-weight k-points, KPOINTS_OPT and HFRCUT). · <a href="https://www.vasp.at/wiki/Band-structure_calculation_using_hybrid_functionals" rel="noopener">vasp.at/wiki</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../incar-tags/"><span>Previous sheet</span>INCAR</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <a class="pn-next" href="../potcar/"><span>Next sheet</span>POTCAR</a>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

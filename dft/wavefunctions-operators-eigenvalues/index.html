@@ -744,7 +744,7 @@ l0,-744c-2,-159.3,-10,-310.7,-24,-454c-53.3,-528,-210,-949.7,
 <dt id="tag-nbands"><code>NBANDS</code></dt>
 <dd>Total number of Kohn–Sham orbitals (bands) per k-point. VASP needs at least all occupied bands plus one empty one, and on several cores it raises NBANDS to a convenient multiple.<span class="tag-meta">Default: max(nint(NELECT + 2)/2 + max(NIONS/2, 3), int(0.6 NELECT)) · <a href="https://www.vasp.at/wiki/NBANDS" rel="noopener">VASP Wiki: NBANDS</a></span></dd>
 <dt id="tag-nelect"><code>NELECT</code></dt>
-<dd>Number of electrons. By default it is set from the POTCARs (ZVAL of each species times its number of atoms) for a neutral cell; set it only for a charged calculation.<span class="tag-meta">Default: number of valence electrons (neutral cell) · <a href="https://www.vasp.at/wiki/NELECT" rel="noopener">VASP Wiki: NELECT</a></span></dd>
+<dd>Number of electrons. By default it is set from the POTCARs (ZVAL of each species times its number of atoms) for a neutral cell; set it only for a charged calculation.<span class="tag-meta">Default: the valence electrons of the POTCARs (neutral cell) · <a href="https://www.vasp.at/wiki/NELECT" rel="noopener">VASP Wiki: NELECT</a></span></dd>
 </dl>
 </section>
 <section class="backmatter" id="further-reading">

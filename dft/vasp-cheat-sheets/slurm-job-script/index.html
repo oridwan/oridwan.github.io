@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP Slurm Job Script: srun, NCORE, KPAR, GPU</title>
+  <meta name="description" content="VASP Slurm job script cheat sheet: CPU and GPU templates, MPI ranks and OpenMP, NCORE and KPAR, job arrays, afterok chains, STOPCAR before the time limit.">
+  <meta name="keywords" content="VASP Slurm script, VASP job script, sbatch VASP, NCORE, KPAR, VASP GPU, srun vasp_std, STOPCAR, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/slurm-job-script/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP Slurm Job Script: srun, NCORE, KPAR, GPU">
+  <meta property="og:description" content="VASP Slurm job script cheat sheet: CPU and GPU templates, MPI ranks and OpenMP, NCORE and KPAR, job arrays, afterok chains, STOPCAR before the time limit.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/slurm-job-script/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP Slurm Job Script: srun, NCORE, KPAR, GPU">
+  <meta name="twitter:description" content="VASP Slurm job script cheat sheet: CPU and GPU templates, MPI ranks and OpenMP, NCORE and KPAR, job arrays, afterok chains, STOPCAR before the time limit.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "VASP Slurm Job Script: srun, NCORE, KPAR, GPU",
+  "name": "VASP Slurm job script cheat sheet",
+  "description": "VASP Slurm job script cheat sheet: CPU and GPU templates, MPI ranks and OpenMP, NCORE and KPAR, job arrays, afterok chains, STOPCAR before the time limit.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/slurm-job-script/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP Slurm script, VASP job script, sbatch VASP, NCORE, KPAR, VASP GPU, srun vasp_std, STOPCAR, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “Optimizing the parallelization” (NCORE, KPAR, the dry run and benchmarking).",
+    "VASP Wiki, “GPU ports of VASP” (one MPI rank per GPU, NCORE, KPAR and NSIM on GPUs).",
+    "VASP Wiki, “Combining MPI and OpenMP” (threads, stack size and pinning).",
+    "Slurm documentation, “sbatch” (directives, --signal, --dependency and arrays)."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Slurm job script",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/slurm-job-script/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="slurm-job-script">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>Slurm job script</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Essentials</p>
+    <h1>VASP Slurm job script cheat sheet</h1>
+    <p class="sheet-lede">How to run VASP under Slurm: CPU and GPU job scripts, how ranks, threads and the parallel tags fit together, chains of jobs, stopping cleanly before the time limit, and watching jobs. The generator writes a script and the matching INCAR tags.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#generator">Write a job script</a></li>
+        <li><a href="#templates">Templates</a></li>
+        <li><a href="#layout">Ranks, threads and the parallel tags</a></li>
+        <li><a href="#executables">Which executable</a></li>
+        <li><a href="#chains">Many structures and chained jobs</a></li>
+        <li><a href="#walltime">Stop cleanly before the time limit</a></li>
+        <li><a href="#monitor">Watch and manage jobs</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Pick the executable: <code>vasp_std</code> for normal runs, <code>vasp_gam</code> for a single Γ point, <code>vasp_ncl</code> for noncollinear magnetism and spin–orbit coupling.</li>
+  <li>Set <code>ulimit -s unlimited</code> and <code>OMP_NUM_THREADS</code> in every script; most random segmentation faults are a stack that is too small.</li>
+  <li>Launch with the MPI that VASP was built with: <code>srun</code> where the site supports it, never a <code>mpirun</code> from another MPI.</li>
+  <li><a class="vtag" href="#tag-kpar">KPAR</a> must divide the number of MPI ranks; <a class="vtag" href="#tag-ncore">NCORE</a> should divide the ranks per node. Set NCORE or NPAR, never both.</li>
+  <li>On GPUs: one MPI rank per GPU, no NCORE (VASP forces 1), KPAR = number of GPUs if memory allows, a larger NSIM.</li>
+  <li>Let Slurm warn the script before the time limit and write a STOPCAR, so VASP stops cleanly after an ionic step.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="generator">
+<h2>Write a job script</h2>
+<p>Describe the layout and the generator writes a Slurm script and the parallel tags for the INCAR. The script is generic: replace ACCOUNT, PARTITION and the module name with your site's values. It runs in your browser.</p>
+<div class="tool" data-tool="slurm">
+  <noscript><p class="callout">The generator needs JavaScript. The templates are <a href="#templates">below</a>.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="templates">
+<h2>Templates</h2>
+<div class="recipes">
+<figure class="code sh"><figcaption><span class="code-t">CPU job (MPI, one thread per rank)</span></figcaption><pre><code><span class="c">#!/bin/bash</span>
+<span class="c"># Replace ACCOUNT, PARTITION and the module name with your site's values.</span>
+<span class="c">#SBATCH -J relax</span>
+<span class="c">#SBATCH -A ACCOUNT</span>
+<span class="c">#SBATCH -p PARTITION</span>
+<span class="c">#SBATCH -N 2</span>
+<span class="c">#SBATCH --ntasks-per-node=64</span>
+<span class="c">#SBATCH -c 1</span>
+<span class="c">#SBATCH -t 24:00:00</span>
+<span class="c">#SBATCH -o %x-%j.out</span>
+<span class="c">#SBATCH -e %x-%j.err</span>
+
+module purge
+module load vasp/VERSION
+
+ulimit -s unlimited                  <span class="c"> # VASP keeps large arrays on the stack</span>
+export OMP_NUM_THREADS=1
+export OMP_STACKSIZE=512m
+export OMP_PLACES=cores OMP_PROC_BIND=close
+
+cd &quot;$SLURM_SUBMIT_DIR&quot; || exit 1
+srun -n 128 -c 1 --cpu-bind=cores vasp_std &gt; vasp.out</code></pre></figure>
+<figure class="code sh"><figcaption><span class="code-t">GPU job (OpenACC build): one MPI rank per GPU</span></figcaption><pre><code><span class="c">#!/bin/bash</span>
+<span class="c"># Replace ACCOUNT, GPU_PARTITION and the module name with your site's values.</span>
+<span class="c">#SBATCH -J relax-gpu</span>
+<span class="c">#SBATCH -A ACCOUNT</span>
+<span class="c">#SBATCH -p GPU_PARTITION</span>
+<span class="c">#SBATCH -N 1</span>
+<span class="c">#SBATCH --gpus-per-node=4</span>
+<span class="c">#SBATCH --ntasks-per-node=4</span>
+<span class="c">#SBATCH -c 16</span>
+<span class="c">#SBATCH -t 12:00:00</span>
+<span class="c">#SBATCH -o %x-%j.out</span>
+<span class="c">#SBATCH -e %x-%j.err</span>
+
+module purge
+module load vasp/VERSION-gpu
+
+ulimit -s unlimited
+export OMP_NUM_THREADS=16            <span class="c"> # CPU-side threads per rank</span>
+export OMP_STACKSIZE=512m
+export OMP_PLACES=cores OMP_PROC_BIND=close
+
+cd &quot;$SLURM_SUBMIT_DIR&quot; || exit 1
+srun -n 4 -c 16 --cpu-bind=cores --gpu-bind=none vasp_std &gt; vasp.out</code></pre></figure>
+<p class="then">INCAR for the GPU job: no NCORE, <code>KPAR = 4</code> if the irreducible k-points divide evenly and memory allows, and <code>NSIM</code> well above 4 (benchmark 8 to 32).</p>
+</div>
+</section>
+
+<section class="sheet-sec" id="layout">
+<h2>Ranks, threads and the parallel tags</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Setting</th><th scope="col">Rule</th></tr></thead>
+<tbody>
+<tr><th scope="row">Cores used</th><td data-label="Rule">nodes × <code>--ntasks-per-node</code> × <code>-c</code>. Keep it at or below the physical cores: oversubscription slows everything.</td></tr>
+<tr><th scope="row"><code>-c</code> and threads</th><td data-label="Rule"><code>-c</code> equals <code>OMP_NUM_THREADS</code> (twice that if the nodes count hyperthreads as CPUs). Pass <code>-c</code> to srun as well as to sbatch.</td></tr>
+<tr><th scope="row">KPAR</th><td data-label="Rule">Divides the MPI ranks and, ideally, the number of irreducible k-points (on GPUs, only when they divide evenly). Each k-point group holds its own copy of the data, so it costs memory. Small bulk cells with many k-points: large KPAR, NCORE = 1. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">NCORE</th><td data-label="Rule">Ranks working on one band. A divisor of the ranks per node, near √(ranks per k-point group); the cores per NUMA domain is often best. About 4 for ~100 atoms, 12–16 above 400 atoms. Forced to 1 with OpenMP or on GPUs. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">NPAR</th><td data-label="Rule">The old way to set the same thing (NPAR × NCORE = ranks per k-point group). If both are set, NPAR wins: delete it from old templates.</td></tr>
+<tr><th scope="row">IMAGES (NEB)</th><td data-label="Rule">The ranks are split over the images too: total ranks = IMAGES × KPAR × (ranks per k-point group).</td></tr>
+</tbody>
+</table></div>
+<p>VASP's own recipe: do a dry run (<code>vasp_std --dry-run</code>, VASP 6.4 and later) to get NBANDS and the number of irreducible k-points, benchmark a few NCORE and KPAR values on a few SCF steps of the real system, then keep the fastest. The layout VASP actually used is at the top of OUTCAR.</p>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ncore"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NCORE" rel="noopener" title="NCORE on the VASP Wiki"><code>NCORE</code></a></th><td data-label="What it does">Number of cores that work together on one band.</td><td data-label="Default">1</td><td data-label="What to use">Cores per NUMA domain is a good start; about 4 for ~100 atoms, 12–16 above 400 atoms. Benchmark.</td><td data-label="Watch out">Forced to 1 with OpenMP threads and on GPUs. Do not set NPAR as well.</td></tr>
+<tr id="tag-npar"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NPAR" rel="noopener" title="NPAR on the VASP Wiki"><code>NPAR</code></a></th><td data-label="What it does">Legacy: the number of band groups (MPI ranks ÷ NCORE).</td><td data-label="Default">the number of MPI ranks</td><td data-label="What to use">Use NCORE instead.</td><td data-label="Watch out">If both are set, NPAR wins.</td></tr>
+<tr id="tag-kpar"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KPAR" rel="noopener" title="KPAR on the VASP Wiki"><code>KPAR</code></a></th><td data-label="What it does">Number of k-point groups that run in parallel.</td><td data-label="Default">1</td><td data-label="What to use">A divisor of the MPI ranks, up to the number of irreducible k-points if memory allows; on GPUs often the number of GPUs.</td><td data-label="Watch out">Each group holds its own copy of the data: memory is not shared.</td></tr>
+<tr id="tag-nsim"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NSIM" rel="noopener" title="NSIM on the VASP Wiki"><code>NSIM</code></a></th><td data-label="What it does">Number of bands optimized at once in the blocked algorithms.</td><td data-label="Default">4</td><td data-label="What to use">Higher on GPUs (up to 32).</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="executables">
+<h2>Which executable</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Executable</th><th scope="col">Use it for</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>vasp_std</code></th><td data-label="Use it for">Every collinear run, spin-polarized or not, with a k-point mesh. The default.</td></tr>
+<tr><th scope="row"><code>vasp_gam</code></th><td data-label="Use it for">Runs with only the Γ point: molecules, large supercells, most AIMD.</td></tr>
+<tr><th scope="row"><code>vasp_ncl</code></th><td data-label="Use it for">Noncollinear magnetism and spin–orbit coupling (LNONCOLLINEAR, LSORBIT). <code>vasp_std</code> stops on such an INCAR.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="chains">
+<h2>Many structures and chained jobs</h2>
+<figure class="code sh"><figcaption><span class="code-t">Job array: one directory per task (dirs.txt lists them)</span></figcaption><pre><code><span class="c">#!/bin/bash</span>
+<span class="c"># ... the #SBATCH lines of a template, plus:</span>
+<span class="c">#SBATCH -a 0-199%20</span>
+<span class="c">#SBATCH -o logs/%x-%A_%a.out</span>
+DIR=$(sed -n &quot;$((SLURM_ARRAY_TASK_ID + 1))p&quot; dirs.txt)
+cd &quot;$DIR&quot; || exit 1
+srun vasp_std &gt; vasp.out</code></pre></figure>
+<p class="then"><code>0-199%20</code> runs 200 tasks, at most 20 at a time. Create the log folder first (<code>mkdir -p logs</code>): Slurm does not, and tasks without it fail without a log.</p>
+<figure class="code sh"><figcaption><span class="code-t">Relax, then static, then DOS</span></figcaption><pre><code>jid1=$(sbatch --parsable relax.sh)
+jid2=$(sbatch --parsable --dependency=afterok:$jid1 static.sh)
+sbatch --dependency=afterok:$jid2 dos.sh</code></pre></figure>
+<p><code>afterok</code> checks only the exit code, and VASP exits normally after NSW steps even when the relaxation did not converge. Start the next script with a guard:</p>
+<figure class="code sh"><figcaption><span class="code-t">Guard at the top of static.sh</span></figcaption><pre><code>grep -q &quot;reached required accuracy&quot; ../relax/OUTCAR || { echo &quot;relaxation not converged&quot;; exit 1; }
+cp ../relax/CONTCAR POSCAR</code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="walltime">
+<h2>Stop cleanly before the time limit</h2>
+<p>A job killed at the time limit can leave a half-written WAVECAR. A STOPCAR with <code>LSTOP = .TRUE.</code> stops VASP after the current ionic step; <code>LABORT = .TRUE.</code> stops at the next electronic step, leaving unconverged WAVECAR and CHGCAR, so prefer LSTOP. Slurm can send the script a signal a set time before the limit; the script then writes the STOPCAR.</p>
+<figure class="code sh"><figcaption><span class="code-t">Signal trap: replace the srun line of a template with this</span></figcaption><pre><code><span class="c">#!/bin/bash</span>
+<span class="c">#SBATCH --signal=B:USR1@900</span>
+<span class="c"># ... the other #SBATCH lines; leave enough time (here 15 min) for about three ionic steps</span>
+rm -f STOPCAR                        <span class="c"> # a leftover STOPCAR would stop the run at once</span>
+trap 'echo &quot;LSTOP = .TRUE.&quot; &gt; STOPCAR' USR1
+srun vasp_std &gt; vasp.out &amp;
+pid=$!
+wait $pid; status=$?
+if [ $status -gt 128 ]; then         <span class="c"> # the signal interrupted wait: let VASP finish its step</span>
+  wait $pid; status=$?
+fi
+exit $status                         <span class="c"> # keeps the exit code for --dependency=afterok</span></code></pre></figure>
+<p class="then">Size the warning from the time per ionic step: <code>grep LOOP+ OUTCAR</code> prints it. To continue: keep OUTCAR, OSZICAR and vasprun.xml under new names, <code>cp CONTCAR POSCAR</code>, keep WAVECAR and CHGCAR (and TAUCAR for meta-GGA), resubmit.</p>
+</section>
+
+<section class="sheet-sec" id="monitor">
+<h2>Watch and manage jobs</h2>
+<figure class="code sh"><figcaption><span class="code-t">Slurm commands</span></figcaption><pre><code>squeue -u $USER                         <span class="c"> # your jobs; the REASON column explains pending ones</span>
+scontrol show job JOBID                 <span class="c"> # the full record: time limit, nodes, work directory</span>
+sacct -j JOBID --format=JobID,JobName%20,State,ExitCode,Elapsed,Timelimit,NNodes,NTasks,MaxRSS
+seff JOBID                              <span class="c"> # CPU and memory efficiency after the job ends (if installed)</span>
+scancel JOBID                           <span class="c"> # cancel one job; scancel -u $USER cancels all yours</span>
+sinfo -s                                <span class="c"> # partitions and how many nodes are free</span></code></pre></figure>
+<p>In <code>sacct</code>, State <code>TIMEOUT</code> means the time limit, <code>OUT_OF_MEMORY</code> an out-of-memory kill, <code>NODE_FAIL</code> a node problem. MaxRSS is recorded on job steps, so leave out <code>-X</code> when you want memory. Progress of a running job: <code>tail -f vasp.out</code>, or <code>grep -c " F= " OSZICAR</code> for the ionic steps done.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>No <code>ulimit -s unlimited</code>: random segmentation faults.</li>
+  <li>A <code>mpirun</code> from a different MPI than VASP's: one rank with many threads, or a crash.</li>
+  <li>Ranks × threads above the physical cores, or <code>-c</code> different from <code>OMP_NUM_THREADS</code>.</li>
+  <li>KPAR that does not divide the ranks; NCORE and NPAR both set.</li>
+  <li>More than one MPI rank per GPU, or NCORE set on GPUs.</li>
+  <li>Trusting <code>afterok</code> as proof of convergence; a stale STOPCAR in the directory.</li>
+  <li>Several calculations in one directory, or running in a home directory instead of scratch.</li>
+  <li>Spin-polarized r²SCAN on VASP 6.6.0, whose forces are wrong: check <code>head -1 OUTCAR</code>.</li>
+  <li>With KPAR &gt; 1 a run can hang in the SCF (a known issue, partly fixed in 6.6.0): if a job stalls, try KPAR = 1.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 19: VASP input files and convergence tests <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiParallel">VASP Wiki, “Optimizing the parallelization” (NCORE, KPAR, the dry run and benchmarking). · <a href="https://www.vasp.at/wiki/Optimizing_the_parallelization" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiGPU">VASP Wiki, “GPU ports of VASP” (one MPI rank per GPU, NCORE, KPAR and NSIM on GPUs). · <a href="https://www.vasp.at/wiki/GPU_ports_of_VASP" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiMPIOMP">VASP Wiki, “Combining MPI and OpenMP” (threads, stack size and pinning). · <a href="https://www.vasp.at/wiki/Combining_MPI_and_OpenMP" rel="noopener">www.vasp.at</a></li>
+<li id="ref-SlurmSbatch">Slurm documentation, “sbatch” (directives, --signal, --dependency and arrays). · <a href="https://slurm.schedmd.com/sbatch.html" rel="noopener">slurm.schedmd.com</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../poscar/"><span>Previous sheet</span>POSCAR</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <a class="pn-next" href="../outcar-oszicar-grep/"><span>Next sheet</span>Reading the output</a>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

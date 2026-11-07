@@ -1,0 +1,191 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1 and the Slurm documentation.
+  VASP Wiki (dft/_research/wiki-cache): NCORE (sqrt of ranks; NUMA domain; 4 for ~100 atoms, 12-16 > 400;
+  forced to 1 with OpenMP or GPU; NPAR wins if both set), KPAR (divisor of cores), NSIM (GPU up to 32),
+  Optimizing the parallelization (dry run, benchmark), Combining MPI and OpenMP (OMP_STACKSIZE=512m, pinning,
+  no oversubscription), GPU ports of VASP (one MPI rank per GPU, NCORE forced to 1, KPAR = GPUs if memory
+  allows), Installing VASP.6.X.X (ulimit -s unlimited; std/gam/ncl targets), STOPCAR (LSTOP next ionic
+  step, LABORT next electronic step), Known issues 66 (KPAR hang), 94.
+  Slurm man pages sbatch (--signal, --dependency afterok = exit code zero, --array, filename patterns,
+  SLURM_* variables), srun, sacct (state codes, fields), Slurm MPI guide (srun vs mpirun), seff source.
+  NERSC VASP page (GPU: --gpu-bind=none; ranks must match GPUs). VASP forum staff: mpirun from a different
+  MPI gives a segfault; stack size. Brief dft/_research/B-slurm-output-debug.md sheet 3.
+  Trap exit status: bash semantics (wait returns 128+signal when a trapped signal arrives); scripts pass bash -n.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Pick the executable: <code>vasp_std</code> for normal runs, <code>vasp_gam</code> for a single Γ point, <code>vasp_ncl</code> for noncollinear magnetism and spin–orbit coupling.</li>
+  <li>Set <code>ulimit -s unlimited</code> and <code>OMP_NUM_THREADS</code> in every script; most random segmentation faults are a stack that is too small.</li>
+  <li>Launch with the MPI that VASP was built with: <code>srun</code> where the site supports it, never a <code>mpirun</code> from another MPI.</li>
+  <li><x-tag>KPAR</x-tag> must divide the number of MPI ranks; <x-tag>NCORE</x-tag> should divide the ranks per node. Set NCORE or NPAR, never both.</li>
+  <li>On GPUs: one MPI rank per GPU, no NCORE (VASP forces 1), KPAR = number of GPUs if memory allows, a larger NSIM.</li>
+  <li>Let Slurm warn the script before the time limit and write a STOPCAR, so VASP stops cleanly after an ionic step.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="generator">
+<h2>Write a job script</h2>
+<p>Describe the layout and the generator writes a Slurm script and the parallel tags for the INCAR. The script is generic: replace ACCOUNT, PARTITION and the module name with your site's values. It runs in your browser.</p>
+<div class="tool" data-tool="slurm">
+  <noscript><p class="callout">The generator needs JavaScript. The templates are <a href="#templates">below</a>.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="templates">
+<h2>Templates</h2>
+<div class="recipes">
+<pre class="sh" data-title="CPU job (MPI, one thread per rank)">
+#!/bin/bash
+# Replace ACCOUNT, PARTITION and the module name with your site's values.
+#SBATCH -J relax
+#SBATCH -A ACCOUNT
+#SBATCH -p PARTITION
+#SBATCH -N 2
+#SBATCH --ntasks-per-node=64
+#SBATCH -c 1
+#SBATCH -t 24:00:00
+#SBATCH -o %x-%j.out
+#SBATCH -e %x-%j.err
+
+module purge
+module load vasp/VERSION
+
+ulimit -s unlimited                   # VASP keeps large arrays on the stack
+export OMP_NUM_THREADS=1
+export OMP_STACKSIZE=512m
+export OMP_PLACES=cores OMP_PROC_BIND=close
+
+cd "$SLURM_SUBMIT_DIR" || exit 1
+srun -n 128 -c 1 --cpu-bind=cores vasp_std > vasp.out
+</pre>
+<pre class="sh" data-title="GPU job (OpenACC build): one MPI rank per GPU">
+#!/bin/bash
+# Replace ACCOUNT, GPU_PARTITION and the module name with your site's values.
+#SBATCH -J relax-gpu
+#SBATCH -A ACCOUNT
+#SBATCH -p GPU_PARTITION
+#SBATCH -N 1
+#SBATCH --gpus-per-node=4
+#SBATCH --ntasks-per-node=4
+#SBATCH -c 16
+#SBATCH -t 12:00:00
+#SBATCH -o %x-%j.out
+#SBATCH -e %x-%j.err
+
+module purge
+module load vasp/VERSION-gpu
+
+ulimit -s unlimited
+export OMP_NUM_THREADS=16             # CPU-side threads per rank
+export OMP_STACKSIZE=512m
+export OMP_PLACES=cores OMP_PROC_BIND=close
+
+cd "$SLURM_SUBMIT_DIR" || exit 1
+srun -n 4 -c 16 --cpu-bind=cores --gpu-bind=none vasp_std > vasp.out
+</pre>
+<p class="then">INCAR for the GPU job: no NCORE, <code>KPAR = 4</code> if the irreducible k-points divide evenly and memory allows, and <code>NSIM</code> well above 4 (benchmark 8 to 32).</p>
+</div>
+</section>
+
+<section class="sheet-sec" id="layout">
+<h2>Ranks, threads and the parallel tags</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Setting</th><th scope="col">Rule</th></tr></thead>
+<tbody>
+<tr><th scope="row">Cores used</th><td data-label="Rule">nodes × <code>--ntasks-per-node</code> × <code>-c</code>. Keep it at or below the physical cores: oversubscription slows everything.</td></tr>
+<tr><th scope="row"><code>-c</code> and threads</th><td data-label="Rule"><code>-c</code> equals <code>OMP_NUM_THREADS</code> (twice that if the nodes count hyperthreads as CPUs). Pass <code>-c</code> to srun as well as to sbatch.</td></tr>
+<tr><th scope="row">KPAR</th><td data-label="Rule">Divides the MPI ranks and, ideally, the number of irreducible k-points (on GPUs, only when they divide evenly). Each k-point group holds its own copy of the data, so it costs memory. Small bulk cells with many k-points: large KPAR, NCORE = 1. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">NCORE</th><td data-label="Rule">Ranks working on one band. A divisor of the ranks per node, near √(ranks per k-point group); the cores per NUMA domain is often best. About 4 for ~100 atoms, 12–16 above 400 atoms. Forced to 1 with OpenMP or on GPUs. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">NPAR</th><td data-label="Rule">The old way to set the same thing (NPAR × NCORE = ranks per k-point group). If both are set, NPAR wins: delete it from old templates.</td></tr>
+<tr><th scope="row">IMAGES (NEB)</th><td data-label="Rule">The ranks are split over the images too: total ranks = IMAGES × KPAR × (ranks per k-point group).</td></tr>
+</tbody>
+</table></div>
+<p>VASP's own recipe: do a dry run (<code>vasp_std --dry-run</code>, VASP 6.4 and later) to get NBANDS and the number of irreducible k-points, benchmark a few NCORE and KPAR values on a few SCF steps of the real system, then keep the fastest. The layout VASP actually used is at the top of OUTCAR.</p>
+<x-tags names="NCORE NPAR KPAR NSIM"></x-tags>
+</section>
+
+<section class="sheet-sec" id="executables">
+<h2>Which executable</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Executable</th><th scope="col">Use it for</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>vasp_std</code></th><td data-label="Use it for">Every collinear run, spin-polarized or not, with a k-point mesh. The default.</td></tr>
+<tr><th scope="row"><code>vasp_gam</code></th><td data-label="Use it for">Runs with only the Γ point: molecules, large supercells, most AIMD.</td></tr>
+<tr><th scope="row"><code>vasp_ncl</code></th><td data-label="Use it for">Noncollinear magnetism and spin–orbit coupling (LNONCOLLINEAR, LSORBIT). <code>vasp_std</code> stops on such an INCAR.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="chains">
+<h2>Many structures and chained jobs</h2>
+<pre class="sh" data-title="Job array: one directory per task (dirs.txt lists them)">
+#!/bin/bash
+# ... the #SBATCH lines of a template, plus:
+#SBATCH -a 0-199%20
+#SBATCH -o logs/%x-%A_%a.out
+DIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" dirs.txt)
+cd "$DIR" || exit 1
+srun vasp_std > vasp.out
+</pre>
+<p class="then"><code>0-199%20</code> runs 200 tasks, at most 20 at a time. Create the log folder first (<code>mkdir -p logs</code>): Slurm does not, and tasks without it fail without a log.</p>
+<pre class="sh" data-title="Relax, then static, then DOS">
+jid1=$(sbatch --parsable relax.sh)
+jid2=$(sbatch --parsable --dependency=afterok:$jid1 static.sh)
+sbatch --dependency=afterok:$jid2 dos.sh
+</pre>
+<p><code>afterok</code> checks only the exit code, and VASP exits normally after NSW steps even when the relaxation did not converge. Start the next script with a guard:</p>
+<pre class="sh" data-title="Guard at the top of static.sh">
+grep -q "reached required accuracy" ../relax/OUTCAR || { echo "relaxation not converged"; exit 1; }
+cp ../relax/CONTCAR POSCAR
+</pre>
+</section>
+
+<section class="sheet-sec" id="walltime">
+<h2>Stop cleanly before the time limit</h2>
+<p>A job killed at the time limit can leave a half-written WAVECAR. A STOPCAR with <code>LSTOP = .TRUE.</code> stops VASP after the current ionic step; <code>LABORT = .TRUE.</code> stops at the next electronic step, leaving unconverged WAVECAR and CHGCAR, so prefer LSTOP. Slurm can send the script a signal a set time before the limit; the script then writes the STOPCAR.</p>
+<pre class="sh" data-title="Signal trap: replace the srun line of a template with this">
+#!/bin/bash
+#SBATCH --signal=B:USR1@900
+# ... the other #SBATCH lines; leave enough time (here 15 min) for about three ionic steps
+rm -f STOPCAR                         # a leftover STOPCAR would stop the run at once
+trap 'echo "LSTOP = .TRUE." > STOPCAR' USR1
+srun vasp_std > vasp.out &
+pid=$!
+wait $pid; status=$?
+if [ $status -gt 128 ]; then          # the signal interrupted wait: let VASP finish its step
+  wait $pid; status=$?
+fi
+exit $status                          # keeps the exit code for --dependency=afterok
+</pre>
+<p class="then">Size the warning from the time per ionic step: <code>grep LOOP+ OUTCAR</code> prints it. To continue: keep OUTCAR, OSZICAR and vasprun.xml under new names, <code>cp CONTCAR POSCAR</code>, keep WAVECAR and CHGCAR (and TAUCAR for meta-GGA), resubmit.</p>
+</section>
+
+<section class="sheet-sec" id="monitor">
+<h2>Watch and manage jobs</h2>
+<pre class="sh" data-title="Slurm commands">
+squeue -u $USER                          # your jobs; the REASON column explains pending ones
+scontrol show job JOBID                  # the full record: time limit, nodes, work directory
+sacct -j JOBID --format=JobID,JobName%20,State,ExitCode,Elapsed,Timelimit,NNodes,NTasks,MaxRSS
+seff JOBID                               # CPU and memory efficiency after the job ends (if installed)
+scancel JOBID                            # cancel one job; scancel -u $USER cancels all yours
+sinfo -s                                 # partitions and how many nodes are free
+</pre>
+<p>In <code>sacct</code>, State <code>TIMEOUT</code> means the time limit, <code>OUT_OF_MEMORY</code> an out-of-memory kill, <code>NODE_FAIL</code> a node problem. MaxRSS is recorded on job steps, so leave out <code>-X</code> when you want memory. Progress of a running job: <code>tail -f vasp.out</code>, or <code>grep -c " F= " OSZICAR</code> for the ionic steps done.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>No <code>ulimit -s unlimited</code>: random segmentation faults.</li>
+  <li>A <code>mpirun</code> from a different MPI than VASP's: one rank with many threads, or a crash.</li>
+  <li>Ranks × threads above the physical cores, or <code>-c</code> different from <code>OMP_NUM_THREADS</code>.</li>
+  <li>KPAR that does not divide the ranks; NCORE and NPAR both set.</li>
+  <li>More than one MPI rank per GPU, or NCORE set on GPUs.</li>
+  <li>Trusting <code>afterok</code> as proof of convergence; a stale STOPCAR in the directory.</li>
+  <li>Several calculations in one directory, or running in a home directory instead of scratch.</li>
+  <li>Spin-polarized r²SCAN on VASP 6.6.0, whose forces are wrong: check <code>head -1 OUTCAR</code>.</li>
+  <li>With KPAR &gt; 1 a run can hang in the SCF (a known issue, partly fixed in 6.6.0): if a job stalls, try KPAR = 1.</li>
+</ul>
+</section>

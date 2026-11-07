@@ -1,0 +1,233 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  Research brief dft/_research/E-properties.md (VASP Wiki pages per entry; tool documentation: phonopy,
+  phono3py, LOBSTER via secondary sources, Henkelman bader, doped, sumo, IFermi, easyunfold, pymatgen).
+  Tag defaults: verbatim wiki source in dft/_research/wiki-raw3 (LOPTICS, CSHIFT, LEPSILON, LCALCEPS, LRPA,
+  LAECHG, LELF, LVHAR, LVTOT, LDIPOL, IDIPOL, DIPOL, LVACPOTAV, LPARD, IBAND, EINT, NBMOD, LPHON_DISPERSION,
+  LCHIMAG, LEFG, LHYPERFINE, ICORELEVEL, LCALCPOL, EFIELD_PEAD, IVDW, EMIN, EMAX).
+  Key facts: LEPSILON and IBRION = 7/8 not supported for meta-GGA (VASP warning, forum p=25674) or hybrids
+  (DFPT limited to LDA and GGA); LCALCEPS works for hybrids and meta-GGA, gapped systems; LOPTICS with
+  tau-dependent meta-GGA from 6.6.0; elastic tensor column order XX YY ZZ XY YZ ZX (forum p=24495);
+  LELF needs NPAR = 1 set explicitly (LELF page); IBRION = 5 deprecated in favour of 6; DFPT gives no
+  elastic tensor; selective dynamics only with IBRION = 5; LPARDH5 6.5.0; electron-phonon native 6.5.0;
+  ELF from pseudo density (unverified, omitted); Raman not native (omitted claims beyond "external").
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Almost every property is a recipe of two or three runs: relax, a careful static run, then the property run reading its CHGCAR or WAVECAR.</li>
+  <li>Use the same ENCUT, POTCARs, functional and k-point density in every run you compare.</li>
+  <li>Check your functional first: with r²SCAN or a hybrid, LEPSILON and VASP's own perturbation-theory phonons (IBRION = 7, 8) are not available; use LCALCEPS and finite differences (IBRION = 6).</li>
+  <li>Many properties need an external tool: phonopy for phonon bands, LOBSTER for bonding, the Bader program for charges, pymatgen for convex hulls.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="finder">
+<h2>Find a property</h2>
+<div class="tool" data-tool="finder" data-items="#catalog tbody tr" data-label="I want to calculate" data-placeholder="e.g. work function, Born charges, phonons, Bader"></div>
+</section>
+
+<section class="sheet-sec" id="catalog">
+<h2>What VASP can calculate</h2>
+<p>Native means VASP computes it; an external tool is named where one is needed.</p>
+<div class="tagtable-wrap"><table class="choice catalog">
+<thead><tr><th scope="col">Property</th><th scope="col">Key tags</th><th scope="col">Needs first</th><th scope="col">Analysis</th></tr></thead>
+<tbody>
+<tr id="p-formation"><th scope="row">Formation energy, convex hull</th><td data-label="Key tags">none special; identical settings</td><td data-label="Needs first">relaxed compound and elemental references</td><td data-label="Analysis">pymatgen PhaseDiagram</td></tr>
+<tr id="p-cohesive"><th scope="row">Cohesive energy</th><td data-label="Key tags">isolated atom: ISPIN = 2, ISMEAR = 0, non-cubic box, Γ only</td><td data-label="Needs first">bulk energy</td><td data-label="Analysis">by hand</td></tr>
+<tr id="p-surface"><th scope="row">Surface energy</th><td data-label="Key tags">ISIF = 2, k-mesh n × m × 1, LDIPOL for asymmetric slabs</td><td data-label="Needs first">bulk reference with the same in-plane cell</td><td data-label="Analysis">γ = (E<sub>slab</sub> − N E<sub>bulk</sub>) / 2A</td></tr>
+<tr id="p-adsorption"><th scope="row">Adsorption energy</th><td data-label="Key tags">same cutoff in every run; dipole correction</td><td data-label="Needs first">clean slab, molecule in a box</td><td data-label="Analysis">by hand</td></tr>
+<tr id="p-defect"><th scope="row">Charged point defect</th><td data-label="Key tags"><x-tag>NELECT</x-tag>, ISPIN = 2</td><td data-label="Needs first">bulk, its band edges and dielectric constant</td><td data-label="Analysis">doped, sxdefectalign (finite-size corrections)</td></tr>
+<tr id="p-eos"><th scope="row">Equation of state, bulk modulus</th><td data-label="Key tags">ISIF = 4 at fixed volumes</td><td data-label="Needs first">relaxed cell</td><td data-label="Analysis">pymatgen EOS, ASE</td></tr>
+<tr id="p-elastic"><th scope="row">Elastic constants</th><td data-label="Key tags">IBRION = 6, ISIF = 3</td><td data-label="Needs first">cell relaxed with the same settings</td><td data-label="Analysis">pymatgen ElasticTensor, VASPKIT</td></tr>
+<tr id="p-dos"><th scope="row">DOS, projected DOS</th><td data-label="Key tags">ICHARG = 11, ISMEAR = −5, LORBIT = 11, NEDOS</td><td data-label="Needs first">CHGCAR</td><td data-label="Analysis">py4vasp, sumo, pymatgen</td></tr>
+<tr id="p-bands"><th scope="row">Band structure</th><td data-label="Key tags">line-mode KPOINTS or KPOINTS_OPT</td><td data-label="Needs first">CHGCAR (GGA)</td><td data-label="Analysis">py4vasp, sumo, pymatgen</td></tr>
+<tr id="p-gap"><th scope="row">Band gap</th><td data-label="Key tags"><x-tag>BANDGAP</x-tag> (6.4.3 and later)</td><td data-label="Needs first">static run</td><td data-label="Analysis">OUTCAR, py4vasp, pymatgen</td></tr>
+<tr id="p-mass"><th scope="row">Effective mass</th><td data-label="Key tags">fine band path near the extrema</td><td data-label="Needs first">band structure</td><td data-label="Analysis">sumo-bandstats (external)</td></tr>
+<tr id="p-workfunction"><th scope="row">Work function, band alignment</th><td data-label="Key tags"><x-tag>LVHAR</x-tag>, <x-tag>LDIPOL</x-tag>, <x-tag>IDIPOL</x-tag> = 3, <x-tag>LVACPOTAV</x-tag></td><td data-label="Needs first">slab with vacuum</td><td data-label="Analysis">LOCPOT plane average, py4vasp</td></tr>
+<tr id="p-bader"><th scope="row">Bader charges</th><td data-label="Key tags"><x-tag>LAECHG</x-tag></td><td data-label="Needs first">static run</td><td data-label="Analysis">bader, chgsum.pl (external)</td></tr>
+<tr id="p-elf"><th scope="row">Electron localization function</th><td data-label="Key tags"><x-tag>LELF</x-tag> with NPAR = 1</td><td data-label="Needs first">static run</td><td data-label="Analysis">VESTA</td></tr>
+<tr id="p-cohp"><th scope="row">COHP, bonding analysis</th><td data-label="Key tags">LWAVE, ISYM = 0, NBANDS set</td><td data-label="Needs first">static run</td><td data-label="Analysis">LOBSTER, LobsterPy (external)</td></tr>
+<tr id="p-stm"><th scope="row">Partial charge, STM image</th><td data-label="Key tags"><x-tag>LPARD</x-tag>, <x-tag>IBAND</x-tag> or <x-tag>EINT</x-tag></td><td data-label="Needs first">WAVECAR</td><td data-label="Analysis">VESTA; py4vasp STM (6.5.0, HDF5)</td></tr>
+<tr id="p-fermi"><th scope="row">Fermi surface</th><td data-label="Key tags">dense uniform non-SCF mesh</td><td data-label="Needs first">CHGCAR</td><td data-label="Analysis">IFermi (external)</td></tr>
+<tr id="p-unfold"><th scope="row">Band unfolding (supercells, alloys)</th><td data-label="Key tags">non-SCF on generated k-points</td><td data-label="Needs first">WAVECAR</td><td data-label="Analysis">easyunfold (external)</td></tr>
+<tr id="p-wannier"><th scope="row">Wannier functions</th><td data-label="Key tags">LWANNIER90, or VASP's own LOCPROJ / SCDM</td><td data-label="Needs first">converged run</td><td data-label="Analysis">Wannier90</td></tr>
+<tr id="p-hybrid"><th scope="row">HSE06 gap and bands</th><td data-label="Key tags">LHFCALC, HFSCREEN = 0.2</td><td data-label="Needs first">PBE WAVECAR</td><td data-label="Analysis">as for bands</td></tr>
+<tr id="p-gw"><th scope="row">GW quasiparticles, BSE optics</th><td data-label="Key tags">ALGO = EVGW0, BSE …</td><td data-label="Needs first">DFT run with many empty bands</td><td data-label="Analysis">py4vasp</td></tr>
+<tr id="p-rpa"><th scope="row">RPA total energies</th><td data-label="Key tags">ALGO = RPA (and its preparation runs)</td><td data-label="Needs first">exact diagonalization</td><td data-label="Analysis">OUTCAR</td></tr>
+<tr id="p-vdw"><th scope="row">van der Waals corrections</th><td data-label="Key tags"><x-tag>IVDW</x-tag> (DFT-D3, …) or vdW-DF functionals</td><td data-label="Needs first">—</td><td data-label="Analysis">—</td></tr>
+<tr id="p-optics"><th scope="row">Optical absorption</th><td data-label="Key tags"><x-tag>LOPTICS</x-tag>, <x-tag>CSHIFT</x-tag>, many bands</td><td data-label="Needs first">static run</td><td data-label="Analysis">py4vasp, vasprun.xml</td></tr>
+<tr id="p-dielectric"><th scope="row">Dielectric tensor, Born charges, piezoelectric tensor</th><td data-label="Key tags"><x-tag>LEPSILON</x-tag> or <x-tag>LCALCEPS</x-tag>; + IBRION = 6 for the ionic part</td><td data-label="Needs first">relaxed structure</td><td data-label="Analysis">OUTCAR</td></tr>
+<tr id="p-phonons-gamma"><th scope="row">Γ-point phonons, force constants</th><td data-label="Key tags">IBRION = 6 (or 8 for GGA)</td><td data-label="Needs first">tightly relaxed structure</td><td data-label="Analysis">OUTCAR (THz, f/i = imaginary)</td></tr>
+<tr id="p-phonons"><th scope="row">Phonon bands, DOS, thermal properties</th><td data-label="Key tags">supercell forces with phonopy; VASP's own <x-tag>LPHON_DISPERSION</x-tag> gives the bands only</td><td data-label="Needs first">relaxed cell</td><td data-label="Analysis">phonopy</td></tr>
+<tr id="p-qha"><th scope="row">Thermal expansion (quasi-harmonic)</th><td data-label="Key tags">phonons at several volumes</td><td data-label="Needs first">E–V curve</td><td data-label="Analysis">phonopy-qha</td></tr>
+<tr id="p-kappa"><th scope="row">Lattice thermal conductivity</th><td data-label="Key tags">third-order force constants</td><td data-label="Needs first">phonons</td><td data-label="Analysis">phono3py (external)</td></tr>
+<tr id="p-ir"><th scope="row">IR and Raman spectra</th><td data-label="Key tags">Born charges and phonons (IR); Raman needs external scripts</td><td data-label="Needs first">dielectric run</td><td data-label="Analysis">Phonopy-Spectroscopy (external)</td></tr>
+<tr id="p-eph"><th scope="row">Electron–phonon coupling, mobility</th><td data-label="Key tags">ELPH tags (native from 6.5.0)</td><td data-label="Needs first">supercell phonon potentials</td><td data-label="Analysis">py4vasp</td></tr>
+<tr id="p-transport"><th scope="row">Electronic transport (Seebeck, conductivity)</th><td data-label="Key tags">dense uniform mesh</td><td data-label="Needs first">CHGCAR</td><td data-label="Analysis">BoltzTraP2 (external)</td></tr>
+<tr id="p-magnetic"><th scope="row">Magnetic moments, orderings, anisotropy, exchange</th><td data-label="Key tags">ISPIN, MAGMOM, LSORBIT …</td><td data-label="Needs first">see the magnetism sheet</td><td data-label="Analysis">—</td></tr>
+<tr id="p-nmr"><th scope="row">NMR chemical shielding</th><td data-label="Key tags"><x-tag>LCHIMAG</x-tag></td><td data-label="Needs first">relaxed structure</td><td data-label="Analysis">OUTCAR</td></tr>
+<tr id="p-efg"><th scope="row">Electric field gradients</th><td data-label="Key tags"><x-tag>LEFG</x-tag></td><td data-label="Needs first">—</td><td data-label="Analysis">OUTCAR</td></tr>
+<tr id="p-hyperfine"><th scope="row">Hyperfine coupling</th><td data-label="Key tags"><x-tag>LHYPERFINE</x-tag>, ISPIN = 2</td><td data-label="Needs first">—</td><td data-label="Analysis">OUTCAR</td></tr>
+<tr id="p-xas"><th scope="row">Core-level shifts, XAS</th><td data-label="Key tags"><x-tag>ICORELEVEL</x-tag> (core hole in a supercell); BSE-based XAS from 6.6.0</td><td data-label="Needs first">supercell</td><td data-label="Analysis">OUTCAR, vasprun.xml</td></tr>
+<tr id="p-polarization"><th scope="row">Ferroelectric polarization</th><td data-label="Key tags"><x-tag>LCALCPOL</x-tag> (Berry phase)</td><td data-label="Needs first">polar and reference structures</td><td data-label="Analysis">by hand</td></tr>
+<tr id="p-field"><th scope="row">Finite electric field</th><td data-label="Key tags"><x-tag>EFIELD_PEAD</x-tag></td><td data-label="Needs first">gapped system</td><td data-label="Analysis">OUTCAR</td></tr>
+<tr id="p-solvation"><th scope="row">Implicit solvation</th><td data-label="Key tags">LSOL (VASPsol patch)</td><td data-label="Needs first">a patched VASP</td><td data-label="Analysis">—</td></tr>
+<tr id="p-barrier"><th scope="row">Migration and reaction barriers</th><td data-label="Key tags">IMAGES, SPRING</td><td data-label="Needs first">relaxed end points</td><td data-label="Analysis">see the NEB sheet</td></tr>
+<tr id="p-md"><th scope="row">Diffusion, melting, finite-temperature structure</th><td data-label="Key tags">IBRION = 0, MDALGO</td><td data-label="Needs first">—</td><td data-label="Analysis">see the AIMD sheet</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="functionals">
+<h2>Which methods work with which functional</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Method</th><th scope="col">LDA, GGA</th><th scope="col">r²SCAN</th><th scope="col">Hybrids</th></tr></thead>
+<tbody>
+<tr><th scope="row">LEPSILON (perturbation theory)</th><td data-label="LDA, GGA">yes</td><td data-label="r²SCAN">no</td><td data-label="Hybrids">no</td></tr>
+<tr><th scope="row">LCALCEPS (finite field)</th><td data-label="LDA, GGA">yes (gapped)</td><td data-label="r²SCAN">yes (gapped)</td><td data-label="Hybrids">yes (gapped)</td></tr>
+<tr><th scope="row">Phonons IBRION = 7, 8</th><td data-label="LDA, GGA">yes</td><td data-label="r²SCAN">no</td><td data-label="Hybrids">no</td></tr>
+<tr><th scope="row">Phonons IBRION = 6, phonopy</th><td data-label="LDA, GGA">yes</td><td data-label="r²SCAN">yes</td><td data-label="Hybrids">yes (expensive)</td></tr>
+<tr><th scope="row">LOPTICS</th><td data-label="LDA, GGA">yes</td><td data-label="r²SCAN">6.6.0 and later; with spin-orbit set LPEAD = .TRUE.</td><td data-label="Hybrids">yes</td></tr>
+<tr><th scope="row">Band structure with ICHARG = 11</th><td data-label="LDA, GGA">yes</td><td data-label="r²SCAN">6.6.0 and later</td><td data-label="Hybrids">never</td></tr>
+<tr><th scope="row">Band structure with KPOINTS_OPT</th><td data-label="LDA, GGA">6.3.0 and later</td><td data-label="r²SCAN">6.3.0 and later</td><td data-label="Hybrids">6.3.0 and later (HFRCUT = −1 for gapped systems)</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="recipes">
+<h2>Recipes</h2>
+
+<h3 id="r-dos">Density of states and projected DOS</h3>
+<p>Run a static calculation with <code>LCHARG = .TRUE.</code>, then the run below with its CHGCAR on a denser Γ-centred mesh (the <x-sheet slug="incar-tags#recipes">INCAR sheet</x-sheet> has both). The gap appears in OUTCAR with VASP 6.4.3 and later.</p>
+<pre class="incar" data-title="DOS from CHGCAR" data-allow="encut-missing">
+ICHARG  = 11
+ISMEAR  = -5
+NEDOS   = 2001
+LORBIT  = 11
+NSW     = 0
+LMAXMIX = 4            ! same as the static run
+</pre>
+
+<h3 id="r-bader">Bader charges, ELF and charge-density differences</h3>
+<pre class="incar" data-title="Static run that writes the all-electron densities and the ELF" data-allow="encut-missing npar-legacy">
+NSW    = 0 ; IBRION = -1
+LAECHG = .TRUE.        ! AECCAR0 (core) and AECCAR2 (valence)
+LELF   = .TRUE.        ! ELFCAR
+NPAR   = 1             ! required with LELF
+LCHARG = .TRUE.
+</pre>
+<pre class="sh" data-title="Bader analysis (Henkelman group's bader program)">
+chgsum.pl AECCAR0 AECCAR2            # reference density CHGCAR_sum
+bader CHGCAR -ref CHGCAR_sum         # charges in ACF.dat: electrons per atom
+</pre>
+<p class="then">The net charge of an atom is its ZVAL minus the Bader electron count. If the total charge is off, refine the FFT grid (NGXF, NGYF, NGZF). For a density difference ρ(AB) − ρ(A) − ρ(B), compute all three at the same positions, cell and FFT grid.</p>
+
+<h3 id="r-workfunction">Work function of a slab</h3>
+<pre class="incar" data-title="Static slab run with the dipole correction" data-allow="encut-missing">
+NSW       = 0 ; IBRION = -1
+LDIPOL    = .TRUE.
+IDIPOL    = 3          ! correction along c, the vacuum direction
+DIPOL     = 0.5 0.5 0.5  ! the slab's centre of mass; this line assumes a centred slab
+LVHAR     = .TRUE.     ! electrostatic potential (no exchange-correlation) to LOCPOT
+LVACPOTAV = .TRUE.     ! vacuum levels on both sides in OUTCAR
+</pre>
+<p class="then">Work function Φ = V<sub>vacuum</sub> − E<sub>F</sub>. Leave 8–12 Å of vacuum on each side, relax first without the correction if it destabilizes the SCF, and take E<sub>F</sub> from the same run.</p>
+
+<h3 id="r-elastic">Elastic constants</h3>
+<pre class="incar" data-title="Elastic tensor by finite differences" data-allow="encut-missing">
+IBRION = 6             ! finite differences with symmetry
+ISIF   = 3             ! needed for the elastic tensor
+NFREE  = 2             ! or 4
+POTIM  = 0.015
+PREC   = Accurate
+EDIFF  = 1E-7
+NSW    = 1
+</pre>
+<p class="then">Use a cutoff about 30% above ENMAX and start from a cell relaxed with the same settings. OUTCAR gives “TOTAL ELASTIC MODULI” in kBar (divide by 10 for GPa). VASP orders the columns XX YY ZZ XY YZ ZX. For the standard Voigt order (XX YY ZZ YZ ZX XY), move the 4th row and column (XY) to the end, that is, reorder them as 1 2 3 5 6 4. Perturbation theory (IBRION = 7, 8) does not give elastic constants.</p>
+
+<h3 id="r-dielectric">Dielectric tensor, Born charges, piezoelectric tensor</h3>
+<pre class="incar" data-title="GGA: perturbation theory (LEPSILON)" data-allow="encut-missing">
+LEPSILON = .TRUE.
+IBRION   = 8           ! adds the ionic contribution (GGA only)
+EDIFF    = 1E-8
+NSW      = 1
+</pre>
+<pre class="incar" data-title="r2SCAN or hybrids: finite field (LCALCEPS)" data-allow="encut-missing">
+LCALCEPS = .TRUE.      ! gapped systems only
+IBRION   = 6           ! adds the ionic contribution
+NFREE    = 2
+POTIM    = 0.015
+EDIFF    = 1E-8
+NSW      = 1
+</pre>
+<p class="then">OUTCAR prints the electronic dielectric tensor, the Born effective charges and the piezoelectric tensor; the ionic parts appear under their own headings. LCALCEPS needs a regular Γ-centred mesh. Don't combine LEPSILON with LOPTICS in one run.</p>
+
+<h3 id="r-optics">Optical absorption</h3>
+<pre class="incar" data-title="Frequency-dependent dielectric function" data-allow="encut-missing">
+LOPTICS = .TRUE.
+NBANDS  = 96           ! 2-3 x the default: empty bands are needed
+NEDOS   = 2001
+CSHIFT  = 0.1          ! broadening in eV (the default)
+ISMEAR  = 0 ; SIGMA = 0.05
+NSW     = 0 ; IBRION = -1
+</pre>
+<p class="then">This is the independent-particle spectrum; excitonic effects need BSE. The real and imaginary parts are in vasprun.xml and vaspout.h5.</p>
+
+<h3 id="r-phonons">Phonons</h3>
+<pre class="incar" data-title="Force calculation in a phonopy supercell" data-allow="encut-missing">
+IBRION = -1 ; NSW = 0  ! one static run per displaced supercell
+PREC   = Accurate
+EDIFF  = 1E-8
+ISMEAR = 0 ; SIGMA = 0.05
+LREAL  = .FALSE.
+LWAVE  = .FALSE. ; LCHARG = .FALSE.
+</pre>
+<p class="then">Relax first with tight forces (EDIFFG ≈ −0.001). phonopy generates the displaced supercells, collects their forces and gives bands, DOS and thermal properties; imaginary frequencies at Γ or elsewhere signal an instability or an under-converged relaxation. For Γ-point modes only, VASP alone with IBRION = 6 is enough.</p>
+
+<h3 id="r-cohp">COHP with LOBSTER</h3>
+<pre class="incar" data-title="Static run for LOBSTER" data-allow="encut-missing">
+NSW    = 0 ; IBRION = -1
+ISYM   = 0             ! LOBSTER needs the full (time-reversal-reduced) mesh
+LWAVE  = .TRUE.
+NBANDS = 128           ! at least the number of LOBSTER basis functions
+LORBIT = 11
+</pre>
+<p class="then">LOBSTER reads WAVECAR and writes COHPCAR.lobster and ICOHPLIST.lobster; LobsterPy automates the analysis.</p>
+
+<h3 id="r-stm">Partial charges and STM images</h3>
+<pre class="incar" data-title="Charge density of states near the Fermi level" data-allow="encut-missing">
+LPARD = .TRUE.
+EINT  = -0.5 0         ! window in eV
+NBMOD = -3             ! window relative to the Fermi energy
+NSW   = 0 ; IBRION = -1
+</pre>
+<p class="then">Read the WAVECAR of a converged run with the same ENCUT and symmetry settings. VASP writes PARCHG (or, from 6.5.0, to vaspout.h5 with LPARDH5 for py4vasp's STM plots).</p>
+
+<h3 id="r-formation">Formation energy and convex hull</h3>
+<pre class="file" data-title="pymatgen: energy above the hull from your own runs">
+from pymatgen.analysis.phase_diagram import PhaseDiagram, PDEntry
+from pymatgen.core import Composition
+entries = [PDEntry(Composition("Fe"), -8.47),        # energies per formula unit from your runs
+           PDEntry(Composition("O2"), -9.86),        # same POTCARs, ENCUT, functional
+           PDEntry(Composition("Fe2O3"), -38.0)]
+pd = PhaseDiagram(entries)
+for e in entries:
+    print(e.composition, pd.get_form_energy_per_atom(e), pd.get_e_above_hull(e))
+</pre>
+<p class="then">The numbers above are placeholders, not results. Compute every reference yourself with the same settings and its own magnetic ground state. Mixing your energies with Materials Project data, or GGA with GGA+U, needs their correction scheme.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>LEPSILON or IBRION = 8 with r²SCAN or a hybrid: not supported. Use LCALCEPS and IBRION = 6.</li>
+  <li>Elastic constants read in VASP's column order as if it were Voigt order.</li>
+  <li>Comparing energies from runs with different POTCARs, cutoffs, U values or functionals.</li>
+  <li>A DOS or optical spectrum with too few empty bands, too coarse a mesh or the default 301 NEDOS points.</li>
+  <li>LELF without NPAR = 1; Bader charges on a coarse grid; COHP without enough bands.</li>
+  <li>Work functions with LVTOT (it includes the exchange-correlation potential) instead of LVHAR.</li>
+  <li>Phonons from a structure relaxed only to 0.02 eV/Å: small imaginary modes that are not physical.</li>
+</ul>
+</section>

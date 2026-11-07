@@ -563,7 +563,7 @@ ${copyright}
  */
 
 const cheats = JSON.parse(readFileSync(join(DFT, "cheatsheets.json"), "utf8"));
-const { lintIncar } = await import(pathToFileURL(join(DFT, "cheat-tools.js")).href);
+const { lintIncar, parsePoscar, parseKpoints } = await import(pathToFileURL(join(DFT, "cheat-tools.js")).href);
 const sheets = cheats.sheets;
 const isSheetPub = s => s && s.status === "published";
 const bySheet = new Map(sheets.map(s => [s.slug, s]));
@@ -575,7 +575,7 @@ function tagTable(names, where) {
   const rows = names.trim().split(/\s+/).map(name => {
     const t = terms.tags[name] || fail(`${where}: <x-tags> names unknown tag "${name}" (add it to dft/terms.json)`);
     if (!t.short || !t.use) fail(`${where}: tag ${name} needs "short" and "use" in dft/terms.json to appear in a table`);
-    return `<tr id="${tagId(name)}"><th scope="row"><a class="wiki" href="${esc(t.wiki)}" rel="noopener" title="${name} on the VASP Wiki"><code>${name}</code></a>${t.since ? ` <span class="since" title="Needs VASP ${esc(t.since)} or later">${esc(t.since)}+</span>` : ""}</th>`
+    return `<tr id="${tagId(name)}"><th scope="row"><a class="wiki" href="${esc(t.wiki)}" rel="noopener" title="${name} on the VASP Wiki"><code>${name}</code></a>${t.since ? ` <span class="since" title="Needs VASP ${esc(t.since)} or later">${esc(t.since)}+</span>` : ""}${t.vtst ? ` <span class="since vtst" title="Needs VASP compiled with the VTST code">VTST</span>` : ""}</th>`
       + `<td data-label="What it does">${t.short}</td><td data-label="Default">${t.default || "—"}</td><td data-label="What to use">${t.use}</td><td data-label="Watch out">${t.pitfall || ""}</td></tr>`;
   });
   return `<div class="tagtable-wrap"><table class="tagtable">
@@ -588,7 +588,7 @@ ${rows.join("\n")}
 
 /** INCAR and shell blocks: checked, highlighted, wrapped in a captioned figure (cheat.js adds the copy button). */
 function codeBlocks(html, where) {
-  return html.replace(/<pre class="(incar|sh)"([^>]*)>([\s\S]*?)<\/pre>/g, (_, kind, attrs, body) => {
+  return html.replace(/<pre class="(incar|sh|poscar|kpoints|file)"([^>]*)>([\s\S]*?)<\/pre>/g, (_, kind, attrs, body) => {
     const attr = k => (attrs.match(new RegExp(`${k}="([^"]*)"`)) || [])[1];
     const title = attr("data-title") || fail(`${where}: a ${kind} block needs data-title`);
     const allow = (attr("data-allow") || "").split(/\s+/).filter(Boolean);
@@ -607,6 +607,19 @@ function codeBlocks(html, where) {
         const stmt = i < 0 ? line : line.slice(0, i), com = i < 0 ? "" : line.slice(i);
         return esc(stmt).replace(/\b([A-Z][A-Z0-9_]*)(?=\s*=)/g, '<span class="k">$1</span>') + (com ? `<span class="c">${esc(com)}</span>` : "");
       }).join("\n");
+    } else if (kind !== "sh") {
+      if (kind === "poscar") {
+        const p = parsePoscar(text);
+        if (p.errors.length && !allow.includes("poscar-error")) fail(`${where}: POSCAR "${title}": ${p.errors.join(" ")}`);
+      }
+      if (kind === "kpoints") {
+        const k = parseKpoints(text);
+        if (k.errors.length) fail(`${where}: KPOINTS "${title}": ${k.errors.join(" ")}`);
+      }
+      code = text.split("\n").map(line => {
+        const i = line.search(/[!#]/);
+        return i < 0 ? esc(line) : esc(line.slice(0, i)) + `<span class="c">${esc(line.slice(i))}</span>`;
+      }).join("\n");
     } else {
       code = text.split("\n").map(line => {
         const i = line.search(/(^|\s)#/);
@@ -624,6 +637,17 @@ function sheetLinks(html, where, base) {
     return isSheetPub(s) ? `<a href="${base}${s.slug}/${hash ? "#" + hash : ""}">${text}</a>`
                          : `<span class="lec-ref" title="${esc(s.h1)} (in preparation)">${text}</span>`;
   });
+}
+
+/** Which published sheet shows each tag in a table (the first one wins). */
+function tagSheets() {
+  const map = new Map();
+  for (const s of sheets.filter(isSheetPub)) {
+    const src = readFileSync(join(DFT, "_cheat", `${s.slug}.html`), "utf8");
+    for (const [, names] of src.matchAll(/<x-tags names="([^"]+)"><\/x-tags>/g))
+      for (const n of names.trim().split(/\s+/)) if (!map.has(n)) map.set(n, s);
+  }
+  return map;
 }
 
 function sheetPage(s) {
@@ -769,11 +793,12 @@ function cheatHub() {
   }).join("\n    ");
 
   // A–Z index of every tag in terms.json
-  const incar = bySheet.get("incar-tags");
+  const onSheet = tagSheets();
   const index = Object.keys(terms.tags).sort().map(name => {
     const t = terms.tags[name];
     const where = [];
-    if (t.group && isSheetPub(incar)) where.push(`<a href="incar-tags/#${tagId(name)}">INCAR sheet</a>`);
+    const sh = onSheet.get(name);
+    if (sh) where.push(`<a href="${sh.slug}/#${tagId(name)}">${esc(sh.short)} sheet</a>`);
     const l = t.lecture != null ? byN.get(t.lecture) : null;
     if (isPub(l)) where.push(`<a href="../${l.slug}/">${lecNo(l)}</a>`);
     return `<tr id="${tagId(name)}" data-search="${esc((name + " " + strip(t.short || t.def)).toLowerCase())}"><th scope="row"><a class="wiki" href="${esc(t.wiki)}" rel="noopener"><code>${name}</code></a></th><td data-label="What it does">${math(t.short || t.def, `tag ${name}`)}</td><td data-label="Default">${t.default || "—"}</td><td data-label="More">${where.join(" · ") || "—"}</td></tr>`;

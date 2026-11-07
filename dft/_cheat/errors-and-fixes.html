@@ -1,0 +1,335 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  Error texts and causes: VASP forum staff answers and VASP-printed advice gathered in
+  dft/_research/B-slurm-output-debug.md sheet 2 (each with thread id there), custodian
+  custodian/vasp/handlers.py (error_msgs substrings and correction ladders; dft/_research/parsers/cust_handlers.py),
+  VASP Wiki: Troubleshooting electronic convergence (ladder; magnetic recipe; DFT+U recipe ICHARG=12,
+  ALGO=All TIME=0.05), ALGO (All with ISEARCH=1 for magnetic, +U, meta-GGA, hybrids), NELM (40 steps),
+  NELMDL, AMIX/AMIX_MAG/BMIX_MAG (linear mixing values), MAGMOM (1.2-1.5x; restart keeps MAGMOM),
+  Structure optimization (IBRION, NELMIN, POTIM), LREAL (Auto above ~30 atoms), Known issues 51, 66, 71,
+  94, 99, 111; Changelog 6.4.3 (Bravais-lattice check demoted to warning), 6.5.0 (IBRION=2 Brent bracketing
+  fix), 6.5.1 (ISEARCH). GPU ports (one rank per GPU). Installing VASP (ulimit -s unlimited).
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Look in the right place: error boxes are in the standard output (<code>vasp.out</code>), crashes and out-of-memory kills in the Slurm <code>.err</code> file, SCF progress in OSZICAR.</li>
+  <li>Check the basics first: is the structure sane (no atoms on top of each other), does the POTCAR order match POSCAR, does a known issue of your VASP version apply?</li>
+  <li>Most crashes during a run trace back to an unconverged SCF or a bad geometry. Fix the SCF before anything else.</li>
+  <li>Restart only from files that match the run: a WAVECAR with different k-points or bands, or files from a different structure, cause several of the errors below.</li>
+  <li>Never “fix” symmetry errors with a huge SYMPREC: it silently over-symmetrizes the result.</li>
+</ol>
+<pre class="sh" data-title="Where to look">
+grep -n -E "I REFUSE TO CONTINUE|VERY BAD NEWS|internal error|ERROR" vasp.out   # error boxes
+grep -c "W    W    AA    RRRRR" vasp.out OUTCAR                                    # warning boxes
+tail -20 *.err                          # crashes, out-of-memory kills, time limit (Slurm)
+grep " F= " OSZICAR | tail -3           # last ionic steps: energy and magnetic moment
+head -1 OUTCAR                          # VASP version
+</pre>
+</section>
+
+<section class="sheet-sec" id="lookup">
+<h2>Look up an error</h2>
+<p>Paste the message from your output, or type a word from it, and jump to its entry.</p>
+<div class="tool" data-tool="finder" data-items=".err-card" data-multiline="1" data-label="Error message" data-placeholder="e.g. ZBRENT: fatal error in bracketing"></div>
+<p class="legend">Labels: <span class="lbl adv">VASP advice</span> printed by VASP or given in its documentation and by its developers; <span class="lbl rule">Rule of thumb</span> common practice; <span class="lbl auto">custodian</span> what the custodian error handler (used by Materials Project workflows) does automatically.</p>
+</section>
+
+<section class="sheet-sec" id="versions">
+<h2>Check your version first</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Problem</th><th scope="col">Versions</th><th scope="col">What to do</th></tr></thead>
+<tbody>
+<tr><th scope="row">Wrong forces in spin-polarized meta-GGA (r²SCAN, SCAN) runs</th><td data-label="Versions">6.6.0 only</td><td data-label="What to do">Use 6.6.1. Relaxations, NEB, MD and force-field training done with 6.6.0 are suspect.</td></tr>
+<tr><th scope="row">Default NBANDS too small with negative MAGMOM values; misleading crashes</th><td data-label="Versions">up to 6.5.x</td><td data-label="What to do">Set NBANDS by hand, or use 6.6.0 or later.</td></tr>
+<tr><th scope="row">KPAR &gt; 1 runs hang in the SCF</th><td data-label="Versions">6.1 and later; partly fixed in 6.6.0</td><td data-label="What to do">Use KPAR = 1 if a job stalls.</td></tr>
+<tr><th scope="row">DFT+U with OpenMP threads hangs or crashes</th><td data-label="Versions">open issue</td><td data-label="What to do">Run DFT+U with <code>OMP_NUM_THREADS=1</code>.</td></tr>
+<tr><th scope="row">ALGO = All from random orbitals stops with “the gradient is not orthogonal”</th><td data-label="Versions">6.1 and later</td><td data-label="What to do">Converge with ALGO = Normal first, then restart with ALGO = All from that WAVECAR.</td></tr>
+<tr><th scope="row">Hybrids with ALGO = Normal crash at random on NVIDIA GPUs</th><td data-label="Versions">6.6.0 and later (not fixed in 6.6.1)</td><td data-label="What to do">Use ALGO = Damped.</td></tr>
+</tbody>
+</table></div>
+<p>VASP's Known issues page on its Wiki lists the rest; <code>head -1 OUTCAR</code> shows the version that ran.</p>
+</section>
+
+<section class="sheet-sec" id="errors">
+<h2>Error messages</h2>
+<div class="err-cards">
+
+<article class="err-card" id="zbrent-fatal-error-in-bracketing" data-keys="zbrent|bracketing|brackting">
+<h3><code>ZBRENT: fatal error in bracketing</code></h3>
+<p>The conjugate-gradient relaxation (IBRION = 2) could not find a sensible next step along its line search. Usually the structure is already close to the minimum, or the forces are noisy because the SCF was not tight enough.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Copy CONTCAR to POSCAR and continue, or tighten EDIFF (e.g. 1E-6 or smaller).</li>
+<li><span class="lbl adv">VASP advice</span> Make sure every ionic step's SCF converged; then try a smaller POTIM or IBRION = 1.</li>
+<li><span class="lbl adv">VASP advice</span> VASP 6.6.0 fixed a bug in how this line search chose its bracketing interval, so upgrading can help when ZBRENT keeps appearing.</li>
+<li><span class="lbl auto">custodian</span> Copies CONTCAR, sets EDIFF = 1E-6 and NELMIN = 8; on a second hit switches to IBRION = 1.</li>
+</ul>
+</article>
+
+<article class="err-card" id="edddav-call-to-zhegv-failed" data-keys="edddav|zhegv failed|call to zhegv">
+<h3><code>Error EDDDAV: Call to ZHEGV failed</code></h3>
+<p>The Davidson diagonalization broke down. Frequent causes: two atoms got too close, or the SCF was not converging.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Check the geometry (duplicate or overlapping atoms) and change ALGO: All (with a small TIME such as 0.05), or Fast, or a larger smearing.</li>
+<li><span class="lbl adv">VASP advice</span> Strip the INCAR to a minimal one to find the setting that triggers it.</li>
+<li><span class="lbl auto">custodian</span> Copies CONTCAR, deletes CHGCAR, switches to ALGO = All with ISEARCH = 1.</li>
+</ul>
+</article>
+
+<article class="err-card" id="warning-in-eddrmm-call-to-zhegv-failed" data-keys="eddrmm">
+<h3><code>WARNING in EDDRMM: call to ZHEGV failed</code></h3>
+<p>A warning, not an error: RMM-DIIS (ALGO = Fast or VeryFast) had trouble updating one band.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Switch to ALGO = Normal; if you keep VeryFast, use a larger NELMDL. Check the geometry and POTIM.</li>
+<li><span class="lbl auto">custodian</span> Sets ALGO = Normal (or halves POTIM) and deletes CHGCAR and WAVECAR.</li>
+</ul>
+</article>
+
+<article class="err-card" id="brmix-very-serious-problems" data-keys="brmix|very serious problems|old and the new charge density differ">
+<h3><code>BRMIX: very serious problems the old and the new charge density differ</code></h3>
+<p>The Broyden density mixer received inconsistent densities. Common causes: the Fermi level could not be determined (change the smearing), too few bands, a stray NELECT, or a restart from a WAVECAR made with a different k-mesh.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Change the smearing method; reduce the mixing (AMIX, BMIX); or use ALGO = All with a smaller TIME. After a WAVECAR restart with a different mesh it is usually safe to ignore if the SCF then converges.</li>
+<li><span class="lbl rule">Rule of thumb</span> ISYM = 0, or move one atom slightly.</li>
+<li><span class="lbl auto">custodian</span> Restarts with ISTART = 1, then Kerker mixing (IMIX = 1), then swaps Gamma and Monkhorst–Pack meshes, then ISYM = 0.</li>
+</ul>
+</article>
+
+<article class="err-card" id="sub-space-matrix-is-not-hermitian" data-keys="sub-space-matrix|not hermitian">
+<h3><code>WARNING: Sub-Space-Matrix is not hermitian in DAV</code></h3>
+<p>A pathological geometry or density, or a WAVECAR inconsistent with the current run (different FFT grid, cell, k-mesh or NBANDS).</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> ALGO = All is usually the most reliable fix. Delete a mismatched WAVECAR; lower POTIM in relaxations.</li>
+<li><span class="lbl auto">custodian</span> Sets LREAL = .FALSE., then PREC = Accurate.</li>
+</ul>
+</article>
+
+<article class="err-card" id="too-few-bands" data-keys="too few bands|nbands too small|highest band is occupied">
+<h3><code>Your highest band is occupied at some k-points! … TOO FEW BANDS</code></h3>
+<p>VASP needs every occupied state plus at least one empty band. The default NBANDS can be too small for f-electron systems, meta-GGA, and (before 6.6.0) negative starting moments.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Raise NBANDS; set MAGMOM explicitly.</li>
+<li><span class="lbl auto">custodian</span> Raises NBANDS by 10% (at least one band).</li>
+</ul>
+</article>
+
+<article class="err-card" id="number-of-bands-has-been-changed" data-keys="number of bands has been changed">
+<h3><code>The number of bands has been changed from the values supplied in the INCAR file</code></h3>
+<p>Not an error: VASP rounds NBANDS up so that it divides evenly over the cores. The results can then differ slightly between runs on different core counts.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Run every step of a study on the same number of cores.</li>
+</ul>
+</article>
+
+<article class="err-card" id="pricel" data-keys="pricel|precision problem|incommensurate within symprec">
+<h3><code>VERY BAD NEWS! internal error in subroutine PRICEL</code></h3>
+<p>Symmetry detection failed, usually because the POSCAR has too few digits or a supercell was built from imprecise coordinates. A variant reads “PRICELV: current lattice and primitive lattice are incommensurate within SYMPREC”.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Write coordinates with at least 7 significant digits; rebuild the supercell from a precise primitive cell; try changing SYMPREC by a factor of 10.</li>
+<li><span class="lbl auto">custodian</span> Sets SYMPREC = 1E-8 and ISYM = 0.</li>
+</ul>
+</article>
+
+<article class="err-card" id="sgrcon" data-keys="sgrcon|non-integer element in rotation matrix">
+<h3><code>VERY BAD NEWS! internal error in subroutine SGRCON: Found some non-integer element in rotation matrix</code></h3>
+<p>Imprecise symmetry, often together with the IBZKPT message below.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> A tighter SYMPREC (e.g. 1E-6); check the POSCAR and whether MAGMOM breaks the symmetry; use a Γ-centred mesh, or ISYM = 0.</li>
+<li><span class="lbl auto">custodian</span> Switches a Monkhorst–Pack mesh to Γ-centred, otherwise sets ISYM = 0.</li>
+</ul>
+</article>
+
+<article class="err-card" id="inconsistent-bravais-lattice" data-keys="inconsistent bravais lattice|bravais lattice types">
+<h3><code>Inconsistent Bravais lattice types found for crystalline and reciprocal lattice</code></h3>
+<p>The lattice vectors are not precise enough for VASP to classify them consistently.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Refine the lattice parameters, and/or change SYMPREC. Check that SYMPREC is really read: a tab at the start of the line has made VASP ignore it.</li>
+<li><span class="lbl auto">custodian</span> Lowers SYMPREC to at most 1E-6, then sets ISYM = 0.</li>
+</ul>
+</article>
+
+<article class="err-card" id="ibzkpt-reciprocal-lattice-and-k-lattice" data-keys="ibzkpt|k-lattice belong to different class|generating k-lattice">
+<h3><code>VERY BAD NEWS! internal error in subroutine IBZKPT: Reciprocal lattice and k-lattice belong to different class of lattices</code></h3>
+<p>The k-mesh does not fit the symmetry of the lattice. VASP's developers describe it as a warning more than an error: results are often still usable, and newer versions simply continue.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Use a mesh that fits the lattice: Γ-centred for fcc and hexagonal cells, no even in-plane Monkhorst–Pack mesh for hexagonal ones. Otherwise ISYM = 0 or a tighter SYMPREC.</li>
+<li><span class="lbl auto">custodian</span> Only if the run did not converge: Monkhorst–Pack to Γ-centred, otherwise ISYM = 0.</li>
+</ul>
+</article>
+
+<article class="err-card" id="zpotrf" data-keys="zpotrf|orthonormalization failed|inversion of matrix">
+<h3><code>LAPACK: Routine ZPOTRF failed</code></h3>
+<p>The overlap matrix of the orbitals is no longer invertible. VASP 6.3 and later print it as “Orbital orthonormalization failed in the inversion of matrix”. Usually atoms came too close, often after an unconverged SCF gave bad forces.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Check for atoms too close together; decrease POTIM; delete an incompatible CHGCAR or WAVECAR; try ISYM = 0; or LREAL = .FALSE., PREC = Accurate and a different ALGO.</li>
+<li><span class="lbl auto">custodian</span> Sets ISYM = 0; for very small cells NCORE = 1; otherwise halves POTIM.</li>
+</ul>
+</article>
+
+<article class="err-card" id="pssyevx-not-enough-eigenvalues" data-keys="pssyevx|pdsyevx|pzheevx|not enough eigenvalues">
+<h3><code>ERROR in subspace rotation PSSYEVX: not enough eigenvalues found</code></h3>
+<p>The parallel diagonalization failed (VASP 6 prints PDSYEVX or PZHEEVX). Mostly an input problem: a wrong POTCAR, or ISPIN = 2 without a sensible MAGMOM.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Check the input files first.</li>
+<li><span class="lbl auto">custodian</span> Sets ALGO = Normal.</li>
+</ul>
+</article>
+
+<article class="err-card" id="rspher-running-out-of-buffer" data-keys="rspher|running out of buffer">
+<h3><code>internal ERROR RSPHER: running out of buffer</code></h3>
+<p>The real-space projectors (LREAL) ran out of room after a large change of geometry, or with a mismatched WAVECAR.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Restart from the last CONTCAR; drop a mismatched WAVECAR.</li>
+<li><span class="lbl rule">Rule of thumb</span> LREAL = .FALSE. (custodian does the same).</li>
+</ul>
+</article>
+
+<article class="err-card" id="real-optlay-internal-error" data-keys="real_optlay">
+<h3><code>REAL_OPTLAY: internal error (1)</code></h3>
+<p>The real-space projector layout failed, typically after an unconverged SCF let the structure change drastically.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Fix the SCF first (ALGO = Normal, no unusual mixing settings).</li>
+<li><span class="lbl rule">Rule of thumb</span> LREAL = .FALSE. (custodian does the same).</li>
+</ul>
+</article>
+
+<article class="err-card" id="posmap-symmetry-equivalent-atom-not-found" data-keys="posmap|symmetry equivalent atom not found">
+<h3><code>POSMAP internal error: symmetry equivalent atom not found</code></h3>
+<p>The symmetry tolerance does not match the precision of the positions.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Change SYMPREC by a factor of 10 (the message suggests it). Do not go as far as 1E-2, and compare with ISYM = −1 if in doubt.</li>
+<li><span class="lbl auto">custodian</span> SYMPREC ÷ 10, then × 100, then ISYM = 0.</li>
+</ul>
+</article>
+
+<article class="err-card" id="distance-between-some-ions-is-very-small" data-keys="distance between some ions is very small|nearest-neighbor list|i hope you know what you are doing">
+<h3><code>The distance between some ions is very small. Please check the nearest-neighbor list in the OUTCAR file.</code></h3>
+<p>Duplicated atoms, an atom overlapping its periodic image, or Cartesian coordinates read as Direct.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Read the nearest-neighbour table in OUTCAR (a dry run prints it in seconds) and look at the structure. The <x-sheet slug="poscar">POSCAR checker</x-sheet> reports the shortest distance.</li>
+</ul>
+</article>
+
+<article class="err-card" id="electronic-self-consistency-was-not-achieved" data-keys="self-consistency was not achieved|nelm">
+<h3><code>The electronic self-consistency was not achieved in the given number of steps (NELM)</code></h3>
+<p>The SCF hit NELM without converging; forces and everything else from that step are unreliable, and an unconverged SCF can ruin a relaxation.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Do not just raise NELM: an SCF that has not converged in about 40 steps usually will not. Follow the <a href="#scf">SCF ladder</a> below.</li>
+</ul>
+</article>
+
+<article class="err-card" id="edwav-gradient-not-orthogonal" data-keys="edwav|gradient is not orthogonal|rot.f">
+<h3><code>EDWAV: internal error, the gradient is not orthogonal</code></h3>
+<p>Seen with ALGO = All started from random orbitals (a known issue since 6.1), and with meta-GGA restarts without TAUCAR.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Converge with ALGO = Normal first, then restart with ALGO = All from that WAVECAR.</li>
+</ul>
+</article>
+
+<article class="err-card" id="tetrahedron-method-fails" data-keys="tetrahedron method fails|bzints|dentet">
+<h3><code>Tetrahedron method fails</code> (BZINTS, DENTET)</h3>
+<p>The tetrahedron method (ISMEAR = −5) needs a Γ-centred mesh with enough k-points.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Use a Γ-centred mesh with at least 4 k-points, or switch to <code>ISMEAR = 0 ; SIGMA = 0.05</code>.</li>
+</ul>
+</article>
+
+<article class="err-card" id="triple-product-of-the-basis-vectors" data-keys="triple product of the basis vectors">
+<h3><code>ERROR: the triple product of the basis vectors</code> …</h3>
+<p>The three lattice vectors are badly defined, most often a left-handed set (negative triple product).</p>
+<ul class="fixes">
+<li><span class="lbl rule">Rule of thumb</span> Swap two lattice vectors (and the matching fractional coordinates); custodian does this automatically.</li>
+</ul>
+</article>
+</div>
+</section>
+
+<section class="sheet-sec" id="runtime">
+<h2>The job died</h2>
+<div class="err-cards">
+<article class="err-card" id="segmentation-fault" data-keys="sigsegv|segmentation fault|exit code: 11|bad termination">
+<h3><code>SIGSEGV, segmentation fault occurred</code> or <code>BAD TERMINATION … EXIT CODE: 11</code></h3>
+<p>Most often the stack is too small: VASP keeps large arrays on it, and the default limit is a few megabytes. Also seen when <code>mpirun</code> comes from a different MPI than the one VASP was built with (the log then shows one rank with many threads).</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> <code>ulimit -s unlimited</code> in the job script, and <code>OMP_STACKSIZE=512m</code> with OpenMP. Load the MPI module VASP was built with.</li>
+</ul>
+</article>
+<article class="err-card" id="out-of-memory" data-keys="oom-kill|out of memory|oom|allocation would exceed memory">
+<h3><code>oom-kill event</code> / <code>Out Of Memory</code> in the Slurm .err file</h3>
+<p>The run needed more memory than the job had.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Lower KPAR (each k-point group holds its own copy), use NCORE of 4 or more and LREAL = Auto, or use more nodes with fewer ranks per node.</li>
+</ul>
+</article>
+<article class="err-card" id="m-divide" data-keys="m_divide|can not subdivide">
+<h3><code>M_divide: can not subdivide … nodes by …</code></h3>
+<p>KPAR, NCORE or NPAR do not fit the number of MPI ranks.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> KPAR must divide the ranks (ideally also the number of k-points); set NCORE or NPAR, never both. See the <x-sheet slug="slurm-job-script">Slurm sheet</x-sheet>.</li>
+</ul>
+</article>
+<article class="err-card" id="time-limit" data-keys="due to time limit|timeout|time limit">
+<h3>Killed at the time limit (<code>sacct</code> State TIMEOUT)</h3>
+<p>No final timing block in OUTCAR; WAVECAR may be incomplete.</p>
+<ul class="fixes">
+<li><span class="lbl adv">VASP advice</span> Restart from CONTCAR. Next time, write a STOPCAR before the limit with a Slurm signal (see the <x-sheet slug="slurm-job-script#walltime">Slurm sheet</x-sheet>).</li>
+</ul>
+</article>
+</div>
+</section>
+
+<section class="sheet-sec" id="scf">
+<h2>The SCF will not converge</h2>
+<p>Signs: OSZICAR runs to NELM steps, dE oscillates, rms(c) does not fall. Work down this list, one change at a time.</p>
+<ol class="tight">
+  <li><b>Simplify.</b> Start from a minimal INCAR with fewer k-points and a lower cutoff, and add tags back one at a time until the problem returns. <span class="lbl adv">VASP advice</span></li>
+  <li><b>Smearing.</b> With partly occupied states use ISMEAR = 1 or −1 and a larger SIGMA; a gapped system with ISMEAR &gt; 0 can misbehave. <span class="lbl adv">VASP advice</span></li>
+  <li><b>Bands.</b> Raise NBANDS, especially for f electrons and meta-GGA; the highest bands must be empty. <span class="lbl adv">VASP advice</span></li>
+  <li><b>Algorithm.</b> Try ALGO = All with ISEARCH = 1 (VASP 6.5.1 and later): the recommended choice for magnetic, DFT+U, meta-GGA and hybrid runs. <span class="lbl adv">VASP advice</span></li>
+  <li><b>Delay.</b> A non-self-consistent start (NELMDL, negative) helps surfaces and metal clusters. <span class="lbl adv">VASP advice</span></li>
+  <li><b>Mixing.</b> For slabs, magnetic and insulating systems, nearly linear mixing: <code>AMIX = 0.2 ; BMIX = 0.0001 ; AMIX_MAG = 0.8 ; BMIX_MAG = 0.0001</code> (not exactly 0, which crashes some versions). Metals may need AMIX as small as 0.02. <span class="lbl adv">VASP advice</span></li>
+</ol>
+<div class="two-col">
+<div>
+<h3>Magnetic systems</h3>
+<ul class="tight">
+  <li>Converge a non-magnetic density first, then restart from it with ISPIN = 2 and your MAGMOM (ICHARG = 1).</li>
+  <li>Linear mixing (above), smaller AMIX and AMIX_MAG, a smaller |MAXMIX|.</li>
+  <li>Restart from a partly converged WAVECAR; constrain the moments if needed.</li>
+</ul>
+</div>
+<div>
+<h3>DFT+U magnets, in three runs</h3>
+<ol class="tight">
+  <li>ICHARG = 12 with ALGO = Normal and no U.</li>
+  <li>ALGO = All with TIME = 0.05 (VASP's documentation calls this crucial).</li>
+  <li>Add the U tags. Restart each run from the previous WAVECAR.</li>
+</ol>
+</div>
+</div>
+<p>For r²SCAN, converge with PBE first and start from its WAVECAR, with ALGO = All and LASPH = .TRUE.</p>
+<x-tags names="AMIX BMIX AMIX_MAG BMIX_MAG MAXMIX"></x-tags>
+</section>
+
+<section class="sheet-sec" id="relaxation">
+<h2>The relaxation will not finish</h2>
+<ul class="tight">
+  <li>Follow the largest force and the energy per ionic step (commands on the <x-sheet slug="outcar-oszicar-grep#forces">output sheet</x-sheet>). Steps that go up and down mean the step size or the forces are the problem.</li>
+  <li>Make the forces accurate: tighter EDIFF (1E-6 or below) and NELMIN = 4 to 8. <span class="lbl adv">VASP advice</span></li>
+  <li>Change the optimizer: IBRION = 2 (conjugate gradient) is the robust default far from the minimum; IBRION = 1 is faster close to it but needs accurate forces; IBRION = 3 needs a sensible POTIM. <span class="lbl adv">VASP advice</span></li>
+  <li>For cell relaxations use ENCUT ≥ 1.3 × ENMAX and restart from CONTCAR until the cell stops changing.</li>
+  <li>If the forces jump between steps, halve POTIM. <span class="lbl rule">Rule of thumb</span></li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="moments">
+<h2>The magnetic moment collapses</h2>
+<ul class="tight">
+  <li>Start the moments 1.2–1.5 × above the expected values; the final state depends on the start. <span class="lbl adv">VASP advice</span></li>
+  <li>Keep MAGMOM in the INCAR when restarting from WAVECAR or CHGCAR: without it the magnetization can be symmetrized away. <span class="lbl adv">VASP advice</span></li>
+  <li>An antiferromagnet needs its opposite signs in MAGMOM and a cell that holds both sublattices.</li>
+  <li>Use the magnetic mixing above, or fix the total moment with NUPDOWN to reach a state, then release it.</li>
+  <li>Follow <code>mag=</code> per ionic step: <code>grep -o "mag= *[-0-9.E+]*" OSZICAR</code>.</li>
+</ul>
+</section>

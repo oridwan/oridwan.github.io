@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP Magnetism: MAGMOM, AFM, NUPDOWN, SOC and DFT+U</title>
+  <meta name="description" content="VASP magnetism cheat sheet: ISPIN and MAGMOM, ferro- and antiferromagnets, NUPDOWN, spin-orbit coupling and anisotropy, DFT+U, and a MAGMOM builder.">
+  <meta name="keywords" content="VASP MAGMOM, antiferromagnetic VASP, ISPIN, NUPDOWN, magnetic anisotropy VASP, LSORBIT, SAXIS, DFT+U VASP, LDAUU, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/magnetism-magmom/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP Magnetism: MAGMOM, AFM, NUPDOWN, SOC and DFT+U">
+  <meta property="og:description" content="VASP magnetism cheat sheet: ISPIN and MAGMOM, ferro- and antiferromagnets, NUPDOWN, spin-orbit coupling and anisotropy, DFT+U, and a MAGMOM builder.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/magnetism-magmom/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP Magnetism: MAGMOM, AFM, NUPDOWN, SOC and DFT+U">
+  <meta name="twitter:description" content="VASP magnetism cheat sheet: ISPIN and MAGMOM, ferro- and antiferromagnets, NUPDOWN, spin-orbit coupling and anisotropy, DFT+U, and a MAGMOM builder.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "VASP Magnetism: MAGMOM, AFM, NUPDOWN, SOC and DFT+U",
+  "name": "VASP magnetism cheat sheet",
+  "description": "VASP magnetism cheat sheet: ISPIN and MAGMOM, ferro- and antiferromagnets, NUPDOWN, spin-orbit coupling and anisotropy, DFT+U, and a MAGMOM builder.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/magnetism-magmom/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP MAGMOM, antiferromagnetic VASP, ISPIN, NUPDOWN, magnetic anisotropy VASP, LSORBIT, SAXIS, DFT+U VASP, LDAUU, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “MAGMOM” (starting moments, symmetry, restarts).",
+    "VASP Wiki, “Determining the magnetic anisotropy”.",
+    "VASP Wiki, “Constraining the local magnetic moments”.",
+    "VASP tutorials, “Magnetism” (antiferromagnets, exchange constants, anisotropy, worked step by step).",
+    "M. K. Horton, J. H. Montoya, M. Liu and K. A. Persson, “High-throughput prediction of the ground-state collinear magnetic order of inorganic materials using density functional theory”, npj Comput. Mater. 5, 64 (2019)."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Magnetism",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/magnetism-magmom/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="magnetism-magmom">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>Magnetism</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Applications</p>
+    <h1>VASP magnetism cheat sheet</h1>
+    <p class="sheet-lede">Everything about magnetic VASP runs: setting the starting moments, finding the magnetic ground state, reading the moments, spin–orbit coupling and anisotropy energies, constrained moments and DFT+U, with notes for rare-earth magnets. The builder writes MAGMOM from your POSCAR.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#builder">Build MAGMOM from your POSCAR</a></li>
+        <li><a href="#basics">Spin on, moments set</a></li>
+        <li><a href="#orderings">Finding the magnetic ground state</a></li>
+        <li><a href="#moments">Reading the moments</a></li>
+        <li><a href="#soc">Spin–orbit coupling and magnetic anisotropy</a></li>
+        <li><a href="#constraints">Constrained moments, spirals and exchange constants</a></li>
+        <li><a href="#dftu">DFT+U</a></li>
+        <li><a href="#rare-earths">Rare-earth magnets</a></li>
+        <li><a href="#versions">Version notes</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li><code>ISPIN = 2</code> switches spin polarization on; without it MAGMOM does nothing for the moments.</li>
+  <li>MAGMOM is one value per atom in POSCAR order. Start above the expected moments (1.2–1.5 ×): a high-spin start can relax down to low spin, but not the other way.</li>
+  <li>An antiferromagnet needs opposite signs on its sublattices and a cell that holds them all, often a supercell.</li>
+  <li>MAGMOM also sets the magnetic symmetry: keep it in every restart, or the order can be symmetrized away.</li>
+  <li>Site moments need LORBIT ≥ 10 (<code>LORBIT = 11</code> is the usual choice); they are integrated in spheres and do not add up to the cell moment <code>mag=</code>.</li>
+  <li>Spin–orbit coupling and noncollinear runs use <code>vasp_ncl</code>, three MAGMOM numbers per atom and <code>GGA_COMPAT = .FALSE.</code></li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="builder">
+<h2>Build MAGMOM from your POSCAR</h2>
+<p>Paste a POSCAR, give each species a starting moment, and choose a pattern: ferromagnetic, or antiferromagnetic planes alternating along one lattice vector. Flip any site by hand. The builder writes MAGMOM in the POSCAR order, compressed with <code>N*value</code>.</p>
+<div class="tool" data-tool="magmom">
+  <noscript><p class="callout">The builder needs JavaScript. MAGMOM is one value per atom, in the order of the POSCAR.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="basics">
+<h2>Spin on, moments set</h2>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ispin"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ISPIN" rel="noopener" title="ISPIN on the VASP Wiki"><code>ISPIN</code></a></th><td data-label="What it does">Spin polarization: 1 off, 2 collinear spin-polarized.</td><td data-label="Default">1</td><td data-label="What to use">2 for anything that may be magnetic.</td><td data-label="Watch out">Noncollinear runs ignore it; delete it there.</td></tr>
+<tr id="tag-magmom"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/MAGMOM" rel="noopener" title="MAGMOM on the VASP Wiki"><code>MAGMOM</code></a></th><td data-label="What it does">Starting magnetic moment of each atom in μB, in POSCAR order.</td><td data-label="Default">1.0 per atom for ISPIN = 2; 3 × 1.0 per atom for noncollinear runs</td><td data-label="What to use">Start 1.2–1.5 × the expected moment; give antiferromagnetic sublattices opposite signs; use N*value shorthand, e.g. 4*5.0 4*-5.0.</td><td data-label="Watch out">It also lowers the symmetry. Keep it on restarts, or the magnetization can be symmetrized away. The final state depends on the start.</td></tr>
+<tr id="tag-nupdown"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NUPDOWN" rel="noopener" title="NUPDOWN on the VASP Wiki"><code>NUPDOWN</code></a></th><td data-label="What it does">Fixes the difference between spin-up and spin-down electrons, i.e. the total moment.</td><td data-label="Default">not set (free)</td><td data-label="What to use">Only to impose a total moment, as in fixed-spin-moment scans.</td><td data-label="Watch out">A wrong value forces a wrong moment: leave it unset in normal runs.</td></tr>
+</tbody>
+</table></div>
+<ul class="tight">
+  <li>A new magnetic run (ISTART = 0) drops every symmetry operation that the MAGMOM pattern breaks, so different starting patterns can converge to different states.</li>
+  <li>The default, 1 μB on every atom, is a ferromagnetic start: it will not find an antiferromagnet.</li>
+  <li>Not magnetic is not paramagnetic: ISPIN = 1 removes the local moments altogether. Paramagnets above T<sub>C</sub> are modelled with disordered local moments, for example a magnetic special quasirandom structure.</li>
+  <li>NUPDOWN fixes the total moment (fixed-spin-moment scans of E(M)). With it set, the Fermi energy in OUTCAR belongs to one spin channel only.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="orderings">
+<h2>Finding the magnetic ground state</h2>
+<ol class="tight">
+  <li>Start high-spin ferromagnetic and relax. If every moment ends below about 0.02 μB per site, the material is probably not magnetic in DFT.</li>
+  <li>Enumerate collinear orderings (ferro-, antiferro-, ferrimagnetic) in supercells; pymatgen's MagneticStructureEnumerator does this, keeping the most symmetric candidates.</li>
+  <li>Relax each ordering with the same ENCUT, POTCARs and k-point density, then run a static calculation on a finer mesh.</li>
+  <li>Compare energies per formula unit. Such workflows find a non-ferromagnetic ground state correctly in most cases and the exact experimental ordering in a majority, and are less reliable for rare-earth compounds.</li>
+</ol>
+<figure class="code incar"><figcaption><span class="code-t">Ferromagnetic and antiferromagnetic starts</span></figcaption><pre><code><span class="k">ISPIN</span>  = 2
+<span class="k">MAGMOM</span> = 2*4.0 4*0.0          <span class="c">! ferromagnetic: two magnetic atoms, then four others</span>
+<span class="c"># MAGMOM = 4.0 -4.0 4*0.0     ! antiferromagnetic: opposite signs on the two sublattices</span>
+<span class="k">LORBIT</span> = 11                   <span class="c">! site moments in OUTCAR</span>
+<span class="k">LASPH</span>  = .TRUE.
+<span class="k">LMAXMIX</span> = 4                   <span class="c">! 6 if f electrons are in the valence</span></code></pre></figure>
+<p class="then">An antiferromagnet whose magnetic cell is larger than the crystallographic one needs a supercell: bcc Cr needs the 2-atom cubic cell, rocksalt NiO a rhombohedral cell doubled along [111].</p>
+</section>
+
+<section class="sheet-sec" id="moments">
+<h2>Reading the moments</h2>
+<figure class="code sh"><figcaption><span class="code-t">Moments after a run</span></figcaption><pre><code>grep &quot; F= &quot; OSZICAR | tail -1 | grep -o &quot;mag= *[-0-9.E+]*&quot;  <span class="c"> # total moment of the cell</span>
+grep -A 9 &quot;magnetization (x)&quot; OUTCAR | tail -10            <span class="c"> # site moments, last block: for N atoms use -A N+5 and tail -(N+6)</span></code></pre></figure>
+<ul class="tight">
+  <li>The site table is printed with LORBIT ≥ 10 (or RWIGS). It is labelled “magnetization (x)” even in collinear runs, where moments have no direction.</li>
+  <li>Site moments are spin moments inside spheres; the space between the spheres is missing, so they do not sum to <code>mag=</code>.</li>
+  <li>Spin–orbit runs print the orbital moments separately with <code>LORBMOM = .TRUE.</code>; noncollinear runs add (y) and (z) tables.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="soc">
+<h2>Spin–orbit coupling and magnetic anisotropy</h2>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-lnoncollinear"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LNONCOLLINEAR" rel="noopener" title="LNONCOLLINEAR on the VASP Wiki"><code>LNONCOLLINEAR</code></a></th><td data-label="What it does">Noncollinear magnetism: each moment can point anywhere.</td><td data-label="Default">.FALSE. (.TRUE. if LSORBIT = .TRUE.)</td><td data-label="What to use">Needs vasp_ncl; MAGMOM then takes three numbers per atom.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-lsorbit"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LSORBIT" rel="noopener" title="LSORBIT on the VASP Wiki"><code>LSORBIT</code></a></th><td data-label="What it does">Spin–orbit coupling.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">Magnetic anisotropy and heavy elements. Needs vasp_ncl and switches on LNONCOLLINEAR.</td><td data-label="Watch out">Set LMAXMIX (4 for d, 6 for f elements).</td></tr>
+<tr id="tag-saxis"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SAXIS" rel="noopener" title="SAXIS on the VASP Wiki"><code>SAXIS</code></a></th><td data-label="What it does">Spin quantization axis of noncollinear runs: MAGMOM and the printed moments refer to it.</td><td data-label="Default">0 0 1</td><td data-label="What to use">For anisotropy runs keep MAGMOM along z (0 0 m) and point SAXIS along the direction you test.</td><td data-label="Watch out">With a non-default SAXIS, MAGMOM is given in the rotated (spinor) frame, not in Cartesian x, y, z.</td></tr>
+<tr id="tag-gga-compat"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/GGA_COMPAT" rel="noopener" title="GGA_COMPAT on the VASP Wiki"><code>GGA_COMPAT</code></a></th><td data-label="What it does">.FALSE. restores the full lattice symmetry of the gradient terms of GGA and meta-GGA functionals.</td><td data-label="Default">.TRUE.</td><td data-label="What to use">.FALSE. for magnetic anisotropy and other noncollinear runs, where the small symmetry error matters.</td><td data-label="Watch out">Its effect (about 0.1 meV) is as large as a typical anisotropy energy.</td></tr>
+<tr id="tag-lorbmom"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LORBMOM" rel="noopener" title="LORBMOM on the VASP Wiki"><code>LORBMOM</code></a></th><td data-label="What it does">Write the orbital moments to OUTCAR (spin–orbit runs only).</td><td data-label="Default">.FALSE.</td><td data-label="What to use">.TRUE. with LSORBIT to see the orbital moment of each site.</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+<p>The magnetic anisotropy energy (MAE) is the energy difference between magnetization directions, often micro-eV to meV. The usual route freezes a collinear density and adds spin–orbit coupling for each direction:</p>
+<div class="recipes">
+<figure class="code incar"><figcaption><span class="code-t">MAE step 1: collinear run with vasp_std, writes CHGCAR</span></figcaption><pre><code><span class="k">ISPIN</span>      = 2
+<span class="k">MAGMOM</span>     = 2*3.0
+<span class="k">PREC</span>       = Accurate
+<span class="k">ENCUT</span>      = 520          <span class="c">! keep it for every direction</span>
+<span class="k">LREAL</span>      = .FALSE.
+<span class="k">EDIFF</span>      = 1E-7
+<span class="k">ISYM</span>       = -1           <span class="c">! the same k-point set for every direction</span>
+<span class="k">GGA_COMPAT</span> = .FALSE.
+<span class="k">LASPH</span>      = .TRUE.
+<span class="k">LMAXMIX</span>    = 4            <span class="c">! 6 with f electrons</span>
+<span class="k">ISMEAR</span>     = -5
+<span class="k">LCHARG</span>     = .TRUE.
+<span class="k">LWAVE</span>      = .FALSE.</code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">MAE step 2: one vasp_ncl run per direction, from that CHGCAR</span></figcaption><pre><code><span class="k">ICHARG</span>     = 11           <span class="c">! density fixed from step 1; do not copy WAVECAR</span>
+<span class="k">LSORBIT</span>    = .TRUE.
+<span class="k">MAGMOM</span>     = 0 0 3.0  0 0 3.0   <span class="c">! three numbers per atom, along the spin axis</span>
+<span class="k">SAXIS</span>      = 1 0 0        <span class="c">! the direction tested: 0 0 1, 1 0 0, 1 1 0 ...</span>
+<span class="k">NBANDS</span>     = 64           <span class="c">! twice the collinear NBANDS</span>
+<span class="k">ENCUT</span>      = 520
+<span class="k">ISYM</span>       = -1
+<span class="k">GGA_COMPAT</span> = .FALSE.
+<span class="k">LASPH</span>      = .TRUE.
+<span class="k">LMAXMIX</span>    = 4
+<span class="k">ISMEAR</span>     = -5
+<span class="k">LORBMOM</span>    = .TRUE.
+<span class="k">LORBIT</span>     = 11
+<span class="k">LCHARG</span>     = .FALSE.</code></pre></figure>
+</div>
+<p>The MAE is E(direction) − E(easy axis), from the free energies of the step-2 runs. Converge the MAE itself, not just the total energy, with respect to the k-points; it usually needs far denser meshes than the energy. Where spin–orbit coupling is strong (open 4f shells), compare with self-consistent spin–orbit runs.</p>
+</section>
+
+<section class="sheet-sec" id="constraints">
+<h2>Constrained moments, spirals and exchange constants</h2>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-i-constrained-m"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/I_CONSTRAINED_M" rel="noopener" title="I_CONSTRAINED_M on the VASP Wiki"><code>I_CONSTRAINED_M</code></a></th><td data-label="What it does">Constrain local moments: 1 direction, 2 size and direction, 4 direction and sign (VASP 6.4.0 and later).</td><td data-label="Default">not set</td><td data-label="What to use">Pin moments while scanning directions or stabilizing a state; raise LAMBDA step by step.</td><td data-label="Watch out">Adds a penalty energy E_p to the total energy: check that it is small before using the energy.</td></tr>
+<tr id="tag-lambda"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LAMBDA" rel="noopener" title="LAMBDA on the VASP Wiki"><code>LAMBDA</code></a></th><td data-label="What it does">Weight of the penalty term for constrained moments.</td><td data-label="Default">0</td><td data-label="What to use">Start small and increase it run by run, restarting each time.</td><td data-label="Watch out">Raising it in one jump makes the SCF unstable.</td></tr>
+<tr id="tag-m-constr"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/M_CONSTR" rel="noopener" title="M_CONSTR on the VASP Wiki"><code>M_CONSTR</code></a></th><td data-label="What it does">Target moment direction (or vector) of each atom for constrained runs, three numbers per atom.</td><td data-label="Default">3*NIONS*0.0</td><td data-label="What to use">Set MAGMOM along the same directions, equal or slightly larger.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-rwigs"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/RWIGS" rel="noopener" title="RWIGS on the VASP Wiki"><code>RWIGS</code></a></th><td data-label="What it does">Radius of the sphere around each species (Å) used to integrate local quantities.</td><td data-label="Default">−1 (from the POTCAR when LORBIT ≥ 10)</td><td data-label="What to use">Needed for LORBIT below 10 and for constrained moments.</td><td data-label="Watch out">The spheres do not fill the cell, so local moments do not add up to the total.</td></tr>
+<tr id="tag-lspiral"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LSPIRAL" rel="noopener" title="LSPIRAL on the VASP Wiki"><code>LSPIRAL</code></a></th><td data-label="What it does">Spin spirals with the generalized Bloch theorem.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">With LNONCOLLINEAR = .TRUE., ISYM = −1 and the spiral vector in QSPIRAL.</td><td data-label="Watch out">Cannot be combined with spin–orbit coupling.</td></tr>
+<tr id="tag-qspiral"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/QSPIRAL" rel="noopener" title="QSPIRAL on the VASP Wiki"><code>QSPIRAL</code></a></th><td data-label="What it does">Propagation vector of a spin spiral, in units of the reciprocal lattice vectors.</td><td data-label="Default">0 0 0</td><td data-label="What to use">Scan q to map E(q).</td><td data-label="Watch out">Use the same k-mesh and cutoffs for every q.</td></tr>
+</tbody>
+</table></div>
+<figure class="code incar"><figcaption><span class="code-t">Constrain moment directions (vasp_ncl)</span></figcaption><pre><code><span class="k">LNONCOLLINEAR</span>   = .TRUE.
+<span class="k">ISYM</span>            = 0
+<span class="k">MAGMOM</span>          = 0 0 3  0 0 3
+<span class="k">M_CONSTR</span>        = 0 0 1  0 0 1
+<span class="k">I_CONSTRAINED_M</span> = 1        <span class="c">! constrain the direction</span>
+<span class="k">RWIGS</span>           = 1.0      <span class="c">! one value per species</span>
+<span class="k">LAMBDA</span>          = 1        <span class="c">! then 5, 10, 25 ... restarting each time</span></code></pre></figure>
+<p class="then">The penalty energy (E_p in OSZICAR) must end up small before the energy means anything.</p>
+<p><b>Exchange constants J</b> come from mapping the energies of several orderings onto a Heisenberg model, E = E<sub>0</sub> − Σ J<sub>ij</sub> e<sub>i</sub> · e<sub>j</sub>, and solving (or least-squares fitting) for the J. State the convention you used: unit vectors or spins S, each pair counted once or twice, and which sign means ferromagnetic. Each configuration must be converged in k-points on its own.</p>
+</section>
+
+<section class="sheet-sec" id="dftu">
+<h2>DFT+U</h2>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ldau"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LDAU" rel="noopener" title="LDAU on the VASP Wiki"><code>LDAU</code></a></th><td data-label="What it does">Switch on DFT+U.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">.TRUE. together with the other LDAU tags.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-ldautype"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LDAUTYPE" rel="noopener" title="LDAUTYPE on the VASP Wiki"><code>LDAUTYPE</code></a></th><td data-label="What it does">DFT+U flavour: 1 Liechtenstein (U and J), 2 Dudarev (only U − J matters), 4 like 1 without exchange splitting.</td><td data-label="Default">2</td><td data-label="What to use">2 for most work and for Materials Project compatibility.</td><td data-label="Watch out">Energies computed with different U (or U − J) cannot be compared.</td></tr>
+<tr id="tag-ldaul"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LDAUL" rel="noopener" title="LDAUL on the VASP Wiki"><code>LDAUL</code></a></th><td data-label="What it does">The l quantum number that gets U, one value per species: 2 for d, 3 for f, −1 for none.</td><td data-label="Default">2 for each species</td><td data-label="What to use">e.g. LDAUL = 2 -1 for an Fe oxide (Fe first in POSCAR).</td><td data-label="Watch out">One l per species only.</td></tr>
+<tr id="tag-ldauu"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LDAUU" rel="noopener" title="LDAUU on the VASP Wiki"><code>LDAUU</code></a></th><td data-label="What it does">U in eV, one value per species.</td><td data-label="Default">0 for each species</td><td data-label="What to use">From the literature or linear response; Materials Project uses e.g. Fe 5.3, Mn 3.9, Ni 6.2, Co 3.32 eV in oxides.</td><td data-label="Watch out">The order follows the POSCAR species line.</td></tr>
+<tr id="tag-ldauj"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LDAUJ" rel="noopener" title="LDAUJ on the VASP Wiki"><code>LDAUJ</code></a></th><td data-label="What it does">J in eV, one value per species.</td><td data-label="Default">0 for each species</td><td data-label="What to use">0 with LDAUTYPE = 2, where only U − J enters.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-ldauprint"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LDAUPRINT" rel="noopener" title="LDAUPRINT on the VASP Wiki"><code>LDAUPRINT</code></a></th><td data-label="What it does">How much of the occupation matrices to print.</td><td data-label="Default">0</td><td data-label="What to use">1 to print the on-site occupation matrices and occupancies.</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+<figure class="code incar"><figcaption><span class="code-t">DFT+U on Fe d states (Dudarev), Fe first in POSCAR</span></figcaption><pre><code><span class="k">LDAU</span>      = .TRUE.
+<span class="k">LDAUTYPE</span>  = 2            <span class="c">! only U - J matters</span>
+<span class="k">LDAUL</span>     = 2 -1         <span class="c">! d on Fe, nothing on the second species</span>
+<span class="k">LDAUU</span>     = 5.3 0        <span class="c">! eV, one value per species</span>
+<span class="k">LDAUJ</span>     = 0 0
+<span class="k">LMAXMIX</span>   = 4            <span class="c">! 6 for f states</span>
+<span class="k">LDAUPRINT</span> = 1            <span class="c">! print the occupation matrices</span>
+<span class="k">ISPIN</span>     = 2
+<span class="k">MAGMOM</span>    = 2*5.0 2*0.0</code></pre></figure>
+<ul class="tight">
+  <li>DFT+U has many self-consistent solutions, which can differ by hundreds of meV per atom. Ramping U up gradually, or trying several starts, helps find the lowest.</li>
+  <li>For a hard magnetic DFT+U case, VASP's recipe runs three steps from the previous WAVECAR: ICHARG = 12 with ALGO = Normal and no U; then ALGO = All with TIME = 0.05; then the U tags.</li>
+  <li>Energies with different U values cannot be compared; formation energies mixing +U and plain GGA need a correction scheme.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="rare-earths">
+<h2>Rare-earth magnets</h2>
+<ul class="tight">
+  <li>With f-in-core potentials (<code>Nd_3</code>, <code>Sm_3</code>) the 4f moment and the 4f single-ion anisotropy, the dominant part of the MAE in Nd₂Fe₁₄B or SmCo₅, are absent; the result is essentially the transition-metal part.</li>
+  <li>Studies that need the 4f contribution put the f electrons in the valence (potpaw.64 <code>Nd</code> or <code>Nd_h</code>), add U on the 4f states and spin–orbit coupling, and handle the many metastable 4f occupations explicitly.</li>
+  <li>Use <code>LMAXMIX = 6</code> and <code>LASPH = .TRUE.</code> with valence f electrons. The <a href="../potcar/#rare-earths">POTCAR sheet</a> covers the choice.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="versions">
+<h2>Version notes</h2>
+<div class="tagtable-wrap"><table class="choice versions">
+<thead><tr><th scope="col">VASP</th><th scope="col">Change</th></tr></thead>
+<tbody>
+<tr><th scope="row">6.4.0</th><td>I_CONSTRAINED_M = 4: constrain direction and sign.</td></tr>
+<tr><th scope="row">6.4.3</th><td>Noncollinear site moments (LORBIT = 11) printed every few SCF steps, for every algorithm.</td></tr>
+<tr><th scope="row">6.5</th><td>ISPIN = 2 combined with LNONCOLLINEAR: rejected in 6.5.0, LNONCOLLINEAR takes precedence from 6.5.1. Simply leave ISPIN out of noncollinear runs.</td></tr>
+<tr><th scope="row">6.6.0</th><td>Default NBANDS uses the size of each MAGMOM; more stable noncollinear GGA and meta-GGA runs.</td></tr>
+<tr><th scope="row">6.6.1</th><td>Correct forces for spin-polarized meta-GGA (r²SCAN) runs, wrong in 6.6.0.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>MAGMOM without ISPIN = 2; MAGMOM count or order not matching POSCAR after building a supercell.</li>
+  <li>An antiferromagnet in a cell too small to hold its order.</li>
+  <li>Dropping MAGMOM on a restart or in the DOS run.</li>
+  <li>Reading the “tot” row of the site table as the cell moment.</li>
+  <li>Comparing energies with different U, POTCARs, ENCUT or k-point density.</li>
+  <li>MAE runs with the default GGA_COMPAT, LMAXMIX = 2, symmetry on, a copied WAVECAR, or NBANDS not doubled.</li>
+  <li>Writing MAGMOM in Cartesian x, y, z when SAXIS is not 0 0 1.</li>
+  <li>Expecting a 4f moment or rare-earth anisotropy from <code>_3</code> potentials.</li>
+  <li>Taking the Fermi energy from a NUPDOWN run as the Fermi level of the material.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 23: Spin-polarized DFT and magnetism <span class="muted">(in preparation)</span></li>
+<li>Lecture 24: Spin–orbit coupling and magnetic anisotropy <span class="muted">(in preparation)</span></li>
+<li>Lecture 25: DFT+U and the Hubbard U <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiMAGMOM">VASP Wiki, “MAGMOM” (starting moments, symmetry, restarts). · <a href="https://www.vasp.at/wiki/MAGMOM" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiMAE">VASP Wiki, “Determining the magnetic anisotropy”. · <a href="https://www.vasp.at/wiki/Determining_the_Magnetic_Anisotropy" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiConstrM">VASP Wiki, “Constraining the local magnetic moments”. · <a href="https://www.vasp.at/wiki/Constraining_the_local_magnetic_moments" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPtutMagnetism">VASP tutorials, “Magnetism” (antiferromagnets, exchange constants, anisotropy, worked step by step). · <a href="https://www.vasp.at/tutorials/latest/magnetism/part1/" rel="noopener">www.vasp.at</a></li>
+<li id="ref-Horton2019">M. K. Horton, J. H. Montoya, M. Liu and K. A. Persson, “High-throughput prediction of the ground-state collinear magnetic order of inorganic materials using density functional theory”, npj Comput. Mater. 5, 64 (2019). · <a href="https://doi.org/10.1038/s41524-019-0199-7" rel="noopener">doi.org</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../relaxation-workflow/"><span>Previous sheet</span>Relaxation</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <a class="pn-next" href="../properties/"><span>Next sheet</span>Properties</a>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

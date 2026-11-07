@@ -734,7 +734,51 @@
     <loc>https://oridwan.github.io/symmetry/230/</loc>
   </url>
   <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/aimd-mlff/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/errors-and-fixes/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
     <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/incar-tags/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/kpoints/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/magnetism-magmom/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/neb/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/outcar-oszicar-grep/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/poscar/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/potcar/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/properties/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/relaxation-workflow/</loc>
+    <lastmod>2026-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://oridwan.github.io/dft/vasp-cheat-sheets/slurm-job-script/</loc>
     <lastmod>2026-11-06</lastmod>
   </url>
 </urlset>

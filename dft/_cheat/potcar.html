@@ -1,0 +1,140 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  VASP Wiki raw source (dft/_research/wiki-raw3): Recommended pseudopotentials (current recommendation valid
+  since October 2026: Be_sv, Mg_pv, Fe_pv, Co_pv, Ni_pv, Cu_pv, Eu_3, Yb_3, Re_pv, Os_pv; standard PBE
+  potpaw.64 table with valence and ENMAX, parsed into cheat-tools.js; SHA256 procedure), Preparing a POTCAR
+  (order mismatch is a common mistake, warning only with species names; mix and match families),
+  Choosing pseudopotentials (f-in-core: magnetism fails; use _2/_3 if not interested in 4f magnetism and the
+  valency is known; Eu_3, Yb_3 recommended). Research brief dft/_research/part4-potcar.md (Available
+  pseudopotentials suffix definitions, POTCAR header keywords, METAGGA kinetic-energy check, potpaw.64
+  lanthanide update, forum p=33545 and p=26523, MP docs and pymatgen-core YAML choices).
+  OUTCAR "POTCAR:" lines checked in OUTCARs from VASP 5.2 to 6.3 (each species is listed twice).
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Concatenate one potential per species, in the order of the POSCAR species line. A wrong order is the most common POTCAR mistake, and VASP only warns about it.</li>
+  <li>Start from VASP's recommended potentials (potpaw.64, PBE). Since October 2026 they include <code>Fe_pv</code>, <code>Co_pv</code>, <code>Ni_pv</code>, <code>Cu_pv</code>, <code>Eu_3</code> and <code>Yb_3</code>.</li>
+  <li>The largest ENMAX of your POTCAR is the default <x-tag>ENCUT</x-tag>. Set ENCUT yourself anyway, and keep it the same for every energy you compare.</li>
+  <li>Compare energies only between runs with identical POTCAR files: the same names <em>and</em> the same set.</li>
+  <li>Lanthanide <code>_3</code> potentials put the 4f electrons in the core: no 4f magnetism comes out of them.</li>
+  <li>Never edit or share a POTCAR. Report the TITEL lines instead.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="planner">
+<h2>Plan a POTCAR</h2>
+<p>Type the species line of your POSCAR, and optionally the counts line. The planner looks up VASP's current recommendation for each element (potpaw.64, PBE), with its valence electrons and ENMAX, and writes the command that builds the POTCAR. Type a potential name such as <code>Fe_sv</code> to override an element. Nothing is uploaded, and no POTCAR content is used.</p>
+<div class="tool" data-tool="potcar">
+  <noscript><p class="callout">The planner needs JavaScript. The commands are <a href="#build">below</a>.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="suffixes">
+<h2>What the suffixes mean</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Suffix</th><th scope="col">Meaning</th><th scope="col">When to use it</th></tr></thead>
+<tbody>
+<tr><th scope="row">none</th><td data-label="Meaning">The standard valence, e.g. Ti with 4 electrons (3d² 4s²).</td><td data-label="When to use it">Most p elements, Zn, Pd, Ag, Cd, Ir to Hg.</td></tr>
+<tr><th scope="row"><code>_pv</code></th><td data-label="Meaning">Semicore p states in the valence: Ti_pv has 10 electrons.</td><td data-label="When to use it">Recommended for most 3d and some 4d/5d metals (Cr to Cu, Tc to Rh, Hf, Ta, Re, Os); safer for magnetism and DFT+U.</td></tr>
+<tr><th scope="row"><code>_sv</code></th><td data-label="Meaning">Semicore s and p states in the valence: Ti_sv has 12 electrons.</td><td data-label="When to use it">Recommended for Sc, Ti, V, Y, Zr, Nb, Mo, W and most alkali and alkaline-earth metals (Na and Mg use <code>_pv</code>).</td></tr>
+<tr><th scope="row"><code>_d</code></th><td data-label="Meaning">Semicore d states in the valence: Ge_d has 14 electrons.</td><td data-label="When to use it">Ga, Ge, In, Sn, Tl, Pb, Bi, Po.</td></tr>
+<tr><th scope="row"><code>_s</code></th><td data-label="Meaning">Soft: larger core radius, lower cutoff (O_s about 283 eV against 400 eV for O).</td><td data-label="When to use it">Quick relaxations and large supercells. Not for hybrid functionals or Hartree–Fock.</td></tr>
+<tr><th scope="row"><code>_h</code></th><td data-label="Meaning">Hard: smaller core radius, higher cutoff, more transferable (O_h about 766 eV).</td><td data-label="When to use it">Short bonds and reference accuracy. potpaw.64 adds valence-f <code>_h</code> lanthanides.</td></tr>
+<tr><th scope="row"><code>_GW</code></th><td data-label="Meaning">Accurate scattering far above the Fermi level; combines with others, e.g. <code>_sv_GW</code>.</td><td data-label="When to use it">GW, RPA, BSE, optics: anything with many empty bands.</td></tr>
+<tr><th scope="row"><code>_2</code>, <code>_3</code></th><td data-label="Meaning">Lanthanides only: a fixed valence, with the remaining 4f electrons frozen in the core.</td><td data-label="When to use it">When 4f magnetism does not matter and the valence is known. VASP recommends <code>_3</code> for Pr to Lu, now including Eu and Yb.</td></tr>
+<tr><th scope="row"><code>_AE</code></th><td data-label="Meaning">All-electron and very hard (H, He, Li only).</td><td data-label="When to use it">Properties of the core region.</td></tr>
+<tr><th scope="row"><code>H.5</code>, <code>H1.25</code> …</th><td data-label="Meaning">Hydrogen with fractional valence.</td><td data-label="When to use it">Passivating dangling bonds of a slab; set <x-tag>NELECT</x-tag> yourself.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="sets">
+<h2>Which set</h2>
+<ul class="tight">
+  <li><b>potpaw.64</b> is the latest and recommended set. It updated the lanthanides (Pr to Yb), whose valence-f potentials in older sets were significantly flawed, and added <code>_h</code> versions of them.</li>
+  <li><b>potpaw.54</b> (2015) and <b>potpaw.52</b> (2012): today's downloads give the same results as their original releases; use them only to reproduce older work. Materials Project's r²SCAN data use potpaw.54.</li>
+  <li>The 2010-and-earlier sets are outdated and unsupported, and can misbehave with newer features such as meta-GGA. Materials Project's PBE and PBE+U data use files of this generation, some of which VASP no longer distributes.</li>
+  <li>Use LDA potentials only for LDA calculations. The PBE potentials serve every GGA, meta-GGA and hybrid: choose the functional in the INCAR, never by editing LEXCH in the POTCAR.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="build">
+<h2>Build a POTCAR</h2>
+<pre class="sh" data-title="Concatenate in the order of the POSCAR species line">
+sed -n 6p POSCAR                     # the species line, e.g.  Nd Fe B
+POTDIR=/path/to/potpaw_PBE.64        # your licensed copy
+cat "$POTDIR/Nd_3/POTCAR" "$POTDIR/Fe_pv/POTCAR" "$POTDIR/B/POTCAR" > POTCAR
+</pre>
+<p>Tools such as pymatgen and ASE build the POTCAR for you once told where your licensed potentials are; check what they chose with the commands below.</p>
+</section>
+
+<section class="sheet-sec" id="inspect">
+<h2>Check a POTCAR without printing it</h2>
+<pre class="sh" data-title="Header lines only">
+grep TITEL POTCAR                    # one line per species, in file order: potential name and date
+grep -c "End of Dataset" POTCAR      # number of species
+grep ZVAL POTCAR                     # valence electrons of each species
+grep ENMAX POTCAR                    # recommended cutoff of each species; the largest is the default ENCUT
+grep kinetic POTCAR                  # meta-GGA (r2SCAN): kinetic-energy data per species (H, He, Li_sv, Be_sv print less, but work)
+grep SHA256 POTCAR                   # checksum line in newer files
+grep -v -e COPYR -e MD5 -e SHA256 POTCAR | sha256sum   # single-element file: compare with the VASP Wiki table
+</pre>
+<pre class="sh" data-title="Which potentials a finished run used">
+grep "POTCAR:" OUTCAR | awk '!seen[$0]++'   # OUTCAR lists each potential twice; keep one of each
+</pre>
+</section>
+
+<section class="sheet-sec" id="encut">
+<h2>ENMAX and ENCUT</h2>
+<ul class="tight">
+  <li>Each potential carries ENMAX, its recommended cutoff, and ENMIN, the lowest usable one. VASP's default <x-tag>ENCUT</x-tag> is the largest ENMAX in the POTCAR.</li>
+  <li>That default changes with the elements, so energies of different compounds are not comparable unless you set ENCUT explicitly to one value for all of them.</li>
+  <li>For relaxations that change the cell, use at least 1.3 × the largest ENMAX. Materials Project uses 520 eV for PBE (1.3 × 400 eV) and 680 eV for r²SCAN.</li>
+  <li>A lanthanide <code>_3</code> potential has a low ENMAX, so in a compound the cutoff is usually set by another element: in Nd₂Fe₁₄B it is boron (318.6 eV), not Nd_3 (182.6 eV).</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="rare-earths">
+<h2>Rare earths: f in the core or in the valence</h2>
+<div class="two-col">
+<div>
+<h3>f in the core (<code>Nd_3</code>, <code>Sm_3</code>, <code>Dy_3</code>)</h3>
+<ul class="tight">
+  <li>Stable and cheap: no partly filled 4f shell pinned at the Fermi level.</li>
+  <li>The 4f moment is absent: only the 5d/6s polarization of the rare-earth site and the transition-metal moments are computed, so no 4f moment or 4f single-ion anisotropy can come out.</li>
+  <li>Needs the valence to be known; VASP recommends <code>_3</code> unless 4f magnetism matters.</li>
+</ul>
+</div>
+<div>
+<h3>f in the valence (<code>Nd</code>, <code>Nd_h</code>)</h3>
+<ul class="tight">
+  <li>Use potpaw.64: the older valence-f lanthanides were significantly flawed.</li>
+  <li>Plain DFT pins the 4f states at the Fermi level and overbinds; DFT+U or a similar correction is usually needed.</li>
+  <li>Set <code>LMAXMIX = 6</code> and <code>LASPH = .TRUE.</code>, and expect a higher cutoff (Nd 338 eV, Nd_h 402 eV).</li>
+</ul>
+</div>
+</div>
+<p>Materials Project uses <code>_3</code> for most lanthanides in its PBE and r²SCAN data and <code>_h</code> in its newest sets; its PBE Gd file is no longer distributed, so rare-earth energies are comparable with their hull only if you hold the identical files.</p>
+</section>
+
+<section class="sheet-sec" id="report">
+<h2>What to report</h2>
+<p>In a methods section give the set (e.g. PBE potpaw.64), the TITEL line of every potential (name and date), the valence electrons and the ENCUT. The TITEL identifies the file without sharing it. POTCAR files are licensed: never post them in a repository or supplementary information.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>POTCAR order different from the POSCAR species order (VASP warns only if POSCAR has the species line).</li>
+  <li>Relying on the default ENCUT, which moves with the composition.</li>
+  <li>Comparing energies made with different files, including the same name from a different set or date.</li>
+  <li>Expecting 4f magnetism from <code>_3</code> or <code>_2</code> potentials; using <code>Eu_2</code> or <code>Yb_2</code> for trivalent compounds.</li>
+  <li>Meta-GGA with old (2010 and earlier) potentials or with <code>O_GW</code>, which lack kinetic-energy data.</li>
+  <li>Editing LEXCH to “make” a PBEsol or SCAN potential instead of setting the functional in the INCAR.</li>
+  <li>Soft <code>_s</code> potentials with hybrids; LDA potentials with GGA.</li>
+  <li>Leaving out semicore states in magnetic transition-metal work: they change lattice constants, moments and energy differences.</li>
+  <li>Fractional hydrogen without setting NELECT.</li>
+</ul>
+</section>

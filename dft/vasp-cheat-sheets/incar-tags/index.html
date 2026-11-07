@@ -178,7 +178,7 @@
 <section class="sheet-sec" id="builder">
 <h2>Build or check an INCAR</h2>
 <p>Choose the task and describe the system, and the builder writes a commented INCAR from the rules on this sheet. Paste an INCAR you already have into the checker to catch the common traps. Both run in your browser; nothing is uploaded.</p>
-<div class="tool" data-tool="incar-builder" data-known="ADDGRID AEXX ALGO AMIX AMIX_MAG BMIX BMIX_MAG EDIFF EDIFFG EFERMI ENCUT GGA HFRCUT HFSCREEN IBRION ICHARG INIWAV ISEARCH ISIF ISMEAR ISPIN ISTART ISYM KGAMMA KPAR KSPACING LASPH LCHARG LHFCALC LMAXMIX LMIXTAU LNONCOLLINEAR LORBIT LREAL LSORBIT LWAVE MAGMOM MAXMIX METAGGA NBANDS NCORE NEDOS NELECT NELM NELMDL NELMIN NPAR NSIM NSW NUPDOWN POTIM PREC PSTRESS SIGMA SYMPREC SYSTEM TIME">
+<div class="tool" data-tool="incar-builder" data-known="ADDGRID AEXX ALGO AMIX AMIX_MAG ANDERSEN_PROB BANDGAP BMIX BMIX_MAG CSHIFT CSVR_PERIOD DIPOL EDIFF EDIFFG EFERMI EFIELD_PEAD EINT EMAX EMIN ENCUT ENINI GGA GGA_COMPAT HFRCUT HFSCREEN IBAND IBRION ICHAIN ICHARG ICORELEVEL IDIPOL IMAGES INIWAV IOPT ISEARCH ISIF ISMEAR ISPIN ISTART ISYM IVDW I_CONSTRAINED_M KBLOCK KGAMMA KPAR KPOINTS_OPT_MODE KPOINTS_OPT_NKBATCH KSPACING KSPACING_OPT LAECHG LAMBDA LANGEVIN_GAMMA LANGEVIN_GAMMA_L LASPH LATTICE_CONSTRAINTS LCALCEPS LCALCPOL LCHARG LCHIMAG LCLIMB LDAU LDAUJ LDAUL LDAUPRINT LDAUTYPE LDAUU LDIPOL LEFG LELF LEPSILON LHFCALC LHYPERFINE LKPOINTS_OPT LMAXMIX LMIXTAU LNEBCELL LNONCOLLINEAR LOPTICS LORBIT LORBMOM LPARD LPHON_DISPERSION LREAL LRPA LSORBIT LSPIRAL LVACPOTAV LVHAR LVTOT LWAVE LZEROZ MAGMOM MAXMIX MDALGO METAGGA ML_CTIFOR ML_LMLFF ML_MODE ML_OUTBLOCK ML_WTSIF M_CONSTR NBANDS NBLOCK NBMOD NCORE NEDOS NELECT NELM NELMDL NELMIN NFREE NHC_NCHAINS NHC_PERIOD NPAR NSIM NSW NUPDOWN PMASS POMASS POTIM PREC PSTRESS QSPIRAL RANDOM_SEED RWIGS SAXIS SIGMA SMASS SPRING SYMPREC SYSTEM TEBEG TEEND TIME VELOCITY">
   <noscript><p class="callout">The builder needs JavaScript. The <a href="#recipes">recipes</a> below give the same INCARs.</p></noscript>
 </div>
 </section>
@@ -299,7 +299,7 @@ grep E-fermi OUTCAR | tail -1         <span class="c"> # Fermi energy of the las
 <span class="k">NSW</span>     = 0
 <span class="k">LMAXMIX</span> = 4
 <span class="k">LCHARG</span>  = .FALSE. ; <span class="k">LWAVE</span> = .FALSE.</code></pre></figure>
-<p class="then">KPOINTS holds the high-symmetry path in line mode; the <span class="lec-ref" title="VASP KPOINTS cheat sheet (in preparation)">KPOINTS sheet</span> covers the format.</p>
+<p class="then">KPOINTS holds the high-symmetry path in line mode; the <a href="../kpoints/">KPOINTS sheet</a> covers the format.</p>
 
 <figure class="code incar"><figcaption><span class="code-t">Spin-polarized: ferromagnet and antiferromagnet</span></figcaption><pre><code><span class="k">ISPIN</span>  = 2
 <span class="k">MAGMOM</span> = 2*3.0              <span class="c">! ferromagnet: one value per atom, in POSCAR order</span>
@@ -307,14 +307,14 @@ grep E-fermi OUTCAR | tail -1         <span class="c"> # Fermi energy of the las
 <span class="k">LORBIT</span> = 11                 <span class="c">! moment of each site in OUTCAR</span>
 <span class="k">LASPH</span>  = .TRUE.
 <span class="k">LMAXMIX</span> = 4</code></pre></figure>
-<p class="then">Add these lines to any recipe above. Start the moments 1.2–1.5 × above the expected values; an antiferromagnet needs a cell that holds both sublattices, often a supercell. The <span class="lec-ref" title="VASP magnetism cheat sheet (in preparation)">magnetism sheet</span> goes further.</p>
+<p class="then">Add these lines to any recipe above. Start the moments 1.2–1.5 × above the expected values; an antiferromagnet needs a cell that holds both sublattices, often a supercell. The <a href="../magnetism-magmom/">magnetism sheet</a> goes further.</p>
 
 <figure class="code incar"><figcaption><span class="code-t">r2SCAN meta-GGA</span></figcaption><pre><code><span class="k">METAGGA</span> = R2SCAN      <span class="c">! VASP 6.2.0 or later; avoid 6.6.0 for spin-polarized forces</span>
 <span class="k">LASPH</span>   = .TRUE.
 <span class="k">ALGO</span>    = All
 <span class="k">ISEARCH</span> = 1           <span class="c">! VASP 6.5.1 or later; delete it on older versions</span>
 <span class="k">EDIFF</span>   = 1E-6</code></pre></figure>
-<p class="then">Add to a recipe above, with a converged ENCUT (Materials Project uses 680 eV for r²SCAN). Check that every POTCAR has kinetic-energy data: <code>grep kinetic POTCAR</code>. If the SCF struggles, start from a PBE WAVECAR; with <code>ALGO = Normal</code>, <code>LMIXTAU = .TRUE.</code> can help. Band structures and DOS with a meta-GGA follow the hybrid procedure below, not ICHARG = 11.</p>
+<p class="then">Add to a recipe above, with a converged ENCUT (Materials Project uses 680 eV for r²SCAN). Check that every POTCAR has kinetic-energy data: <code>grep kinetic POTCAR</code>. If the SCF struggles, start from a PBE WAVECAR; with <code>ALGO = Normal</code>, <code>LMIXTAU = .TRUE.</code> can help. Before VASP 6.6.0, band structures and DOS with a meta-GGA must follow the hybrid procedure below instead of ICHARG = 11; KPOINTS_OPT works on every version from 6.3.0.</p>
 
 <figure class="code incar"><figcaption><span class="code-t">HSE06 hybrid, static run</span></figcaption><pre><code><span class="k">LHFCALC</span>  = .TRUE.
 <span class="k">HFSCREEN</span> = 0.2        <span class="c">! HSE06; the exact-exchange fraction AEXX is 0.25 by default</span>
@@ -327,7 +327,7 @@ grep E-fermi OUTCAR | tail -1         <span class="c"> # Fermi energy of the las
 <span class="k">LASPH</span>    = .TRUE.
 <span class="k">NSW</span>      = 0 ; <span class="k">IBRION</span> = -1
 <span class="k">LWAVE</span>    = .TRUE.     <span class="c">! hybrids are expensive: keep WAVECAR for restarts</span></code></pre></figure>
-<p class="then">Start from a converged PBE WAVECAR. Never use ICHARG = 11 with hybrids: for a band structure, put the path in a KPOINTS_OPT file (VASP 6.3.0 and later) or as zero-weight k-points, and set <code>HFRCUT = -1</code>. To relax the cell with a hybrid, set ISIF explicitly: its default is 0, which moves the atoms but computes no stress.</p>
+<p class="then">Start from a converged PBE WAVECAR. Never use ICHARG = 11 with hybrids: for a band structure, put the path in a KPOINTS_OPT file (VASP 6.3.0 and later) or as zero-weight k-points, and for gapped systems set <code>HFRCUT = -1</code>. To relax the cell with a hybrid, set ISIF explicitly: its default is 0, which moves the atoms but computes no stress.</p>
 </div>
 </section>
 
@@ -383,7 +383,7 @@ grep E-fermi OUTCAR | tail -1         <span class="c"> # Fermi energy of the las
 </table></div>
 
 <h3 id="g-mixing">Density mixing, for SCF trouble</h3>
-<p>Touch these only when the SCF will not converge. For a stubborn magnetic system, VASP's own advice is to converge a non-magnetic density first and restart from it, to switch to nearly linear mixing with <code>BMIX = 0.0001 ; BMIX_MAG = 0.0001</code>, and to lower AMIX and AMIX_MAG. The <span class="lec-ref" title="VASP errors and fixes (in preparation)">errors sheet</span> covers this in detail.</p>
+<p>Touch these only when the SCF will not converge. For a stubborn magnetic system, VASP's own advice is to converge a non-magnetic density first and restart from it, to switch to nearly linear mixing with <code>BMIX = 0.0001 ; BMIX_MAG = 0.0001</code>, and to lower AMIX and AMIX_MAG. The <a href="../errors-and-fixes/">errors sheet</a> covers this in detail.</p>
 <div class="tagtable-wrap"><table class="tagtable">
 <thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
 <tbody>
@@ -541,7 +541,7 @@ grep -E 'name=&quot;(ENCUT|ENMAX|ISMEAR|SIGMA|EDIFFG)&quot;' vasprun.xml</code><
   <nav class="sheet-pn" aria-label="Other cheat sheets">
     <span></span>
     <a class="pn-hub" href="../">All VASP cheat sheets</a>
-    <span></span>
+    <a class="pn-next" href="../kpoints/"><span>Next sheet</span>KPOINTS</a>
   </nav>
 </main>
 

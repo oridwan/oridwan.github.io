@@ -289,3 +289,355 @@ export function allBuilderCombos() {
     combos = combos.flatMap(c => BUILDER_OPTIONS[k].map(([v]) => ({ ...c, [k]: v })));
   return combos;
 }
+
+/* ---------------- POSCAR ---------------- */
+
+const det3 = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+const norm = v => Math.hypot(v[0], v[1], v[2]);
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const isNum = w => /^[-+]?(\d+\.?\d*|\.\d+)([eEdD][-+]?\d+)?$/.test(w);
+const deg = r => (r * 180) / Math.PI;
+
+/** Reciprocal vectors without the 2π factor (b_i · a_j = δ_ij), as VASP defines them for KSPACING. */
+export function reciprocal(lat) {
+  const V = det3(lat);
+  return [cross(lat[1], lat[2]), cross(lat[2], lat[0]), cross(lat[0], lat[1])].map(v => v.map(x => x / V));
+}
+
+/** Lattice lengths (Å) and angles (degrees): a, b, c, alpha (b,c), beta (a,c), gamma (a,b). */
+export function cellParams(lat) {
+  const [a, b, c] = lat.map(norm);
+  const ang = (u, v) => deg(Math.acos(Math.max(-1, Math.min(1, dot(u, v) / (norm(u) * norm(v))))));
+  return { a, b, c, alpha: ang(lat[1], lat[2]), beta: ang(lat[0], lat[2]), gamma: ang(lat[0], lat[1]) };
+}
+
+/** Guess the lattice type from the cell shape alone (no symmetry analysis), for the k-mesh advice. */
+export function cellShape(lat) {
+  const p = cellParams(lat);
+  const eq = (x, y, t = 1e-3) => Math.abs(x - y) <= t * Math.max(1, Math.abs(y));
+  const ang = (x, y) => Math.abs(x - y) < 0.05;
+  const abc = eq(p.a, p.b) && eq(p.b, p.c);
+  if (abc && ang(p.alpha, 60) && ang(p.beta, 60) && ang(p.gamma, 60)) return 'fcc';
+  if (abc && [p.alpha, p.beta, p.gamma].every(x => ang(x, 109.4712))) return 'bcc';
+  if (abc && [p.alpha, p.beta, p.gamma].every(x => ang(x, 90))) return 'cubic';
+  if (eq(p.a, p.b) && ang(p.alpha, 90) && ang(p.beta, 90) && (ang(p.gamma, 120) || ang(p.gamma, 60))) return 'hexagonal';
+  if (abc && ang(p.alpha, p.beta) && ang(p.beta, p.gamma)) return 'rhombohedral';
+  if ([p.alpha, p.beta, p.gamma].every(x => ang(x, 90))) return eq(p.a, p.b) || eq(p.b, p.c) || eq(p.a, p.c) ? 'tetragonal' : 'orthorhombic';
+  return 'other';
+}
+
+/** Parse a POSCAR (VASP 5+ or VASP 4 format). Returns the cell in Å, fractional positions and
+ *  {errors, warnings}. Follows the format rules on the VASP Wiki POSCAR page. */
+export function parsePoscar(text) {
+  const errors = [], warnings = [];
+  const lines = String(text).replace(/\r/g, '').split('\n');
+  while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+  const out = { errors, warnings };
+  const words = i => (lines[i] ?? '').trim().split(/\s+/).filter(Boolean);
+  const nums = (i, n, what) => {
+    const w = words(i).slice(0, n);
+    if (w.length < n || !w.every(isNum)) { errors.push(`Line ${i + 1} should hold ${n} numbers (${what}).`); return null; }
+    return w.map(num);
+  };
+  if (lines.length < 8) { errors.push('Too short: a POSCAR needs a comment, a scale, three lattice vectors, the counts, a coordinate line and the positions.'); return out; }
+  out.comment = lines[0];
+  // scaling factor(s)
+  const sw = words(1).filter(isNum).map(num);
+  if (sw.length !== 1 && sw.length !== 3) { errors.push('Line 2 must hold one scaling factor or three (x, y, z).'); return out; }
+  if (sw.length === 3 && sw.some(x => !(x > 0))) errors.push('With three scaling factors, all three must be positive.');
+  if (sw.length === 1 && sw[0] === 0) errors.push('The scaling factor cannot be 0.');
+  const raw = [2, 3, 4].map(i => nums(i, 3, `lattice vector a${i - 1}`));
+  if (raw.includes(null) || errors.length) return out;
+  let lat;
+  if (sw.length === 3) lat = raw.map(v => v.map((x, k) => x * sw[k]));
+  else if (sw[0] < 0) {
+    const V0 = Math.abs(det3(raw));
+    const s = Math.cbrt(-sw[0] / V0);
+    lat = raw.map(v => v.map(x => x * s));
+    out.scaleFromVolume = s;
+  } else lat = raw.map(v => v.map(x => x * sw[0]));
+  out.lattice = lat;
+  const V = det3(lat);
+  if (Math.abs(V) < 1e-8) { errors.push('The three lattice vectors are linearly dependent (zero volume).'); return out; }
+  if (V < 0) warnings.push('The lattice vectors form a left-handed set (negative triple product). Swap two of them, and swap the matching columns of the fractional coordinates (and selective-dynamics flags) so the atoms stay put.');
+  out.volume = Math.abs(V);
+  // species line (VASP 5+) or counts directly (VASP 4)
+  let i = 5;
+  const w5 = words(5);
+  if (w5.length && w5.every(w => /^\d+$/.test(w))) { out.species = null; warnings.push('No species line (VASP 4 format): VASP takes the species from POTCAR, but most tools need the names. Add a line with the element symbols above the counts.'); }
+  else {
+    out.species = w5;
+    i = 6;
+    const long = w5.filter(s => s.length > 2);
+    if (long.length) warnings.push(`VASP keeps only the first 2 characters of species names: ${long.join(', ')}. The species themselves come from POTCAR, in the order of this line.`);
+  }
+  const cw = words(i);
+  if (!cw.length || !cw.every(w => /^\d+$/.test(w))) { errors.push(`Line ${i + 1} should hold the number of atoms of each species (whole numbers).`); return out; }
+  out.counts = cw.map(Number);
+  if (out.species && out.species.length !== out.counts.length) errors.push(`${out.species.length} species names but ${out.counts.length} counts.`);
+  out.natoms = out.counts.reduce((a, b) => a + b, 0);
+  i++;
+  out.selective = /^[sS]/.test((lines[i] ?? '').trim());
+  if (out.selective) i++;
+  const mode = (lines[i] ?? '').trim();
+  out.cartesian = /^[cCkK]/.test(mode);
+  i++;
+  const inv = reciprocal(lat); // rows b_i: fractional = b_i · r
+  out.positions = []; out.flags = [];
+  let few = false;
+  for (let n = 0; n < out.natoms; n++, i++) {
+    const w = words(i);
+    if (w.length < 3 || !w.slice(0, 3).every(isNum)) { errors.push(`Expected ${out.natoms} position lines; line ${i + 1} is not a position.`); return out; }
+    let r = w.slice(0, 3).map(num);
+    if (out.cartesian) {
+      r = sw.length === 3 ? r.map((x, k) => x * sw[k]) : r.map(x => x * (out.scaleFromVolume ?? sw[0]));
+      r = inv.map(b => dot(b, r));
+    }
+    out.positions.push(r);
+    if (out.selective) {
+      const f = w.slice(3, 6);
+      if (f.length < 3 || !f.every(x => /^[TF]$/i.test(x))) errors.push(`Line ${i + 1}: selective dynamics needs three T/F flags after the coordinates.`);
+      out.flags.push(f.map(x => /^t/i.test(x)));
+    }
+    if (!out.cartesian && w.slice(0, 3).some(x => { const v = num(x); return [3, 6, 12].some(d => { const e = Math.abs(v * d - Math.round(v * d)); return e > 5e-7 && e < 2e-3; }); })) few = true;
+  }
+  if (few) warnings.push('Some fractional coordinates look like thirds, sixths or twelfths written with too few digits (e.g. 0.3333). Write at least 7 significant digits, or VASP may find a lower symmetry.');
+  // shortest interatomic distance, including periodic images
+  if (out.natoms <= 400) {
+    let best = Infinity, pair = null;
+    const cart = f => [0, 1, 2].map(k => f[0] * lat[0][k] + f[1] * lat[1][k] + f[2] * lat[2][k]);
+    for (let a = 0; a < out.natoms; a++) for (let b = a; b < out.natoms; b++) {
+      const d0 = out.positions[b].map((x, k) => x - out.positions[a][k]);
+      for (let x = -1; x <= 1; x++) for (let y = -1; y <= 1; y++) for (let z = -1; z <= 1; z++) {
+        if (a === b && !x && !y && !z) continue;
+        const d = norm(cart([d0[0] - Math.round(d0[0]) + x, d0[1] - Math.round(d0[1]) + y, d0[2] - Math.round(d0[2]) + z]));
+        if (d < best) { best = d; pair = [a + 1, b + 1]; }
+      }
+    }
+    out.minDist = best; out.minPair = pair;
+    if (best < 0.5) warnings.push(`Atoms ${pair[0]} and ${pair[1]} are only ${best.toFixed(3)} Å apart (including periodic images): check the positions and the Direct/Cartesian line.`);
+  }
+  out.params = cellParams(lat);
+  out.shape = cellShape(lat);
+  // the species of each site, in order
+  out.sites = [];
+  (out.counts || []).forEach((c, k) => { for (let j = 0; j < c; j++) out.sites.push(out.species ? out.species[k] : `type ${k + 1}`); });
+  return out;
+}
+
+/* ---------------- k-point meshes ---------------- */
+
+/** N_i = max(1, ceiling(|b_i| · 2π / KSPACING)), the VASP rule when KSPACING replaces KPOINTS. */
+export function meshFromKspacing(lat, kspacing) {
+  return reciprocal(lat).map(b => Math.max(1, Math.ceil(norm(b) * 2 * Math.PI / kspacing - 1e-9)));
+}
+/** N_i = int(max(1, R_k · |b_i| + 0.5)), the rule of the deprecated fully automatic KPOINTS mode. */
+export function meshFromLength(lat, Rk) {
+  return reciprocal(lat).map(b => Math.floor(Math.max(1, Rk * norm(b) + 0.5)));
+}
+/** The advice for a mesh on a cell of the given shape (VASP Wiki, KPOINTS: symmetry of the mesh). */
+export function meshAdvice(shape, N, gamma) {
+  const notes = [];
+  if (['fcc', 'hexagonal', 'rhombohedral'].includes(shape) && !gamma)
+    notes.push(`This cell looks ${shape}: use a Γ-centred mesh${shape === 'hexagonal' ? ' (Monkhorst–Pack with an even number of in-plane subdivisions breaks the hexagonal symmetry)' : ''}.`);
+  if (!gamma && N.some(n => n % 2 === 0)) notes.push('Monkhorst–Pack with even subdivisions does not contain Γ; with odd subdivisions it is identical to the Γ-centred mesh.');
+  if (shape === 'other') notes.push('The cell shape does not match a standard setting; the Γ-centred mesh is the safe choice.');
+  return notes;
+}
+export function kpointsText(N, gamma, comment = 'Regular k-point mesh') {
+  return `${comment}\n0\n${gamma ? 'Gamma' : 'Monkhorst-Pack'}\n${N.join(' ')}\n0 0 0\n`;
+}
+
+/** A light check of a KPOINTS file: the mode from line 3 and the lines it needs. Returns {mode, errors}. */
+export function parseKpoints(text) {
+  const L = String(text).replace(/\r/g, '').split('\n').map(l => l.replace(/[!#].*$/, '').trim());
+  while (L.length && !L[L.length - 1]) L.pop();
+  const errors = [];
+  const n = parseInt(L[1], 10);
+  if (!/^\s*-?\d+/.test(L[1] ?? '')) errors.push('Line 2 must be a whole number: 0 for an automatic mesh, the number of k-points for a list, or points per segment for line mode.');
+  const c = (L[2] || ' ')[0];
+  const words = i => (L[i] || '').split(/\s+/).filter(Boolean);
+  let mode;
+  if (/[lL]/.test(c)) {
+    mode = 'line';
+    if (!(n > 0)) errors.push('Line mode: line 2 is the number of points per segment and must be positive.');
+    const pts = L.slice(4).filter(Boolean);
+    if (pts.length < 2 || pts.length % 2) errors.push('Line mode needs pairs of points (start and end of each segment).');
+    if (pts.some(l => words(L.indexOf(l)).slice(0, 3).filter(isNum).length < 3)) errors.push('Each line-mode point needs three coordinates.');
+  } else if (n === 0 && /[gGmM]/.test(c)) {
+    mode = /[gG]/.test(c) ? 'gamma' : 'monkhorst-pack';
+    const N = words(3);
+    if (N.length < 3 || !N.slice(0, 3).every(w => /^\d+$/.test(w) && +w > 0)) errors.push('Line 4 must hold three positive whole numbers, the subdivisions N1 N2 N3.');
+    if (L[4] && words(4).slice(0, 3).filter(isNum).length < 3) errors.push('The optional shift on line 5 needs three numbers.');
+  } else if (n === 0 && /[aA]/.test(c)) {
+    mode = 'auto';
+    if (!isNum(words(3)[0] || '')) errors.push('Fully automatic mode: line 4 holds the length R_k.');
+  } else if (n === 0) {
+    mode = 'generalized';
+    for (const i of [3, 4, 5]) if (words(i).slice(0, 3).filter(isNum).length < 3) errors.push(`Line ${i + 1} must hold a generating vector (three numbers).`);
+  } else if (n > 0) {
+    mode = 'list';
+    for (let i = 3; i < 3 + n; i++) if (words(i).slice(0, 4).filter(isNum).length < 4) { errors.push(`Line ${i + 1}: an explicit k-point needs three coordinates and a weight.`); break; }
+  }
+  return { mode, errors };
+}
+
+
+/* ---------------- POTCAR ---------------- */
+
+/** VASP's recommended potentials for standard DFT, potpaw.64 PBE ("valid since October 2026"):
+ *  element -> [potential, valence electrons (ZVAL), ENMAX in eV]. Public table on the VASP Wiki page
+ *  "Recommended pseudopotentials"; names and numbers only, no POTCAR content. */
+export const RECOMMENDED_PBE64 = {H:["H",1,250],He:["He",2,478.896],Li:["Li_sv",3,499.034],Be:["Be_sv",4,308.768],B:["B",3,318.614],C:["C",4,400],N:["N",5,400],O:["O",6,400],F:["F",7,400],Ne:["Ne",8,343.606],Na:["Na_pv",7,259.561],Mg:["Mg_pv",8,403.929],Al:["Al",3,240.3],Si:["Si",4,245.345],P:["P",5,255.04],S:["S",6,258.689],Cl:["Cl",7,262.472],Ar:["Ar",8,266.408],K:["K_sv",9,259.264],Ca:["Ca_sv",10,266.622],Sc:["Sc_sv",11,222.66],Ti:["Ti_sv",12,274.61],V:["V_sv",13,263.673],Cr:["Cr_pv",12,265.681],Mn:["Mn_pv",13,269.864],Fe:["Fe_pv",14,293.238],Co:["Co_pv",15,271.042],Ni:["Ni_pv",16,367.986],Cu:["Cu_pv",17,368.648],Zn:["Zn",12,276.723],Ga:["Ga_d",13,282.691],Ge:["Ge_d",14,310.294],As:["As",5,208.702],Se:["Se",6,211.555],Br:["Br",7,216.285],Kr:["Kr",8,185.331],Rb:["Rb_sv",9,220.112],Sr:["Sr_sv",10,229.353],Y:["Y_sv",11,202.626],Zr:["Zr_sv",12,229.898],Nb:["Nb_sv",13,293.235],Mo:["Mo_sv",14,242.676],Tc:["Tc_pv",13,263.523],Ru:["Ru_pv",14,240.049],Rh:["Rh_pv",15,247.408],Pd:["Pd",10,250.925],Ag:["Ag",11,249.844],Cd:["Cd",12,274.336],In:["In_d",13,239.211],Sn:["Sn_d",14,241.083],Sb:["Sb",5,172.069],Te:["Te",6,174.982],I:["I",7,175.647],Xe:["Xe",8,153.118],Cs:["Cs_sv",9,220.318],Ba:["Ba_sv",10,187.181],La:["La",11,219.292],Ce:["Ce",12,273.042],Pr:["Pr_3",11,181.719],Nd:["Nd_3",11,182.619],Pm:["Pm_3",11,176.959],Sm:["Sm_3",11,177.087],Eu:["Eu_3",9,129.057],Gd:["Gd_3",9,154.332],Tb:["Tb_3",9,155.613],Dy:["Dy_3",9,155.713],Ho:["Ho_3",9,154.137],Er:["Er_3",9,155.037],Tm:["Tm_3",9,149.221],Yb:["Yb_3",9,188.359],Lu:["Lu_3",9,154.992],Hf:["Hf_pv",10,220.334],Ta:["Ta_pv",11,223.667],W:["W_sv",14,223.057],Re:["Re_pv",13,226.216],Os:["Os_pv",14,228.022],Ir:["Ir",9,210.864],Pt:["Pt",10,230.283],Au:["Au",11,229.943],Hg:["Hg",12,233.204],Tl:["Tl_d",13,237.053],Pb:["Pb_d",14,237.835],Bi:["Bi_d",15,242.839],Po:["Po_d",16,264.565],At:["At",7,161.43],Rn:["Rn",8,151.497],Fr:["Fr_sv",9,214.54],Ra:["Ra_sv",10,237.367],Ac:["Ac",11,172.351],Th:["Th",12,247.306],Pa:["Pa",13,252.193],U:["U",14,252.502],Np:["Np",15,254.26],Pu:["Pu",16,254.353],Am:["Am",17,255.875],Cm:["Cm",18,257.953]};
+
+/** Plan a POTCAR from a species line ("Fe O" or "Fe_pv O_s") and optional counts ("2 3").
+ *  Returns rows, the default and suggested ENCUT, NELECT for a neutral cell and the shell commands. */
+export function potcarPlan(speciesText, countsText = '') {
+  const tokens = String(speciesText).trim().split(/\s+/).filter(Boolean);
+  const counts = String(countsText).trim().split(/\s+/).filter(Boolean).map(Number);
+  const rows = tokens.map(tok => {
+    const el = tok.split(/[_.]/)[0].replace(/\d+$/, '');
+    const rec = RECOMMENDED_PBE64[el];
+    if (!rec) return { tok, el, pot: tok, known: false, note: `${el} is not an element symbol in the recommended table.` };
+    const pot = tok === el || /^[A-Z][a-z]?\d+$/.test(tok) ? rec[0] : tok;   // POSCAR labels like Fe1 mean the element
+    const same = pot === rec[0];
+    return { tok, el, pot, recommended: rec[0], zval: same ? rec[1] : null, enmax: same ? rec[2] : null, known: true,
+      note: same ? '' : `Not VASP's current recommendation for ${el} (${rec[0]}); check its ZVAL and ENMAX with grep.` };
+  });
+  const enmaxes = rows.map(r => r.enmax).filter(x => x != null);
+  const allKnown = rows.length && rows.every(r => r.enmax != null);
+  const maxEnmax = allKnown ? Math.max(...enmaxes) : null;
+  const nelect = allKnown && counts.length === rows.length && counts.every(n => n >= 0) ? rows.reduce((s, r, i) => s + r.zval * counts[i], 0) : null;
+  const cat = 'cat ' + rows.map(r => `"$POTDIR/${r.pot}/POTCAR"`).join(' ') + ' > POTCAR';
+  return { rows, maxEnmax, encut13: maxEnmax ? Math.ceil(1.3 * maxEnmax / 10) * 10 : null, nelect, cat };
+}
+
+
+/* ---------------- Slurm job scripts ---------------- */
+
+const divisors = n => { const d = []; for (let i = 1; i <= n; i++) if (n % i === 0) d.push(i); return d; };
+
+/** Suggest KPAR and NCORE for a layout, following the VASP Wiki parallelization advice:
+ *  KPAR divides the ranks and is at most the number of irreducible k-points; NCORE is a divisor of the
+ *  ranks per node close to sqrt(ranks per k-point group); GPUs and OpenMP force NCORE = 1. */
+export function parallelTags({ nodes, ranksPerNode, threads = 1, gpusPerNode = 0, kpts }) {
+  const total = nodes * ranksPerNode;
+  const notes = [];
+  let kpar = 1;
+  if (kpts > 0) kpar = Math.max(...divisors(total).filter(d => kpts % d === 0));   // divides both the ranks and the k-points
+  const perGroup = total / kpar;
+  let ncore = null, nsim = null;
+  if (gpusPerNode > 0) {
+    nsim = 32;
+    notes.push('GPU runs force NCORE = 1, so it is not set. NSIM much larger than the default 4 helps on GPUs: benchmark values between 8 and 32.');
+  } else if (threads > 1) {
+    notes.push('With OpenMP threads (more than one per rank) VASP sets NCORE = 1 itself.');
+  } else {
+    const per = Math.min(ranksPerNode, perGroup);
+    const cand = divisors(ranksPerNode).filter(d => d <= per && perGroup % d === 0);
+    const target = Math.sqrt(perGroup);
+    ncore = cand.reduce((b, d) => (Math.abs(d - target) < Math.abs(b - target) ? d : b), 1);
+    notes.push(`NCORE = ${ncore} is close to the square root of the ${perGroup} ranks per k-point group. The number of cores per NUMA domain is often better still: benchmark a few values.`);
+  }
+  if (kpts > 0) notes.push(`KPAR = ${kpar} divides both the ${total} ranks and the ${kpts} irreducible k-points. Each k-point group holds its own copy of the data, so lower KPAR if memory runs out.`);
+  else notes.push('Give the number of irreducible k-points (grep "irreducible k-points" OUTCAR, or vasp_std --dry-run) to get a KPAR suggestion.');
+  return { total, kpar, ncore, nsim, notes };
+}
+
+/** Write a generic Slurm job script. Site-specific lines are placeholders in capitals. */
+export function slurmScript(o) {
+  const errors = [];
+  const nodes = Math.max(1, Math.floor(+o.nodes || 1));
+  const rpn = Math.max(1, Math.floor(+o.ranksPerNode || 1));
+  const thr = Math.max(1, Math.floor(+o.threads || 1));
+  const gpn = Math.max(0, Math.floor(+o.gpusPerNode || 0));
+  const exe = ['vasp_std', 'vasp_gam', 'vasp_ncl'].includes(o.exe) ? o.exe : 'vasp_std';
+  const time = /^\d+(-\d+)?(:\d\d){0,2}$/.test(String(o.time || '')) ? o.time : '24:00:00';
+  const name = String(o.name || 'vasp').replace(/[^A-Za-z0-9_.-]/g, '') || 'vasp';
+  const sig = Math.max(0, Math.floor(+o.signalMinutes || 0));
+  if (gpn > 0 && rpn !== gpn) errors.push(`GPU builds need exactly one MPI rank per GPU: set ranks per node to ${gpn}.`);
+  const tags = parallelTags({ nodes, ranksPerNode: rpn, threads: thr, gpusPerNode: gpn, kpts: +o.kpts || 0 });
+  const L = [];
+  L.push('#!/bin/bash');
+  L.push('# Generic VASP job script: replace ACCOUNT, PARTITION and the module name with your site\'s values.');
+  L.push(`# ${nodes} node(s) x ${rpn} MPI ranks${gpn ? ' (one per GPU)' : ''} x ${thr} OpenMP thread(s) per rank = ${nodes * rpn * thr} cores.`);
+  L.push(`#SBATCH -J ${name}`);
+  L.push('#SBATCH -A ACCOUNT');
+  L.push(`#SBATCH -p ${gpn ? 'GPU_PARTITION' : 'PARTITION'}`);
+  L.push(`#SBATCH -N ${nodes}`);
+  L.push(`#SBATCH --ntasks-per-node=${rpn}`);
+  L.push(`#SBATCH -c ${thr}`);
+  if (gpn) L.push(`#SBATCH --gpus-per-node=${gpn}`);
+  L.push(`#SBATCH -t ${time}`);
+  L.push('#SBATCH -o %x-%j.out');
+  L.push('#SBATCH -e %x-%j.err');
+  if (sig) {
+    L.push(`#SBATCH --signal=B:USR1@${sig * 60}`);
+    L.push(`# --signal: Slurm sends USR1 to this script ${sig} min before the time limit (see the trap below).`);
+  }
+  L.push('# The .err file collects segfaults, out-of-memory kills and time-limit messages.');
+  L.push('');
+  L.push('module purge');
+  L.push(`module load vasp/VERSION${gpn ? '-gpu' : ''}       # replace: your site's VASP module (avoid 6.6.0 for spin-polarized meta-GGA)`);
+  L.push('');
+  L.push('ulimit -s unlimited                  # VASP keeps large arrays on the stack');
+  L.push(`export OMP_NUM_THREADS=${thr}`);
+  L.push('export OMP_STACKSIZE=512m');
+  L.push('export OMP_PLACES=cores OMP_PROC_BIND=close');
+  L.push('');
+  L.push('cd "$SLURM_SUBMIT_DIR" || exit 1');
+  const run = `srun -n ${tags.total} -c ${thr} --cpu-bind=cores${gpn ? ' --gpu-bind=none' : ''} ${exe} > vasp.out`;
+  if (sig) {
+    L.push('rm -f STOPCAR                        # a leftover STOPCAR would stop this run at once');
+    L.push(`trap 'echo "LSTOP = .TRUE." > STOPCAR' USR1   # stop cleanly after the current ionic step`);
+    L.push(`${run} &`);
+    L.push('pid=$!');
+    L.push('wait $pid; status=$?');
+    L.push('if [ $status -gt 128 ]; then         # the signal interrupted wait: let VASP finish its step');
+    L.push('  wait $pid; status=$?');
+    L.push('fi');
+    L.push('exit $status                         # keeps the exit code for --dependency=afterok');
+  } else L.push(run);
+  const incar = [];
+  if (tags.kpar > 1) incar.push(`KPAR  = ${tags.kpar}`);
+  if (tags.ncore) incar.push(`NCORE = ${tags.ncore}`);
+  if (tags.nsim) incar.push(`NSIM  = ${tags.nsim}`);
+  // align the trailing comments
+  const out = L.map(l => { const m = l.match(/^(.*?\S)\s{2,}(# .*)$/); return m && !l.startsWith('#') ? m[1].padEnd(37) + ' ' + m[2] : l; });
+  return { script: out.join('\n') + '\n', incar, notes: tags.notes, errors, total: tags.total };
+}
+
+
+/* ---------------- MAGMOM ---------------- */
+
+/** Starting moments (μB) suggested for a high-spin start; 0 for everything else. A rule of thumb only:
+ *  VASP's advice is to start above the expected moment (1.2-1.5x experiment). */
+export const START_MOMENT = { Cr: 4, Mn: 5, Fe: 5, Co: 4, Ni: 3, V: 3, Cu: 1, Ru: 2, Rh: 1, Mo: 2, Ce: 1, Pr: 2, Nd: 3, Pm: 4, Sm: 5, Eu: 7, Gd: 7, Tb: 6, Dy: 5, Ho: 4, Er: 3, Tm: 2, Yb: 1 };
+
+/** Signs for each site: 'fm' all +1; 'layers-a|b|c' alternate between successive planes of the magnetic
+ *  sites along that lattice vector (A-type layering); sites with zero moment get 0. */
+export function magmomSigns(p, moments, pattern = 'fm') {
+  const mag = p.sites.map((s, i) => (moments[s] ? i : -1)).filter(i => i >= 0);
+  const signs = p.sites.map(s => (moments[s] ? 1 : 0));
+  const m = pattern.match(/^layers-([abc])$/);
+  if (m) {
+    const k = 'abc'.indexOf(m[1]);
+    const tol = 1e-2;   // atoms of one plane in a relaxed structure differ slightly in height
+    const coord = i => { const x = ((p.positions[i][k] % 1) + 1) % 1; return x > 1 - tol ? x - 1 : x; };
+    const planes = [];
+    for (const x of mag.map(coord).sort((a, b) => a - b)) if (!planes.length || x - planes[planes.length - 1] > tol) planes.push(x);
+    const plane = x => planes.findIndex(q => Math.abs(x - q) <= tol);
+    for (const i of mag) signs[i] = plane(coord(i)) % 2 ? -1 : 1;
+    signs.planes = planes.length;
+  }
+  return signs;
+}
+
+/** MAGMOM text from per-species moments and per-site signs; noncollinear writes (0, 0, m) per site. */
+export function magmomLine(p, moments, signs, noncollinear = false) {
+  const vals = p.sites.map((s, i) => (moments[s] || 0) * (signs[i] ?? 1));
+  const flat = noncollinear ? vals.flatMap(v => [0, 0, v]) : vals;
+  const total = vals.reduce((a, b) => a + b, 0);
+  return { line: compressValues(flat.map(v => (Object.is(v, -0) ? 0 : v))), count: flat.length, total };
+}

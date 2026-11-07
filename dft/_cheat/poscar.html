@@ -1,0 +1,143 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  VASP Wiki raw source (dft/_research/wiki-raw): POSCAR (full format specification: scaling factor one or
+  three numbers, negative = volume, three must be positive; species line optional, truncated to 2 characters,
+  POTCAR overwrites; only S/s for selective dynamics; first character C/c/K/k = Cartesian; flags refer to
+  direct components; lattice velocities before ion velocities; 7 significant digits), CONTCAR (MD block,
+  remove when changing ensemble), Phonons from finite differences (selective flags Cartesian, IBRION = 5
+  only), LATTICE_CONSTRAINTS (6.4.3 / 6.5.1, bug < 6.5.0), SYMPREC, TEBEG, Changelog 6.4.2/6.4.3 (CONTCAR
+  species line hashes, known issue 18). Forum p=30080 (POSCAR/POTCAR type mismatch warning).
+  OUTCAR strings ("ions per type", "position of ions in fractional coordinates") checked in OUTCARs from
+  VASP 5.2.12, 6.2.0, 6.3.0. Research brief: dft/_research/part3-kpoints-part5-poscar.md.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>The species come from POTCAR, in the order of the counts line. The species-name line is only a label: keep it, and keep it in the same order as the POTCAR.</li>
+  <li>Write coordinates with at least 7 significant digits, or VASP may find a lower symmetry than the crystal has.</li>
+  <li>Use <code>Direct</code> (fractional) coordinates; Cartesian ones are multiplied by the scaling factor.</li>
+  <li>Selective-dynamics flags act on the fractional (lattice-vector) components, not on x, y and z, except in IBRION = 5 phonon runs.</li>
+  <li>Continue a relaxation with <code>cp CONTCAR POSCAR</code>. A CONTCAR from MD carries velocities and more; strip them before using it elsewhere.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="checker">
+<h2>Check a POSCAR</h2>
+<p>Paste a POSCAR or CONTCAR. The checker reads it the way VASP does and reports the species, the cell, the shortest distance between atoms (periodic images included) and the problems it finds. It runs in your browser.</p>
+<div class="tool" data-tool="poscar">
+  <noscript><p class="callout">The checker needs JavaScript. The format is described <a href="#format">below</a>.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="format">
+<h2>The format, line by line</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Line</th><th scope="col">Holds</th><th scope="col">Rules and traps</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td data-label="Holds">A comment</td><td data-label="Rules and traps">Free text. Old VASP 4 files put the element symbols here.</td></tr>
+<tr><th scope="row">2</th><td data-label="Holds">Scaling factor</td><td data-label="Rules and traps">One number multiplies the lattice vectors and Cartesian positions. A negative number is the cell volume in Å³ instead. Three positive numbers scale x, y and z separately.</td></tr>
+<tr><th scope="row">3–5</th><td data-label="Holds">Lattice vectors a1, a2, a3</td><td data-label="Rules and traps">Cartesian components in Å (before scaling). A left-handed set (negative triple product) is fixed by swapping two vectors, together with the matching columns of the Direct coordinates.</td></tr>
+<tr><th scope="row">6</th><td data-label="Holds">Species names</td><td data-label="Rules and traps">Optional and only a label: VASP takes the species from POTCAR and keeps just 2 characters of each name, so <code>Fe1 Fe2</code> both become <code>Fe</code>. If names and POTCAR disagree, VASP warns and uses POTCAR.</td></tr>
+<tr><th scope="row">7</th><td data-label="Holds">Atoms per species</td><td data-label="Rules and traps">In the order of the POTCAR. The same element may appear in two groups (<code>Fe O Fe</code>) to give them different per-species values, such as the U of DFT+U; MAGMOM is set per atom and needs no extra group. Machine-learned force fields reject two groups with the same name.</td></tr>
+<tr><th scope="row">8</th><td data-label="Holds"><code>Selective dynamics</code></td><td data-label="Rules and traps">Optional; only the first letter (S) matters. Adds three T/F flags to each position line.</td></tr>
+<tr><th scope="row">9</th><td data-label="Holds"><code>Direct</code> or <code>Cartesian</code></td><td data-label="Rules and traps">C or K as first letter means Cartesian (Å, scaled); anything else is Direct (fractional).</td></tr>
+<tr><th scope="row">10 …</th><td data-label="Holds">One position per atom</td><td data-label="Rules and traps">As many lines as the sum of line 7, in the same species order. At least 7 significant digits.</td></tr>
+<tr><th scope="row">After</th><td data-label="Holds">Velocities and MD data</td><td data-label="Rules and traps">Written by VASP into CONTCAR during molecular dynamics: lattice velocities, then ion velocities (Å/fs when Cartesian; not scaled), then predictor–corrector data that cannot be written by hand.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="examples">
+<h2>Examples</h2>
+<div class="recipes">
+<pre class="poscar" data-title="Minimal POSCAR: cubic BN, primitive fcc cell">
+Cubic BN
+3.615
+0.0 0.5 0.5
+0.5 0.0 0.5
+0.5 0.5 0.0
+B N
+1 1
+Direct
+0.00 0.00 0.00
+0.25 0.25 0.25
+</pre>
+<pre class="poscar" data-title="Selective dynamics: fix the bottom layers of a slab">
+Al(100) slab, 3 layers, bottom 2 fixed
+1.0
+2.8637824     0.0000000     0.0000000
+0.0000000     2.8637824     0.0000000
+0.0000000     0.0000000    24.0500000
+Al
+3
+Selective dynamics
+Direct
+0.0000000  0.0000000  0.0000000   F F F
+0.5000000  0.5000000  0.0841996   F F F
+0.0000000  0.0000000  0.1683992   T T T
+</pre>
+<p class="then">The first two atoms stay fixed and the third relaxes. A flag constrains a fractional component, so <code>T T F</code> on a tilted cell is not the same as fixing z.</p>
+<pre class="poscar" data-title="A negative scale sets the volume (here 40 cubic angstrom)">
+Si, simple cubic test cell, volume fixed by the scale
+-40.0
+1.0 0.0 0.0
+0.0 1.0 0.0
+0.0 0.0 1.0
+Si
+1
+Direct
+0.0 0.0 0.0
+</pre>
+</div>
+</section>
+
+<section class="sheet-sec" id="selective">
+<h2>Selective dynamics and fixed cells</h2>
+<ul class="tight">
+  <li>In relaxations and MD, the T/F flags refer to the fractional components of each position, whether the positions are written in Direct or Cartesian form.</li>
+  <li>In finite-difference phonon runs the flags refer to Cartesian components, and only <code>IBRION = 5</code> honours them.</li>
+  <li>Removing the <code>Selective dynamics</code> line frees every atom again.</li>
+  <li>Selective dynamics cannot constrain the cell. To keep the out-of-plane vector of a slab fixed while the in-plane ones relax, use <x-tag>LATTICE_CONSTRAINTS</x-tag> (from VASP 6.5.0 in practice; see the table below), or relax with a fixed cell (<code>ISIF = 2</code>).</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="contcar">
+<h2>Reusing CONTCAR</h2>
+<ul class="tight">
+  <li>CONTCAR has the POSCAR format, so <code>cp CONTCAR POSCAR</code> continues a relaxation.</li>
+  <li>After molecular dynamics, CONTCAR also holds velocities and predictor–corrector data. Keep them to continue the same run; delete the predictor–corrector block before switching ensemble (NVT to NpT, say), or the run crashes; delete everything after the positions before using the structure for anything else.</li>
+  <li>VASP 6.4.2 wrote POTCAR hash codes into the CONTCAR species line, which breaks phonopy and other tools; 6.4.3 copies your POSCAR labels again.</li>
+  <li>Positions in CONTCAR after a long relaxation can carry numerical noise that lowers the symmetry: symmetrize with a symmetry tool before a production run if the symmetry matters.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>Related INCAR tags</h2>
+<x-tags names="SYMPREC LATTICE_CONSTRAINTS"></x-tags>
+</section>
+
+<section class="sheet-sec" id="check">
+<h2>Check what VASP read</h2>
+<pre class="sh" data-title="Species, counts and positions">
+sed -n '6,7p' POSCAR                     # species names and counts (VASP 5 and later format)
+grep TITEL POTCAR                        # the potentials, one per species, in file order
+grep "ions per type" OUTCAR              # the counts VASP used
+grep -A 4 "position of ions in fractional coordinates" OUTCAR   # first positions; raise 4 to the number of atoms
+</pre>
+<p>The order of the TITEL lines must match the species line of POSCAR. The <x-sheet slug="potcar">POTCAR sheet</x-sheet> shows how to build and check a POTCAR without printing it.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>Species order in POSCAR different from the POTCAR order: VASP only warns, and the run uses the wrong elements on the wrong sites.</li>
+  <li>Expecting the species line to choose the element; POTCAR does.</li>
+  <li>Long labels such as <code>Nd1 Nd2</code>: both are truncated to <code>Nd</code>, and with VASP's machine-learned force fields two groups with the same name stop the run.</li>
+  <li>Coordinates with too few digits (0.3333 for 1/3): lost symmetry.</li>
+  <li>Cartesian positions with a scale other than 1: they are scaled too.</li>
+  <li>Reading selective-dynamics flags as x, y, z in a relaxation.</li>
+  <li>An MD CONTCAR, with its velocity blocks, reused for a different kind of run.</li>
+  <li>A counts line that does not match the number of position lines.</li>
+</ul>
+</section>

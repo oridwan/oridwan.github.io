@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Read VASP Output: grep OUTCAR and OSZICAR</title>
+  <meta name="description" content="Read VASP output fast: grep and awk one-liners for energy, convergence, forces, stress, Fermi level, band gap and magnetic moments in OUTCAR and OSZICAR.">
+  <meta name="keywords" content="grep OUTCAR, VASP OUTCAR, OSZICAR, VASP final energy, TOTEN, energy sigma-&gt;0, VASP magnetic moment, VASP output files, vasprun.xml, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/outcar-oszicar-grep/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Read VASP Output: grep OUTCAR and OSZICAR">
+  <meta property="og:description" content="Read VASP output fast: grep and awk one-liners for energy, convergence, forces, stress, Fermi level, band gap and magnetic moments in OUTCAR and OSZICAR.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/outcar-oszicar-grep/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Read VASP Output: grep OUTCAR and OSZICAR">
+  <meta name="twitter:description" content="Read VASP output fast: grep and awk one-liners for energy, convergence, forces, stress, Fermi level, band gap and magnetic moments in OUTCAR and OSZICAR.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "Read VASP Output: grep OUTCAR and OSZICAR",
+  "name": "Reading VASP output",
+  "description": "Read VASP output fast: grep and awk one-liners for energy, convergence, forces, stress, Fermi level, band gap and magnetic moments in OUTCAR and OSZICAR.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/outcar-oszicar-grep/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "grep OUTCAR, VASP OUTCAR, OSZICAR, VASP final energy, TOTEN, energy sigma->0, VASP magnetic moment, VASP output files, vasprun.xml, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “OUTCAR”.",
+    "VASP Wiki, “OSZICAR” (what each column means).",
+    "VASP Wiki, “Restart and output files cheat sheet” (which files LWAVE, LCHARG and LH5 write)."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Reading the output",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/outcar-oszicar-grep/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="outcar-oszicar-grep">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>Reading the output</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Essentials</p>
+    <h1>Reading VASP output</h1>
+    <p class="sheet-lede">Where VASP writes each result and the one-line commands that pull it out of OUTCAR, OSZICAR and vasprun.xml, tested on real output files from VASP 5.2 to 6.3. Includes which energy to report and what every OSZICAR column means.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#finder">Find a command</a></li>
+        <li><a href="#files">What each file holds</a></li>
+        <li><a href="#energy">Energy: which number to report</a></li>
+        <li><a href="#converged">Did it converge?</a></li>
+        <li><a href="#forces">Forces and stress</a></li>
+        <li><a href="#electronic">Fermi energy, gap, bands and k-points</a></li>
+        <li><a href="#magnetism">Magnetic moments</a></li>
+        <li><a href="#timing">Time, memory and the parallel layout</a></li>
+        <li><a href="#warnings">Warnings and errors</a></li>
+        <li><a href="#oszicar">OSZICAR, column by column</a></li>
+        <li><a href="#python">The same in Python</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Use <code>grep "free  energy   TOTEN"</code> with two and three spaces: a plain <code>grep TOTEN</code> also matches every SCF step.</li>
+  <li>A relaxation is done only if OUTCAR says <code>reached required accuracy</code> <em>and</em> its last SCF converged.</li>
+  <li>Take the <em>last</em> occurrence of anything printed per step: energies, forces, stress, moments.</li>
+  <li>Forces and stress belong to the free energy TOTEN (OSZICAR <code>F=</code>); with Gaussian smearing, report <code>energy(sigma-&gt;0)</code> (<code>E0=</code>).</li>
+  <li>Error boxes, above all the last one before a crash, are reliably only in the standard output (your <code>vasp.out</code>); some warnings are also copied to OUTCAR. Keep the standard output.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="finder">
+<h2>Find a command</h2>
+<p>Type what you want to know, such as <em>fermi</em>, <em>force</em>, <em>magnetic</em> or <em>converged</em>, and jump to the command.</p>
+<div class="tool" data-tool="finder" data-items=".sheet-body figure.code" data-label="I want to find" data-placeholder="e.g. band gap, max force, moments"></div>
+</section>
+
+<section class="sheet-sec" id="files">
+<h2>What each file holds</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">File</th><th scope="col">Holds</th><th scope="col">Note</th></tr></thead>
+<tbody>
+<tr><th scope="row">OUTCAR</th><td data-label="Holds">The full log: parameters used, symmetry, k-points, energies, forces, stress, moments, timing.</td><td data-label="Note">Its detail is set by NWRITE.</td></tr>
+<tr><th scope="row">OSZICAR</th><td data-label="Holds">One line per SCF step and one summary line per ionic step.</td><td data-label="Note">The quickest view of progress.</td></tr>
+<tr><th scope="row">standard output</th><td data-label="Holds">The SCF lines plus every ERROR, WARNING and ADVICE box.</td><td data-label="Note">Redirect it: <code>srun vasp_std &gt; vasp.out</code>.</td></tr>
+<tr><th scope="row">CONTCAR</th><td data-label="Holds">The latest structure, in POSCAR format; after MD also velocities.</td><td data-label="Note">Written after every ionic step.</td></tr>
+<tr><th scope="row">vasprun.xml</th><td data-label="Holds">Everything in XML: inputs, every ionic step, eigenvalues, DOS, projections.</td><td data-label="Note">Complete only if the last line is <code>&lt;/modeling&gt;</code>.</td></tr>
+<tr><th scope="row">vaspout.h5</th><td data-label="Holds">HDF5 output for py4vasp (HDF5 builds only).</td><td data-label="Note">Holds a copy of your POTCAR: do not share it.</td></tr>
+<tr><th scope="row">CHGCAR / CHG</th><td data-label="Holds">Charge density; CHGCAR adds the PAW on-site data.</td><td data-label="Note">Restart with CHGCAR only (ICHARG = 1 or 11); CHG is for plotting.</td></tr>
+<tr><th scope="row">WAVECAR</th><td data-label="Holds">Orbitals (binary).</td><td data-label="Note">Restart file for ISTART = 1, which also works after the cell or ENCUT changed; the k-points and number of bands must match.</td></tr>
+<tr><th scope="row">DOSCAR / PROCAR</th><td data-label="Holds">Total and projected DOS; orbital character of each band.</td><td data-label="Note">Projections need LORBIT ≥ 10 (or RWIGS).</td></tr>
+<tr><th scope="row">EIGENVAL</th><td data-label="Holds">Eigenvalues at each k-point.</td><td data-label="Note"></td></tr>
+<tr><th scope="row">XDATCAR</th><td data-label="Holds">The trajectory of a relaxation or MD run.</td><td data-label="Note"></td></tr>
+<tr><th scope="row">IBZKPT</th><td data-label="Holds">The irreducible k-points and weights actually used.</td><td data-label="Note">Explicit KPOINTS format.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="energy">
+<h2>Energy: which number to report</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">OUTCAR label</th><th scope="col">OSZICAR</th><th scope="col">What it is</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>free  energy   TOTEN</code></th><td data-label="OSZICAR"><code>F=</code></td><td data-label="What it is">The free energy E − TS. Forces and stress are consistent with it: use it for relaxations, phonons and NEB profiles at fixed smearing.</td></tr>
+<tr><th scope="row"><code>energy(sigma-&gt;0)</code></th><td data-label="OSZICAR"><code>E0=</code></td><td data-label="What it is">Extrapolated to zero smearing; the number to report with Gaussian smearing (ISMEAR = 0), provided SIGMA is small.</td></tr>
+<tr><th scope="row"><code>energy  without entropy</code></th><td data-label="OSZICAR">—</td><td data-label="What it is">E without the TS term; rarely reported.</td></tr>
+</tbody>
+</table></div>
+<p>With the tetrahedron method (ISMEAR = −5) all three are equal. Compare energies only between runs with the same ENCUT, PREC, LREAL, smearing and POTCAR files.</p>
+<figure class="code sh"><figcaption><span class="code-t">Final energies</span></figcaption><pre><code>grep &quot;free  energy   TOTEN&quot; OUTCAR | tail -1 | awk '{print $5}'  <span class="c"> # final TOTEN in eV (two spaces, then three)</span>
+grep &quot;energy(sigma-&gt;0)&quot; OUTCAR | tail -1 | awk '{print $NF}'      <span class="c"> # final E0 in eV</span>
+awk '/F=/{for(i=1;i&lt;NF;i++){if($i==&quot;F=&quot;)f=$(i+1);if($i==&quot;E0=&quot;)e=$(i+1)}} END{print f, e}' OSZICAR  <span class="c"> # final F and E0 (relaxation or MD)</span>
+grep '&lt;i name=&quot;e_fr_energy&quot;&gt;' vasprun.xml | tail -1               <span class="c"> # free energy in vasprun.xml</span></code></pre></figure>
+<p class="then">In VASP 5 vasprun.xml the <code>e_0_energy</code> and <code>e_wo_entrp</code> labels of each ionic step are swapped; read those from OUTCAR instead.</p>
+</section>
+
+<section class="sheet-sec" id="converged">
+<h2>Did it converge?</h2>
+<figure class="code sh"><figcaption><span class="code-t">Convergence checks</span></figcaption><pre><code>grep -c &quot;reached required accuracy&quot; OUTCAR              <span class="c"> # 1 = the relaxation met EDIFFG</span>
+grep -c &quot;aborting loop because EDIFF is reached&quot; OUTCAR <span class="c"> # ionic steps whose SCF converged</span>
+grep &quot;soft stop encountered&quot; OUTCAR                     <span class="c"> # stopped by a STOPCAR</span>
+tail -1 vasprun.xml                                     <span class="c"> # &lt;/modeling&gt; = vasprun.xml is complete</span></code></pre></figure>
+<figure class="code sh"><figcaption><span class="code-t">SCF steps per ionic step (relaxation runs)</span></figcaption><pre><code>awk '/^[A-Za-z]+ *:/{n++} / F= /{printf &quot;ionic %s  SCF %d  F=%s  E0=%s\n&quot;,$1,n,$3,$5; n=0}' OSZICAR</code></pre></figure>
+<p class="then">An ionic step that used NELM SCF steps (60 by default) did not converge. VASP 6 also prints a warning box saying the electronic self-consistency was not achieved within NELM steps.</p>
+</section>
+
+<section class="sheet-sec" id="forces">
+<h2>Forces and stress</h2>
+<figure class="code sh"><figcaption><span class="code-t">Largest force on any atom, per ionic step (eV/A)</span></figcaption><pre><code>awk '/TOTAL-FORCE/{inb=1;max=0;getline;next}
+     inb &amp;&amp; /^ -+/{inb=0;printf &quot;step %d  max|F| %.4f\n&quot;,++s,max;next}
+     inb{f=sqrt($4^2+$5^2+$6^2); if(f&gt;max)max=f}' OUTCAR</code></pre></figure>
+<p class="then">The block lists every atom, including those fixed by selective dynamics: leave those out before comparing with EDIFFG. A <code>total drift</code> comparable to |EDIFFG| means noisy forces.</p>
+<figure class="code sh"><figcaption><span class="code-t">Stress and pressure (kB)</span></figcaption><pre><code>grep &quot;in kB&quot; OUTCAR | tail -1            <span class="c"> # XX YY ZZ XY YZ ZX</span>
+grep &quot;external pressure&quot; OUTCAR | tail -1<span class="c"> # also prints the Pulay stress</span></code></pre></figure>
+<p class="then">A positive diagonal value means the cell is compressed and wants to expand; 1 kB = 0.1 GPa. With ISIF = 1 only the pressure is valid; hybrid runs compute no stress unless ISIF is set.</p>
+</section>
+
+<section class="sheet-sec" id="electronic">
+<h2>Fermi energy, gap, bands and k-points</h2>
+<figure class="code sh"><figcaption><span class="code-t">Fermi energy</span></figcaption><pre><code>grep E-fermi OUTCAR | tail -1 | awk '{print $3}'</code></pre></figure>
+<p class="then">Take it from the self-consistent run, not from a band-structure path. For a semiconductor the default <code>EFERMI = LEGACY</code> places it somewhere in the gap; <code>EFERMI = MIDGAP</code> (VASP 6.4 and later) puts it in the middle.</p>
+<figure class="code sh"><figcaption><span class="code-t">Band gap (VASP 6.4.3 and later report it in OUTCAR)</span></figcaption><pre><code>grep -i &quot;gap&quot; OUTCAR | tail -5</code></pre></figure>
+<p class="then">From VASP 6.4.3 the gap report is controlled by the <a class="vtag" href="#tag-bandgap">BANDGAP</a> tag. On older versions compute it from vasprun.xml with pymatgen or py4vasp (below), not from DOS edges or the Fermi energy.</p>
+<figure class="code sh"><figcaption><span class="code-t">Bands, electrons, k-points</span></figcaption><pre><code>grep &quot;NBANDS=&quot; OUTCAR | tail -1          <span class="c"> # bands actually used (VASP may raise NBANDS)</span>
+grep NELECT OUTCAR | head -1             <span class="c"> # number of electrons</span>
+grep &quot;irreducible k-points&quot; OUTCAR       <span class="c"> # k-points after symmetry</span></code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="magnetism">
+<h2>Magnetic moments</h2>
+<figure class="code sh"><figcaption><span class="code-t">Total and site moments</span></figcaption><pre><code>grep &quot; F= &quot; OSZICAR | tail -1 | grep -o &quot;mag= *[-0-9.E+]*&quot;  <span class="c"> # total moment of the cell</span>
+grep &quot;number of electron&quot; OUTCAR | tail -1                  <span class="c"> # electrons and total magnetization</span>
+awk '/magnetization <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span>/{b=&quot;&quot;;inb=1;next}
+     inb&amp;&amp;/^tot/{inb=0;t=$NF;next}
+     inb&amp;&amp;/^ +[0-9]+ /{b=b sprintf(&quot;ion %s  %s\n&quot;,$1,$NF)}
+     END{printf &quot;%s tot %s\n&quot;,b,t}' OUTCAR                 <span class="c"> # moment of each ion, last block</span></code></pre></figure>
+<p class="then">Site moments need LORBIT ≥ 10 (<code>LORBIT = 11</code> also splits them by orbital), or RWIGS. They are integrated inside spheres around the atoms, so they do not add up to the cell moment <code>mag=</code>. The block is printed more than once per step: take the last. Noncollinear runs add <code>magnetization (y)</code> and <code>(z)</code> blocks.</p>
+</section>
+
+<section class="sheet-sec" id="timing">
+<h2>Time, memory and the parallel layout</h2>
+<figure class="code sh"><figcaption><span class="code-t">Timing and layout</span></figcaption><pre><code>grep -E &quot;Elapsed time|Total CPU time|Maximum memory used&quot; OUTCAR  <span class="c"> # missing = the job was killed</span>
+grep &quot;LOOP+&quot; OUTCAR | awk '{print $NF}'  <span class="c"> # wall seconds per ionic step</span>
+head -6 OUTCAR | grep -E &quot;running|distr&quot;<span class="c"> # ranks, threads, KPAR groups and NCORE actually used</span>
+head -1 OUTCAR                           <span class="c"> # VASP version that wrote the file</span></code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="warnings">
+<h2>Warnings and errors</h2>
+<figure class="code sh"><figcaption><span class="code-t">Find the boxes</span></figcaption><pre><code>grep -c &quot;W    W    AA    RRRRR&quot; vasp.out OUTCAR  <span class="c"> # number of WARNING boxes</span>
+grep -n -E &quot;I REFUSE TO CONTINUE|VERY BAD NEWS|internal error&quot; vasp.out
+grep -n &quot;ADVICE to this user running VASP&quot; vasp.out</code></pre></figure>
+<p>The <a href="../errors-and-fixes/">errors sheet</a> explains each message and its fix.</p>
+</section>
+
+<section class="sheet-sec" id="oszicar">
+<h2>OSZICAR, column by column</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Field</th><th scope="col">Meaning</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>DAV:</code> <code>RMM:</code> <code>CG :</code></th><td data-label="Meaning">The algorithm of that SCF step (Davidson, RMM-DIIS, conjugate gradient). ALGO = Fast switches from DAV to RMM.</td></tr>
+<tr><th scope="row"><code>N</code></th><td data-label="Meaning">SCF step number.</td></tr>
+<tr><th scope="row"><code>E</code></th><td data-label="Meaning">Current free energy.</td></tr>
+<tr><th scope="row"><code>dE</code></th><td data-label="Meaning">Change of the free energy since the last step; compared with EDIFF.</td></tr>
+<tr><th scope="row"><code>d eps</code></th><td data-label="Meaning">Change of the band-structure energy.</td></tr>
+<tr><th scope="row"><code>ncg</code></th><td data-label="Meaning">Number of Hamiltonian evaluations.</td></tr>
+<tr><th scope="row"><code>rms</code>, <code>rms(c)</code></th><td data-label="Meaning">Residual of the orbitals; difference between input and output density (blank in the first non-self-consistent steps).</td></tr>
+<tr><th scope="row"><code>F=</code> <code>E0=</code> <code>d E =</code> <code>mag=</code></th><td data-label="Meaning">Ionic line: free energy (TOTEN), energy at zero smearing, change since the last ionic step, total magnetic moment.</td></tr>
+<tr><th scope="row"><code>T=</code> <code>E=</code> <code>EK=</code> <code>SP=</code> <code>SK=</code></th><td data-label="Meaning">MD line: temperature, total energy including kinetic and thermostat terms, ionic kinetic energy, thermostat potential and kinetic energy.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="python">
+<h2>The same in Python</h2>
+<figure class="code file"><figcaption><span class="code-t">pymatgen (reads vasprun.xml, OUTCAR, OSZICAR)</span></figcaption><pre><code>from pymatgen.io.vasp.outputs import Vasprun, Outcar
+v = Vasprun(&quot;vasprun.xml&quot;, parse_potcar_file=False)
+v.final_energy, v.converged_electronic, v.converged_ionic
+v.ionic_steps[-1][&quot;forces&quot;], v.ionic_steps[-1][&quot;stress&quot;]
+v.get_band_structure(efermi=&quot;smart&quot;).get_band_gap()[&quot;energy&quot;]
+o = Outcar(&quot;OUTCAR&quot;)
+o.efermi, o.total_mag, o.magnetization</code></pre></figure>
+<figure class="code file"><figcaption><span class="code-t">py4vasp (needs vaspout.h5 from an HDF5 build)</span></figcaption><pre><code>from py4vasp import Calculation
+calc = Calculation.from_path(&quot;.&quot;)
+calc.energy.read()        <span class="c"># free energy, energy without entropy, energy(sigma-&gt;0)</span>
+calc.bandgap.read()
+calc.electronic_minimization.read()   <span class="c"># the OSZICAR data</span></code></pre></figure>
+<figure class="code file"><figcaption><span class="code-t">ASE</span></figcaption><pre><code>from ase.io import read
+atoms = read(&quot;OUTCAR&quot;)                  <span class="c"># last ionic step</span>
+atoms.get_potential_energy()            <span class="c"># energy(sigma-&gt;0)</span>
+traj = read(&quot;XDATCAR&quot;, index=&quot;:&quot;)       <span class="c"># every frame; without index only the last</span></code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li><code>grep TOTEN | head</code>: an SCF-step energy, not an ionic result.</li>
+  <li>Calling a relaxation converged from <code>reached required accuracy</code> alone, without checking its last SCF.</li>
+  <li>Reading the first magnetization block instead of the last, or expecting site moments to add up to <code>mag=</code>.</li>
+  <li>Taking the Fermi energy or the gap from a band-structure (path) run.</li>
+  <li>Reporting <code>energy(sigma-&gt;0)</code> from a Methfessel–Paxton run, or comparing energies with different SIGMA, ENCUT or POTCARs.</li>
+  <li>Not keeping the standard output, where VASP prints its error boxes.</li>
+  <li>Sharing vaspout.h5 publicly: in current versions it contains a copy of your POTCAR.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="key-terms">
+<h2>Other tags on this sheet</h2>
+<dl class="terms tags">
+<dt id="tag-bandgap"><code>BANDGAP</code></dt>
+<dd>How VASP reports the band gap in OUTCAR (VASP 6.4.3 and later).<span class="tag-meta">Default: COMPACT · <a href="https://www.vasp.at/wiki/BANDGAP" rel="noopener">VASP Wiki: BANDGAP</a></span></dd>
+</dl>
+</section>
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 12: Self-consistent field convergence <span class="muted">(in preparation)</span></li>
+<li>Lecture 19: VASP input files and convergence tests <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiOUTCAR">VASP Wiki, “OUTCAR”. · <a href="https://www.vasp.at/wiki/OUTCAR" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiOSZICAR">VASP Wiki, “OSZICAR” (what each column means). · <a href="https://www.vasp.at/wiki/OSZICAR" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiRestartFiles">VASP Wiki, “Restart and output files cheat sheet” (which files LWAVE, LCHARG and LH5 write). · <a href="https://www.vasp.at/wiki/Restart_and_output_files_cheat_sheet" rel="noopener">www.vasp.at</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../slurm-job-script/"><span>Previous sheet</span>Slurm job script</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <a class="pn-next" href="../errors-and-fixes/"><span>Next sheet</span>Errors and fixes</a>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  VASP Wiki raw source (dft/_research): IBRION, ISIF (table; positive diagonal stress = wants to expand;
+  ISIF = 8 from 6.4.1), EDIFFG, POTIM, NFREE, NSW, SMASS, Structure optimization (CG default, RMM-DIIS near
+  minimum, damped MD SMASS ~0.4, NELMIN 4/8, symmetry kept), Volume relaxation (1.3 x cutoff; restart with
+  ISTART = 1; ISTART = 2 keeps poor settings; fixed-volume EOS safe at default cutoff; final single point),
+  Pulay stress, PSTRESS (sign conflict with Volume relaxation, see PLAN), LATTICE_CONSTRAINTS (6.4.3/6.5.0/
+  6.5.1), Smearing technique, Band-structure calculation using DFT / meta-GGA, ICHARG, KPOINTS_OPT, EFERMI.
+  EDIFFG including stress for ISIF = 3: VASP developer, forum p=24685 (undocumented on the Wiki).
+  Materials Project: docs (two consecutive relaxations), MPRelaxSet.yaml; atomate2 flows (PBEsol pre-relax,
+  ML pre-relax makers). OUTCAR "volume of cell" checked on VASP 5.2.12-6.2.0 files.
+  Brief: dft/_research/C-magnetism-relaxation.md sheet 2.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Relax with <code>IBRION = 2</code>, <code>ISIF = 3</code> (bulk) or <code>ISIF = 2</code> (slabs, defects), and a force criterion such as <code>EDIFFG = -0.02</code>.</li>
+  <li>When the cell changes, use ENCUT ≥ 1.3 × the largest ENMAX and relax again from CONTCAR until the volume stops changing (Pulay stress).</li>
+  <li>Relax metals with <code>ISMEAR = 1 ; SIGMA = 0.2</code>, insulators with <code>ISMEAR = 0 ; SIGMA = 0.05</code>; keep <code>ISMEAR = -5</code> for the final static run.</li>
+  <li>Take the energy you report from a static run at the relaxed geometry, not from the relaxation.</li>
+  <li>A relaxation keeps the symmetry of its starting structure. To reach a lower-symmetry minimum, displace atoms in POSCAR.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="workflow">
+<h2>The workflow, step by step</h2>
+<ol class="steps">
+  <li><b>Pre-relax (optional).</b> A machine-learned potential (MACE, CHGNet, VASP's own MLFF) or a coarse VASP run (PREC = Normal, fewer k-points, EDIFFG = −0.1) gets the structure close cheaply.</li>
+  <li><b>Relax atoms and cell</b> with the INCAR below.</li>
+  <li><b>Relax again</b> from CONTCAR (<code>cp CONTCAR POSCAR</code>), with a fresh basis set (a new run, or ISTART = 1), until the volume changes by less than about 1%. For magnets, seed MAGMOM with the final moments.</li>
+  <li><b>Static run</b> at the final geometry: the energy you report, and CHGCAR for the next step.</li>
+  <li><b>DOS and band structure</b> from that CHGCAR (see the <x-sheet slug="incar-tags#recipes">INCAR recipes</x-sheet> and the <x-sheet slug="kpoints#bands">KPOINTS sheet</x-sheet>).</li>
+</ol>
+<div class="recipes">
+<pre class="incar" data-title="Step 2-3: relax atoms and cell">
+PREC   = Accurate
+ENCUT  = 520            ! at least 1.3 x the largest ENMAX; keep it fixed for the whole project
+EDIFF  = 1E-6
+IBRION = 2              ! conjugate gradient
+ISIF   = 3              ! atoms, cell shape and volume
+NSW    = 99
+EDIFFG = -0.02          ! every force below 0.02 eV/A
+NELMIN = 4
+ISMEAR = 1 ; SIGMA = 0.2        ! metal; insulator: ISMEAR = 0 ; SIGMA = 0.05
+ISPIN  = 2 ; MAGMOM = 2*4.0 ; LORBIT = 11   ! magnets: high-spin start, one value per atom
+LASPH  = .TRUE. ; LMAXMIX = 4
+LWAVE  = .FALSE. ; LCHARG = .FALSE.
+</pre>
+<pre class="incar" data-title="Step 4: static run at the relaxed geometry">
+PREC    = Accurate
+ENCUT   = 520           ! the same as the relaxation
+EDIFF   = 1E-6
+NSW     = 0 ; IBRION = -1
+ISMEAR  = -5            ! tetrahedron: Gamma-centred mesh, at least 4 k-points
+ISPIN   = 2 ; MAGMOM = 2*2.2 ; LORBIT = 11   ! relaxed moments; keep MAGMOM in every later run
+LASPH   = .TRUE. ; LMAXMIX = 4
+LCHARG  = .TRUE.        ! CHGCAR for the DOS and band runs
+LWAVE   = .FALSE.
+</pre>
+</div>
+</section>
+
+<section class="sheet-sec" id="isif">
+<h2>What moves: ISIF</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">ISIF</th><th scope="col">Atoms</th><th scope="col">Cell shape</th><th scope="col">Volume</th><th scope="col">Use for</th></tr></thead>
+<tbody>
+<tr><th scope="row">0</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">no</td><td data-label="Use for">No stress computed (the default for MD and hybrids).</td></tr>
+<tr><th scope="row">1</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">no</td><td data-label="Use for">Only the pressure (trace of the stress) is valid.</td></tr>
+<tr><th scope="row">2</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">no</td><td data-label="Use for">Slabs, defects, molecules: the default otherwise.</td></tr>
+<tr><th scope="row">3</th><td data-label="Atoms">yes</td><td data-label="Cell shape">yes</td><td data-label="Volume">yes</td><td data-label="Use for">Full relaxation of bulk crystals.</td></tr>
+<tr><th scope="row">4</th><td data-label="Atoms">yes</td><td data-label="Cell shape">yes</td><td data-label="Volume">no</td><td data-label="Use for">Fixed-volume points of an energy–volume curve.</td></tr>
+<tr><th scope="row">5</th><td data-label="Atoms">no</td><td data-label="Cell shape">yes</td><td data-label="Volume">no</td><td data-label="Use for">Cell shape only.</td></tr>
+<tr><th scope="row">6</th><td data-label="Atoms">no</td><td data-label="Cell shape">yes</td><td data-label="Volume">yes</td><td data-label="Use for">Cell only, atoms fixed in fractional coordinates.</td></tr>
+<tr><th scope="row">7</th><td data-label="Atoms">no</td><td data-label="Cell shape">no</td><td data-label="Volume">yes</td><td data-label="Use for">Volume only.</td></tr>
+<tr><th scope="row">8</th><td data-label="Atoms">yes</td><td data-label="Cell shape">no</td><td data-label="Volume">yes</td><td data-label="Use for">Atoms and volume, shape fixed (VASP 6.4.1 and later).</td></tr>
+</tbody>
+</table></div>
+<p>The stress tensor is computed for ISIF 2 to 8. In OUTCAR a positive diagonal stress means the cell is compressed and wants to expand. VASP's own volume-relaxation guide recommends relaxing one degree of freedom at a time (its example uses ISIF = 7); ISIF = 3 in one go is the common practice.</p>
+</section>
+
+<section class="sheet-sec" id="optimizer">
+<h2>Which optimizer</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">IBRION</th><th scope="col">Method</th><th scope="col">When</th></tr></thead>
+<tbody>
+<tr><th scope="row">2</th><td data-label="Method">Conjugate gradient</td><td data-label="When">The robust default, also far from the minimum. Fine-tune the step: optimal POTIM ≈ POTIM × the <code>trialstep</code> printed in the output. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">1</th><td data-label="Method">RMM-DIIS (quasi-Newton)</td><td data-label="When">Close to the minimum and with more than about 20 degrees of freedom; needs accurate forces (NELMIN 4 for bulk, 8 for surfaces) and is sensitive to POTIM. NFREE 10–20 for complex cases. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">3</th><td data-label="Method">Damped molecular dynamics</td><td data-label="When">Far from the minimum or for soft systems; start with SMASS ≈ 0.4 and a POTIM about twice the smallest conjugate-gradient step. <span class="lbl adv">VASP advice</span></td></tr>
+</tbody>
+</table></div>
+<p>Without IBRION, NSW &gt; 0 runs molecular dynamics and stops at once (no default time step). With IBRION = −1 and NSW &gt; 0 the same structure is computed NSW times.</p>
+</section>
+
+<section class="sheet-sec" id="stop">
+<h2>When it stops: EDIFFG</h2>
+<ul class="tight">
+  <li>A negative EDIFFG stops when every force is below |EDIFFG| (eV/Å): <code>-0.02</code> for most work, <code>-0.01</code> or tighter before phonons.</li>
+  <li>A positive value (and the default, 10 × EDIFF) stops on the energy change between ionic steps, which can leave large forces.</li>
+  <li>For ISIF = 3, VASP's developers state that the test also includes the stress; the documentation does not spell this out.</li>
+  <li>EDIFF must be much tighter than the forces you ask for: 1E-6 or smaller, otherwise the forces are noise.</li>
+  <li>Hitting NSW is not convergence: OUTCAR must say <code>reached required accuracy</code>.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="pulay">
+<h2>Pulay stress and the cutoff</h2>
+<p>VASP keeps the number of plane waves fixed while the cell changes, so the effective cutoff drifts with the volume and the stress comes out too negative; volumes then end up too small. Two remedies:</p>
+<ul class="tight">
+  <li>Use ENCUT ≥ 1.3 × the largest ENMAX for any relaxation that changes the cell; VASP calls this the lower recommended limit. <span class="lbl adv">VASP advice</span></li>
+  <li>Restart from CONTCAR with a fresh basis set (a new run, or <code>ISTART = 1</code>) until the cell stops changing. <code>ISTART = 2</code> keeps the old basis and therefore the error. <span class="lbl adv">VASP advice</span></li>
+</ul>
+<p>An energy–volume curve at fixed volumes avoids the problem and works with the default cutoff. PSTRESS can absorb a measured Pulay stress, but VASP's PSTRESS and Volume-relaxation pages give opposite signs for that correction; a higher cutoff is the safer route.</p>
+</section>
+
+<section class="sheet-sec" id="special">
+<h2>Slabs, 2D sheets, E–V curves and magnets</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Case</th><th scope="col">How</th></tr></thead>
+<tbody>
+<tr><th scope="row">Slab with vacuum</th><td data-label="How"><code>ISIF = 2</code> with the bottom layers fixed by selective dynamics (<code>F F F</code>). Never ISIF = 3: the vacuum collapses.</td></tr>
+<tr><th scope="row">2D sheet</th><td data-label="How"><code>ISIF = 3</code> with <code>LATTICE_CONSTRAINTS = .TRUE. .TRUE. .FALSE.</code>, the vacuum along a3 parallel to z (VASP 6.5.0 or later in practice).</td></tr>
+<tr><th scope="row">Energy–volume curve</th><td data-label="How">5–10 volumes spanning about ±5–10% in volume, each with <code>ISIF = 4</code> (atoms and shape relax at fixed volume; a negative POSCAR scale sets the volume), then fit an equation of state.</td></tr>
+<tr><th scope="row">Magnet</th><td data-label="How">Start high-spin; reseed MAGMOM from the final moments for the next run, and keep MAGMOM in every restart so the magnetic symmetry is not lost.</td></tr>
+<tr><th scope="row">r²SCAN</th><td data-label="How">Pre-relax with PBE or PBEsol and start from its WAVECAR. Use VASP 6.6.1, not 6.6.0, for spin-polarized r²SCAN.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="check">
+<h2>Check it worked</h2>
+<pre class="sh" data-title="Relaxation checks">
+grep -c "reached required accuracy" OUTCAR    # 1 = EDIFFG met
+grep -c " F= " OSZICAR                        # ionic steps used: must be below NSW
+grep "volume of cell" OUTCAR | awk 'NR==1{v0=$5} END{printf "start %s  end %s  change %.2f %%\n", v0, $5, 100*($5-v0)/v0}'
+grep "external pressure" OUTCAR | tail -1     # near 0 kB after a converged ISIF = 3 run
+</pre>
+<p>Also check that the last SCF converged, that the largest force is below |EDIFFG| (<x-sheet slug="outcar-oszicar-grep#forces">command</x-sheet>), that the moments did not collapse, and that CONTCAR has the space group you expect (spglib or pymatgen).</p>
+</section>
+
+<section class="sheet-sec" id="materials-project">
+<h2>How Materials Project does it</h2>
+<p>Materials Project relaxes every structure twice in a row (cell and atoms, starting high-spin ferromagnetic), then runs a static calculation on a finer mesh. Its newest r²SCAN workflow first relaxes with PBEsol, which gives a cheap starting structure and density, then relaxes with r²SCAN. Workflow packages such as atomate2 also offer a machine-learned pre-relaxation before the VASP relaxation.</p>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The relaxation tags</h2>
+<x-tags names="IBRION ISIF NSW EDIFFG POTIM NFREE PSTRESS"></x-tags>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>NSW set and IBRION forgotten: molecular dynamics, stopping at once.</li>
+  <li>One ISIF = 3 run at the default ENCUT, and its energy reported.</li>
+  <li>Restarting a cell relaxation with ISTART = 2.</li>
+  <li>ISIF = 3 on a slab; ISMEAR = −5 in a metal relaxation; ISMEAR &gt; 0 for an insulator.</li>
+  <li>EDIFF too loose for the EDIFFG asked for.</li>
+  <li>Expecting a symmetry-lowering distortion without breaking the symmetry in POSCAR.</li>
+  <li>Dropping MAGMOM, or changing ENCUT, between the relaxation, static and DOS runs.</li>
+</ul>
+</section>

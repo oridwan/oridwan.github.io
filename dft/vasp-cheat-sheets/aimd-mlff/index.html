@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP AIMD Cheat Sheet: MDALGO, NVT, NpT and ML Force Fields</title>
+  <meta name="description" content="VASP AIMD cheat sheet: MDALGO thermostats, NVE, NVT and NpT recipes, time steps, restarts, trajectory analysis, and on-the-fly machine-learned force fields.">
+  <meta name="keywords" content="VASP AIMD, VASP molecular dynamics, MDALGO, NVT VASP, NpT VASP, Langevin thermostat, Nose-Hoover, VASP MLFF, ML_LMLFF, machine-learned force field, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/aimd-mlff/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP AIMD Cheat Sheet: MDALGO, NVT, NpT and ML Force Fields">
+  <meta property="og:description" content="VASP AIMD cheat sheet: MDALGO thermostats, NVE, NVT and NpT recipes, time steps, restarts, trajectory analysis, and on-the-fly machine-learned force fields.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/aimd-mlff/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP AIMD Cheat Sheet: MDALGO, NVT, NpT and ML Force Fields">
+  <meta name="twitter:description" content="VASP AIMD cheat sheet: MDALGO thermostats, NVE, NVT and NpT recipes, time steps, restarts, trajectory analysis, and on-the-fly machine-learned force fields.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "VASP AIMD Cheat Sheet: MDALGO, NVT, NpT and ML Force Fields",
+  "name": "VASP AIMD and machine-learned force fields",
+  "description": "VASP AIMD cheat sheet: MDALGO thermostats, NVE, NVT and NpT recipes, time steps, restarts, trajectory analysis, and on-the-fly machine-learned force fields.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/aimd-mlff/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP AIMD, VASP molecular dynamics, MDALGO, NVT VASP, NpT VASP, Langevin thermostat, Nose-Hoover, VASP MLFF, ML_LMLFF, machine-learned force field, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “Molecular-dynamics calculations” (setup, ensembles, analysis).",
+    "VASP Wiki, “MDALGO” (thermostats and ensembles).",
+    "VASP Wiki, “Best practices for machine-learned force fields”."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "AIMD and ML force fields",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/aimd-mlff/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="aimd-mlff">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>AIMD and ML force fields</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Applications</p>
+    <h1>VASP AIMD and machine-learned force fields</h1>
+    <p class="sheet-lede">Molecular dynamics with VASP: choosing the thermostat and ensemble, the defaults that silently give NVE, time steps, restarting and analysing a trajectory, and training VASP's own machine-learned force fields during the run.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#thermostats">Thermostats and ensembles</a></li>
+        <li><a href="#recipes">INCAR recipes</a></li>
+        <li><a href="#tags">The MD tags</a></li>
+        <li><a href="#restart">Restarting and changing ensemble</a></li>
+        <li><a href="#analysis">Analysis</a></li>
+        <li><a href="#mlff">Machine-learned force fields in VASP</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>MD is <code>IBRION = 0</code> with <code>NSW</code> steps of <code>POTIM</code> fs; POTIM has no default, and VASP stops without it.</li>
+  <li>Always set MDALGO and its coupling tag: every thermostat's coupling defaults to “off”, so a run that sets only MDALGO is silently NVE.</li>
+  <li>The default MDALGO = 0 folds atoms back into the cell, which rules out a mean-squared displacement. Use MDALGO 1–5.</li>
+  <li>Constant pressure (NpT) only works with Langevin: <code>MDALGO = 3</code>, <code>ISIF = 3</code>.</li>
+  <li>Use <code>ISYM = 0</code>, a time step of about 1 fs (0.5–0.7 fs with hydrogen), and check the drift of the conserved energy.</li>
+  <li>VASP's machine-learned force fields (6.3 and later) train on the fly during MD: train, refit, then run.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="thermostats">
+<h2>Thermostats and ensembles</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">MDALGO</th><th scope="col">Thermostat</th><th scope="col">Ensembles</th><th scope="col">Coupling tag (default = off)</th></tr></thead>
+<tbody>
+<tr><th scope="row">0</th><td data-label="Thermostat">legacy Nosé (deprecated)</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">SMASS (−3 = NVE); wraps coordinates</td></tr>
+<tr><th scope="row">1</th><td data-label="Thermostat">Andersen</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">ANDERSEN_PROB (0)</td></tr>
+<tr><th scope="row">2</th><td data-label="Thermostat">Nosé–Hoover</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">SMASS (−3)</td></tr>
+<tr><th scope="row">3</th><td data-label="Thermostat">Langevin (+ Parrinello–Rahman cell)</td><td data-label="Ensembles">NVT, NpT, NpH</td><td data-label="Coupling tag">LANGEVIN_GAMMA (0), LANGEVIN_GAMMA_L (0), PMASS</td></tr>
+<tr><th scope="row">4</th><td data-label="Thermostat">Nosé–Hoover chain (6.4.0)</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">NHC_NCHAINS (0), NHC_PERIOD</td></tr>
+<tr><th scope="row">5</th><td data-label="Thermostat">CSVR, stochastic velocity rescaling (6.4.3)</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">CSVR_PERIOD (0)</td></tr>
+</tbody>
+</table></div>
+<p>NVE: <code>MDALGO = 1</code> with <code>ANDERSEN_PROB = 0</code> is the simplest. NVT: any MDALGO with its coupling switched on, ISIF = 2. NpT: Langevin with ISIF = 3 only, at a cutoff of about 1.3 × ENMAX (the cell changes). NpH: as NpT with both frictions 0.</p>
+</section>
+
+<section class="sheet-sec" id="recipes">
+<h2>INCAR recipes</h2>
+<p>Add your converged electronic settings (ENCUT, PREC, EDIFF, smearing) to each block.</p>
+<div class="recipes">
+<figure class="code incar"><figcaption><span class="code-t">NVT, Nosé-Hoover chain (VASP 6.4.0 and later)</span></figcaption><pre><code><span class="k">IBRION</span>      = 0
+<span class="k">MDALGO</span>      = 4
+<span class="k">ISIF</span>        = 2
+<span class="k">ISYM</span>        = 0
+<span class="k">NSW</span>         = 10000
+<span class="k">POTIM</span>       = 1.0        <span class="c">! fs; 0.5-0.7 with hydrogen</span>
+<span class="k">TEBEG</span>       = 300 ; <span class="k">TEEND</span> = 300
+<span class="k">NHC_NCHAINS</span> = 3          <span class="c">! the default 0 means no thermostat</span>
+<span class="k">NHC_PERIOD</span>  = 40         <span class="c">! in MD steps</span>
+<span class="k">RANDOM_SEED</span> = 248489752 0 0</code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">NVT, Langevin (good for sampling and force-field training)</span></figcaption><pre><code><span class="k">IBRION</span>         = 0
+<span class="k">MDALGO</span>         = 3
+<span class="k">ISIF</span>           = 2
+<span class="k">ISYM</span>           = 0
+<span class="k">NSW</span>            = 10000
+<span class="k">POTIM</span>          = 1.0
+<span class="k">TEBEG</span>          = 300
+<span class="k">LANGEVIN_GAMMA</span> = 10.0 10.0   <span class="c">! ps^-1, one value per species</span></code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">NpT, Langevin with Parrinello-Rahman cell dynamics</span></figcaption><pre><code><span class="k">IBRION</span>           = 0
+<span class="k">MDALGO</span>           = 3
+<span class="k">ISIF</span>             = 3
+<span class="k">ISYM</span>             = 0
+<span class="k">NSW</span>              = 10000
+<span class="k">POTIM</span>            = 1.0
+<span class="k">TEBEG</span>            = 300
+<span class="k">LANGEVIN_GAMMA</span>   = 10.0 10.0 10.0   <span class="c">! three species</span>
+<span class="k">LANGEVIN_GAMMA_L</span> = 10.0
+<span class="k">PMASS</span>            = 1000
+<span class="k">PSTRESS</span>          = 0        <span class="c">! target pressure in kB</span></code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">NVE production run</span></figcaption><pre><code><span class="k">IBRION</span>        = 0
+<span class="k">MDALGO</span>        = 1
+<span class="k">ANDERSEN_PROB</span> = 0.0      <span class="c">! Andersen switched off: plain NVE</span>
+<span class="k">ISIF</span>          = 2
+<span class="k">ISYM</span>          = 0
+<span class="k">NSW</span>           = 10000
+<span class="k">POTIM</span>         = 1.0
+<span class="k">TEBEG</span>         = 300</code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">Faster electronic settings for long AIMD</span></figcaption><pre><code><span class="k">PREC</span>   = Normal
+<span class="k">EDIFF</span>  = 1E-5
+<span class="k">ALGO</span>   = Fast
+<span class="k">LREAL</span>  = Auto
+<span class="k">MAXMIX</span> = 40              <span class="c">! reuse the mixer between steps (not when training force fields)</span>
+<span class="k">LWAVE</span>  = .FALSE. ; <span class="k">LCHARG</span> = .FALSE.
+<span class="k">NBLOCK</span> = 10              <span class="c">! one XDATCAR frame every 10 steps</span></code></pre></figure>
+</div>
+<p class="then">With a single Γ point, run <code>vasp_gam</code>. Split long simulations into runs of at most about 20000 steps.</p>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The MD tags</h2>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-mdalgo"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/MDALGO" rel="noopener" title="MDALGO on the VASP Wiki"><code>MDALGO</code></a></th><td data-label="What it does">Thermostat: 1 Andersen, 2 Nosé–Hoover, 3 Langevin, 4 Nosé–Hoover chain (6.4.0), 5 CSVR (6.4.3).</td><td data-label="Default">0 (legacy Nosé)</td><td data-label="What to use">Set it explicitly (1–5); only 3 (Langevin) with ISIF = 3 gives NpT.</td><td data-label="Watch out">MDALGO = 0 wraps the atoms back into the cell, which rules out a mean-squared displacement.</td></tr>
+<tr id="tag-tebeg"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/TEBEG" rel="noopener" title="TEBEG on the VASP Wiki"><code>TEBEG</code></a></th><td data-label="What it does">Starting temperature (K); velocities are drawn from it if POSCAR has none.</td><td data-label="Default">0</td><td data-label="What to use">The target temperature.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-teend"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/TEEND" rel="noopener" title="TEEND on the VASP Wiki"><code>TEEND</code></a></th><td data-label="What it does">Final temperature (K) of a linear ramp.</td><td data-label="Default">TEBEG</td><td data-label="What to use">Larger than TEBEG to heat gradually, e.g. for force-field training.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-smass"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SMASS" rel="noopener" title="SMASS on the VASP Wiki"><code>SMASS</code></a></th><td data-label="What it does">Nosé mass for MDALGO = 0 and 2 (−3 = NVE, −1 = velocity rescaling, ≥ 0 = Nosé thermostat); damping for IBRION = 3.</td><td data-label="Default">−3</td><td data-label="What to use">MDALGO = 2: 0 or a small positive value for NVT.</td><td data-label="Watch out">The default −3 means no thermostat (NVE).</td></tr>
+<tr id="tag-andersen-prob"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ANDERSEN_PROB" rel="noopener" title="ANDERSEN_PROB on the VASP Wiki"><code>ANDERSEN_PROB</code></a></th><td data-label="What it does">Andersen collision probability per atom per step (MDALGO = 1).</td><td data-label="Default">0</td><td data-label="What to use">0 for NVE; positive for NVT.</td><td data-label="Watch out">Rescale it if POTIM changes.</td></tr>
+<tr id="tag-langevin-gamma"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LANGEVIN_GAMMA" rel="noopener" title="LANGEVIN_GAMMA on the VASP Wiki"><code>LANGEVIN_GAMMA</code></a></th><td data-label="What it does">Langevin friction per species in ps⁻¹ (MDALGO = 3).</td><td data-label="Default">0 for each species</td><td data-label="What to use">About 10 ps⁻¹ per species for NVT or NpT.</td><td data-label="Watch out">0 means NVE; very large values overdamp the motion.</td></tr>
+<tr id="tag-langevin-gamma-l"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/LANGEVIN_GAMMA_L" rel="noopener" title="LANGEVIN_GAMMA_L on the VASP Wiki"><code>LANGEVIN_GAMMA_L</code></a></th><td data-label="What it does">Langevin friction of the lattice in ps⁻¹ (MDALGO = 3, ISIF = 3).</td><td data-label="Default">0</td><td data-label="What to use">About 10 for NpT.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-pmass"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/PMASS" rel="noopener" title="PMASS on the VASP Wiki"><code>PMASS</code></a></th><td data-label="What it does">Fictitious mass of the lattice for NpT (MDALGO = 3, ISIF = 3), in amu.</td><td data-label="Default">1000</td><td data-label="What to use">Start at 1000 and test.</td><td data-label="Watch out">Too small: violent volume swings; too large: the cell barely responds.</td></tr>
+<tr id="tag-nhc-nchains"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NHC_NCHAINS" rel="noopener" title="NHC_NCHAINS on the VASP Wiki"><code>NHC_NCHAINS</code></a></th><td data-label="What it does">Length of the Nosé–Hoover chain (MDALGO = 4).</td><td data-label="Default">0 (= NVE)</td><td data-label="What to use">3 is a common choice.</td><td data-label="Watch out">The default gives NVE.</td></tr>
+<tr id="tag-nhc-period"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NHC_PERIOD" rel="noopener" title="NHC_PERIOD on the VASP Wiki"><code>NHC_PERIOD</code></a></th><td data-label="What it does">Time scale of the Nosé–Hoover chain thermostat, in MD steps.</td><td data-label="Default">40</td><td data-label="What to use">20–200 steps.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-csvr-period"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/CSVR_PERIOD" rel="noopener" title="CSVR_PERIOD on the VASP Wiki"><code>CSVR_PERIOD</code></a> <span class="since" title="Needs VASP 6.4.3 or later">6.4.3+</span></th><td data-label="What it does">Time scale of the CSVR thermostat (MDALGO = 5).</td><td data-label="Default">0 (= NVE)</td><td data-label="What to use">Set it to get NVT.</td><td data-label="Watch out">The VASP Wiki gives its unit both as fs and as MD steps.</td></tr>
+<tr id="tag-nblock"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/NBLOCK" rel="noopener" title="NBLOCK on the VASP Wiki"><code>NBLOCK</code></a></th><td data-label="What it does">Every NBLOCK steps VASP writes an XDATCAR frame and updates averages.</td><td data-label="Default">1</td><td data-label="What to use">1 for short AIMD; 10–100 for long runs.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-kblock"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/KBLOCK" rel="noopener" title="KBLOCK on the VASP Wiki"><code>KBLOCK</code></a></th><td data-label="What it does">Averages (PCDAT, DOSCAR) are written every KBLOCK × NBLOCK steps.</td><td data-label="Default">NSW</td><td data-label="What to use">Leave the default.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-pomass"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/POMASS" rel="noopener" title="POMASS on the VASP Wiki"><code>POMASS</code></a></th><td data-label="What it does">Atomic masses (amu) per species, overriding the POTCAR values.</td><td data-label="Default">from the POTCAR</td><td data-label="What to use">A heavier H (e.g. 8) allows a longer time step when only equilibrium properties matter.</td><td data-label="Watch out">It changes the dynamics: avoid it when time-dependent or mass-dependent results matter.</td></tr>
+<tr id="tag-random-seed"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/RANDOM_SEED" rel="noopener" title="RANDOM_SEED on the VASP Wiki"><code>RANDOM_SEED</code></a></th><td data-label="What it does">Seed of the random numbers (initial velocities, stochastic thermostats).</td><td data-label="Default">from the system clock</td><td data-label="What to use">Set it to make a run reproducible.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-velocity"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/VELOCITY" rel="noopener" title="VELOCITY on the VASP Wiki"><code>VELOCITY</code></a></th><td data-label="What it does">Write the velocities to vaspout.h5 (VASP 6.4 and later).</td><td data-label="Default">.FALSE.</td><td data-label="What to use">.TRUE. for velocity autocorrelation and vibrational DOS.</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="restart">
+<h2>Restarting and changing ensemble</h2>
+<ul class="tight">
+  <li><code>cp CONTCAR POSCAR</code> continues the trajectory: CONTCAR carries the velocities and the integrator's predictor–corrector data.</li>
+  <li>Switching ensemble (NVT to NpT, say): delete the predictor–corrector block at the end of the file, or the run crashes; keep the velocities.</li>
+  <li>Equilibrate first, then count only the production part. Starting velocities come from TEBEG unless POSCAR has them; set RANDOM_SEED for reproducible runs.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="analysis">
+<h2>Analysis</h2>
+<figure class="code sh"><figcaption><span class="code-t">Temperature and energies from OSZICAR (MD runs)</span></figcaption><pre><code>grep &quot;T=&quot; OSZICAR | awk '{print $1, $3, $5}' &gt; T_E.dat  <span class="c"> # step, temperature, conserved energy E</span>
+tail -3 OSZICAR                                        <span class="c"> # the latest steps</span></code></pre></figure>
+<ul class="tight">
+  <li>OSZICAR's MD line: <code>T=</code> temperature, <code>E=</code> total energy including kinetic and thermostat terms (the conserved quantity), <code>F=</code> and <code>E0=</code> as in relaxations, <code>EK=</code> kinetic energy, <code>SP=</code> and <code>SK=</code> thermostat energies.</li>
+  <li>In NVE and Nosé–Hoover runs, E must not drift systematically; drift means too large a time step or noisy forces (a poorly converged SCF). Stochastic thermostats do not conserve it exactly.</li>
+  <li>XDATCAR holds a frame every NBLOCK steps; with MDALGO ≥ 1 the coordinates are not folded back into the cell. In ASE read all frames with <code>read("XDATCAR", index=":")</code>; without the index you get only the last one.</li>
+  <li>Diffusion: D from the mean-squared displacement, ⟨|r(t) − r(0)|²⟩ = 2 n D t in n dimensions; pymatgen's DiffusionAnalyzer reads vasprun.xml files directly. Radial distribution: PCDAT (averaged) or ASE's get_rdf. Vibrational DOS: Fourier transform of the velocity autocorrelation (VELOCITY = .TRUE.).</li>
+  <li>MDAnalysis has no VASP reader: convert with ASE first.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="mlff">
+<h2>Machine-learned force fields in VASP</h2>
+<p>VASP can learn a force field during MD: it computes a step from first principles only when the model's estimated error is too large, and otherwise predicts.</p>
+<figure class="code incar"><figcaption><span class="code-t">Train on the fly (NpT Langevin, heating)</span></figcaption><pre><code><span class="k">ML_LMLFF</span> = .TRUE.
+<span class="k">ML_MODE</span>  = train          <span class="c">! continues from ML_AB if that file is present</span>
+<span class="k">IBRION</span>   = 0
+<span class="k">MDALGO</span>   = 3
+<span class="k">ISIF</span>     = 3
+<span class="k">ISYM</span>     = 0
+<span class="k">TEBEG</span>    = 200 ; <span class="k">TEEND</span> = 500       <span class="c">! heat to about 30% above the temperature you need</span>
+<span class="k">LANGEVIN_GAMMA</span>   = 10.0 10.0
+<span class="k">LANGEVIN_GAMMA_L</span> = 3.0
+<span class="k">PMASS</span>    = 100
+<span class="k">POTIM</span>    = 1.5
+<span class="k">NSW</span>      = 20000</code></pre></figure>
+<figure class="code sh"><figcaption><span class="code-t">Train, refit, run</span></figcaption><pre><code>cp ML_ABN ML_AB     <span class="c"> # continue training (ML_MODE = train) or refit (ML_MODE = refit)</span>
+cp ML_FFN ML_FF     <span class="c"> # then production: ML_MODE = run</span>
+grep ERR ML_LOGFILE | grep -v &quot;#&quot; | awk '{print $2, $4}' &gt; ERR.dat  <span class="c"> # force error per step</span></code></pre></figure>
+<ul class="tight">
+  <li>Refit before production: without it the fast prediction mode, 20 to 100 times faster, is not available.</li>
+  <li>Keep the INCAR and POTCAR of the first-principles part identical across training stages; no MAXMIX while training; never train in NVE.</li>
+  <li>Aim for training errors below about 1 meV/atom in energy and 30–100 meV/Å in forces.</li>
+  <li>Surfaces and molecules: a tiny stress weight, <code>ML_WTSIF = 1E-10</code>.</li>
+  <li>A force field describes one potential-energy landscape: for a magnet, train on one consistent magnetic state.</li>
+  <li>Since VASP 6.6.0 a run stops if the model's spilling factor becomes critically large (above 0.9).</li>
+</ul>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-ml-lmlff"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ML_LMLFF" rel="noopener" title="ML_LMLFF on the VASP Wiki"><code>ML_LMLFF</code></a> <span class="since" title="Needs VASP 6.3.0 or later">6.3.0+</span></th><td data-label="What it does">Switch on VASP's machine-learned force field (VASP 6.3.0 and later).</td><td data-label="Default">.FALSE.</td><td data-label="What to use">.TRUE. together with ML_MODE.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-ml-mode"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ML_MODE" rel="noopener" title="ML_MODE on the VASP Wiki"><code>ML_MODE</code></a> <span class="since" title="Needs VASP 6.4.0 or later">6.4.0+</span></th><td data-label="What it does">Force-field mode: train, select, refit, run, or delta (6.6.0).</td><td data-label="Default">none (with ML_LMLFF = .TRUE., VASP then trains)</td><td data-label="What to use">train → refit → run; set it explicitly.</td><td data-label="Watch out">Without refit, the fast prediction mode is not available.</td></tr>
+<tr id="tag-ml-ctifor"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ML_CTIFOR" rel="noopener" title="ML_CTIFOR on the VASP Wiki"><code>ML_CTIFOR</code></a></th><td data-label="What it does">Bayesian error threshold that decides when to compute a step from first principles.</td><td data-label="Default">0.02 or 0.002, depending on ML_CALGO</td><td data-label="What to use">Lower for stricter training.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-ml-outblock"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ML_OUTBLOCK" rel="noopener" title="ML_OUTBLOCK on the VASP Wiki"><code>ML_OUTBLOCK</code></a></th><td data-label="What it does">How often a prediction run (ML_MODE = run) writes output.</td><td data-label="Default">10 in most cases</td><td data-label="What to use">10–100 for long runs.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-ml-wtsif"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/ML_WTSIF" rel="noopener" title="ML_WTSIF on the VASP Wiki"><code>ML_WTSIF</code></a></th><td data-label="What it does">Weight of the stress in the force-field fit.</td><td data-label="Default">1.0 (5.0 with ML_IWEIGHT = 1)</td><td data-label="What to use">A tiny value (1E-10) for surfaces and molecules, which have no meaningful stress.</td><td data-label="Watch out"></td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>No POTIM: VASP stops at once. No coupling tag: a silent NVE run.</li>
+  <li>MDALGO = 0, then a mean-squared displacement from wrapped coordinates.</li>
+  <li>NpT with a thermostat other than Langevin.</li>
+  <li>Too large a time step for hydrogen; or a heavier hydrogen mass (POMASS) when dynamics matter.</li>
+  <li>Symmetry left on (ISYM).</li>
+  <li>A CONTCAR from an NVT run reused for NpT without removing the predictor–corrector block.</li>
+  <li>Reading XDATCAR with ASE without <code>index=":"</code>.</li>
+  <li>Spin-polarized r²SCAN MD or force-field training on VASP 6.6.0.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 33: Ab initio molecular dynamics <span class="muted">(in preparation)</span></li>
+<li>Lecture 34: Machine-learning interatomic potentials <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiMD">VASP Wiki, “Molecular-dynamics calculations” (setup, ensembles, analysis). · <a href="https://www.vasp.at/wiki/Molecular-dynamics_calculations" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiMDALGO">VASP Wiki, “MDALGO” (thermostats and ensembles). · <a href="https://www.vasp.at/wiki/MDALGO" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VASPwikiMLFFbest">VASP Wiki, “Best practices for machine-learned force fields”. · <a href="https://www.vasp.at/wiki/Best_practices_for_machine-learned_force_fields" rel="noopener">www.vasp.at</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../neb/"><span>Previous sheet</span>NEB</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <span></span>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

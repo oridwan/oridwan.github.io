@@ -409,8 +409,13 @@
     "PSTRESS": {
       "def": "A pressure added in relaxations that change the cell. Its unit is kB (kilobar); 1 kB = 0.1 GPa.",
       "wiki": "https://www.vasp.at/wiki/PSTRESS",
-      "checked": "2026-10-30",
-      "lecture": 21
+      "checked": "2026-11-06",
+      "lecture": 21,
+      "short": "An external pressure in kB (1 kB = 0.1 GPa) that relaxations and NpT runs target.",
+      "default": "0",
+      "use": "Relax under pressure. It can also absorb the Pulay stress, but a higher ENCUT is the cleaner fix.",
+      "pitfall": "The VASP Wiki's PSTRESS and Volume relaxation pages give opposite signs for the Pulay correction: test it on your system.",
+      "group": "ionic"
     },
     "LWAVE": {
       "def": "Whether the orbitals are written to WAVECAR at the end of the run.",
@@ -480,10 +485,11 @@
     },
     "NELECT": {
       "def": "Number of electrons. By default it is set from the POTCARs (ZVAL of each species times its number of atoms) for a neutral cell; set it only for a charged calculation.",
-      "default": "number of valence electrons (neutral cell)",
+      "default": "the valence electrons of the POTCARs (neutral cell)",
       "wiki": "https://www.vasp.at/wiki/NELECT",
-      "checked": "2026-10-30",
-      "lecture": 2
+      "checked": "2026-11-06",
+      "lecture": 2,
+      "short": "Total number of electrons; set it for charged cells (fewer electrons for a positive charge)."
     },
     "LORBIT": {
       "def": "Selects a method to project the Kohn–Sham orbitals onto local quantum numbers (ℓ, m) around each atom, giving s-, p-, d- and f-resolved information in PROCAR and DOSCAR.",
@@ -822,6 +828,686 @@
       "wiki": "https://www.vasp.at/wiki/TIME",
       "checked": "2026-11-06",
       "short": "Trial time step of the electronic algorithms ALGO = Damped and All."
+    },
+    "KSPACING_OPT": {
+      "def": "k-spacing (Å⁻¹, 2π included) of an extra non-self-consistent mesh, used when there is no KPOINTS_OPT file.",
+      "short": "k-spacing (Å⁻¹, 2π included) of an extra non-self-consistent mesh, used when there is no KPOINTS_OPT file.",
+      "default": "0.5",
+      "use": "A denser mesh for the DOS in the same run as the self-consistent one.",
+      "pitfall": "Needs VASP 6.6.0 or later; with older versions write a KPOINTS_OPT file instead.",
+      "since": "6.6.0",
+      "wiki": "https://www.vasp.at/wiki/KSPACING_OPT",
+      "checked": "2026-11-06",
+      "group": "kpoints"
+    },
+    "LKPOINTS_OPT": {
+      "def": "Whether VASP reads the KPOINTS_OPT file.",
+      "short": "Whether VASP reads the KPOINTS_OPT file.",
+      "default": ".TRUE. if a KPOINTS_OPT file is present",
+      "use": "Set .FALSE. to ignore a KPOINTS_OPT left in the folder.",
+      "pitfall": "A stray KPOINTS_OPT file silently adds an extra non-self-consistent step.",
+      "wiki": "https://www.vasp.at/wiki/LKPOINTS_OPT",
+      "checked": "2026-11-06",
+      "group": "kpoints"
+    },
+    "KPOINTS_OPT_NKBATCH": {
+      "def": "Batch size of k-points in the KPOINTS_OPT step.",
+      "short": "Batch size of k-points in the KPOINTS_OPT step.",
+      "default": "the number of irreducible k-points of the self-consistent run",
+      "use": "Lower it to save memory; raise it for speed.",
+      "wiki": "https://www.vasp.at/wiki/KPOINTS_OPT_NKBATCH",
+      "checked": "2026-11-06",
+      "group": "kpoints"
+    },
+    "KPOINTS_OPT_MODE": {
+      "def": "Diagonalizer for the KPOINTS_OPT step: 0 skip, 1 blocked Davidson, 2 exact.",
+      "short": "Diagonalizer for the KPOINTS_OPT step: 0 skip, 1 blocked Davidson, 2 exact.",
+      "default": "1",
+      "use": "Use 2 if the Davidson step struggles.",
+      "since": "6.5.0",
+      "wiki": "https://www.vasp.at/wiki/KPOINTS_OPT_MODE",
+      "checked": "2026-11-06",
+      "group": "kpoints"
+    },
+    "LATTICE_CONSTRAINTS": {
+      "def": "Three logicals that freeze or free the lattice components during a cell relaxation or MD.",
+      "short": "Three logicals that freeze or free the lattice components during a cell relaxation or MD.",
+      "default": "no constraints",
+      "use": "Slab or 2D sheet: .TRUE. .TRUE. .FALSE. keeps the out-of-plane vector fixed.",
+      "pitfall": "With IBRION = 1 or 2 from VASP 6.4.3, with ISIF = 4 or 5 from 6.5.1; it was ignored for IBRION = 1 or 2 before 6.5.0. In non-orthogonal cells the angles are not conserved.",
+      "wiki": "https://www.vasp.at/wiki/LATTICE_CONSTRAINTS",
+      "checked": "2026-11-06",
+      "group": "poscar"
+    },
+    "BANDGAP": {
+      "def": "How VASP reports the band gap in OUTCAR: COMPACT gives the valence-band maximum, conduction-band minimum and fundamental gap.",
+      "short": "How VASP reports the band gap in OUTCAR (VASP 6.4.3 and later).",
+      "default": "COMPACT",
+      "wiki": "https://www.vasp.at/wiki/BANDGAP",
+      "checked": "2026-11-06",
+      "since": "6.4.3"
+    },
+    "SAXIS": {
+      "def": "Spin quantization axis of noncollinear runs: MAGMOM and the printed moments refer to it.",
+      "short": "Spin quantization axis of noncollinear runs: MAGMOM and the printed moments refer to it.",
+      "default": "0 0 1",
+      "use": "For anisotropy runs keep MAGMOM along z (0 0 m) and point SAXIS along the direction you test.",
+      "pitfall": "With a non-default SAXIS, MAGMOM is given in the rotated (spinor) frame, not in Cartesian x, y, z.",
+      "wiki": "https://www.vasp.at/wiki/SAXIS",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "GGA_COMPAT": {
+      "def": ".FALSE. restores the full lattice symmetry of the gradient terms of GGA and meta-GGA functionals.",
+      "short": ".FALSE. restores the full lattice symmetry of the gradient terms of GGA and meta-GGA functionals.",
+      "default": ".TRUE.",
+      "use": ".FALSE. for magnetic anisotropy and other noncollinear runs, where the small symmetry error matters.",
+      "pitfall": "Its effect (about 0.1 meV) is as large as a typical anisotropy energy.",
+      "wiki": "https://www.vasp.at/wiki/GGA_COMPAT",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LORBMOM": {
+      "def": "Write the orbital moments to OUTCAR (spin–orbit runs only).",
+      "short": "Write the orbital moments to OUTCAR (spin–orbit runs only).",
+      "default": ".FALSE.",
+      "use": ".TRUE. with LSORBIT to see the orbital moment of each site.",
+      "wiki": "https://www.vasp.at/wiki/LORBMOM",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "I_CONSTRAINED_M": {
+      "def": "Constrain local moments: 1 direction, 2 size and direction, 4 direction and sign (VASP 6.4.0 and later).",
+      "short": "Constrain local moments: 1 direction, 2 size and direction, 4 direction and sign (VASP 6.4.0 and later).",
+      "default": "not set",
+      "use": "Pin moments while scanning directions or stabilizing a state; raise LAMBDA step by step.",
+      "pitfall": "Adds a penalty energy E_p to the total energy: check that it is small before using the energy.",
+      "wiki": "https://www.vasp.at/wiki/I_CONSTRAINED_M",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LAMBDA": {
+      "def": "Weight of the penalty term for constrained moments.",
+      "short": "Weight of the penalty term for constrained moments.",
+      "default": "0",
+      "use": "Start small and increase it run by run, restarting each time.",
+      "pitfall": "Raising it in one jump makes the SCF unstable.",
+      "wiki": "https://www.vasp.at/wiki/LAMBDA",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "M_CONSTR": {
+      "def": "Target moment direction (or vector) of each atom for constrained runs, three numbers per atom.",
+      "short": "Target moment direction (or vector) of each atom for constrained runs, three numbers per atom.",
+      "default": "3*NIONS*0.0",
+      "use": "Set MAGMOM along the same directions, equal or slightly larger.",
+      "wiki": "https://www.vasp.at/wiki/M_CONSTR",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "RWIGS": {
+      "def": "Radius of the sphere around each species (Å) used to integrate local quantities.",
+      "short": "Radius of the sphere around each species (Å) used to integrate local quantities.",
+      "default": "−1 (from the POTCAR when LORBIT ≥ 10)",
+      "use": "Needed for LORBIT below 10 and for constrained moments.",
+      "pitfall": "The spheres do not fill the cell, so local moments do not add up to the total.",
+      "wiki": "https://www.vasp.at/wiki/RWIGS",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LSPIRAL": {
+      "def": "Spin spirals with the generalized Bloch theorem.",
+      "short": "Spin spirals with the generalized Bloch theorem.",
+      "default": ".FALSE.",
+      "use": "With LNONCOLLINEAR = .TRUE., ISYM = −1 and the spiral vector in QSPIRAL.",
+      "pitfall": "Cannot be combined with spin–orbit coupling.",
+      "wiki": "https://www.vasp.at/wiki/LSPIRAL",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "QSPIRAL": {
+      "def": "Propagation vector of a spin spiral, in units of the reciprocal lattice vectors.",
+      "short": "Propagation vector of a spin spiral, in units of the reciprocal lattice vectors.",
+      "default": "0 0 0",
+      "use": "Scan q to map E(q).",
+      "pitfall": "Use the same k-mesh and cutoffs for every q.",
+      "wiki": "https://www.vasp.at/wiki/QSPIRAL",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LDAU": {
+      "def": "Switch on DFT+U.",
+      "short": "Switch on DFT+U.",
+      "default": ".FALSE.",
+      "use": ".TRUE. together with the other LDAU tags.",
+      "wiki": "https://www.vasp.at/wiki/LDAU",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LDAUTYPE": {
+      "def": "DFT+U flavour: 1 Liechtenstein (U and J), 2 Dudarev (only U − J matters), 4 like 1 without exchange splitting.",
+      "short": "DFT+U flavour: 1 Liechtenstein (U and J), 2 Dudarev (only U − J matters), 4 like 1 without exchange splitting.",
+      "default": "2",
+      "use": "2 for most work and for Materials Project compatibility.",
+      "pitfall": "Energies computed with different U (or U − J) cannot be compared.",
+      "wiki": "https://www.vasp.at/wiki/LDAUTYPE",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LDAUL": {
+      "def": "The l quantum number that gets U, one value per species: 2 for d, 3 for f, −1 for none.",
+      "short": "The l quantum number that gets U, one value per species: 2 for d, 3 for f, −1 for none.",
+      "default": "2 for each species",
+      "use": "e.g. LDAUL = 2 -1 for an Fe oxide (Fe first in POSCAR).",
+      "pitfall": "One l per species only.",
+      "wiki": "https://www.vasp.at/wiki/LDAUL",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LDAUU": {
+      "def": "U in eV, one value per species.",
+      "short": "U in eV, one value per species.",
+      "default": "0 for each species",
+      "use": "From the literature or linear response; Materials Project uses e.g. Fe 5.3, Mn 3.9, Ni 6.2, Co 3.32 eV in oxides.",
+      "pitfall": "The order follows the POSCAR species line.",
+      "wiki": "https://www.vasp.at/wiki/LDAUU",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LDAUJ": {
+      "def": "J in eV, one value per species.",
+      "short": "J in eV, one value per species.",
+      "default": "0 for each species",
+      "use": "0 with LDAUTYPE = 2, where only U − J enters.",
+      "wiki": "https://www.vasp.at/wiki/LDAUJ",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "LDAUPRINT": {
+      "def": "How much of the occupation matrices to print.",
+      "short": "How much of the occupation matrices to print.",
+      "default": "0",
+      "use": "1 to print the on-site occupation matrices and occupancies.",
+      "wiki": "https://www.vasp.at/wiki/LDAUPRINT",
+      "checked": "2026-11-06",
+      "group": "magnetism"
+    },
+    "NFREE": {
+      "def": "IBRION = 1: how many previous steps the quasi-Newton optimizer remembers; IBRION = 5, 6: displacements per direction.",
+      "short": "IBRION = 1: how many previous steps the quasi-Newton optimizer remembers; IBRION = 5, 6: displacements per direction.",
+      "default": "2 for IBRION = 5 and 6, otherwise 0",
+      "use": "10 to 20 for complex relaxations with IBRION = 1.",
+      "pitfall": "Very large values rarely help.",
+      "wiki": "https://www.vasp.at/wiki/NFREE",
+      "checked": "2026-11-06",
+      "group": "ionic"
+    },
+    "ENINI": {
+      "def": "Cutoff used during the first, non-self-consistent steps of a run.",
+      "short": "Cutoff used during the first, non-self-consistent steps of a run.",
+      "default": "ENCUT",
+      "wiki": "https://www.vasp.at/wiki/ENINI",
+      "checked": "2026-11-06"
+    },
+    "LZEROZ": {
+      "def": "Keep the z component of the moments zero in a spin-spiral run.",
+      "short": "Keep the z component of the moments zero in a spin-spiral run.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LZEROZ",
+      "checked": "2026-11-06"
+    },
+    "LOPTICS": {
+      "def": "Frequency-dependent dielectric function in the independent-particle picture.",
+      "short": "Frequency-dependent dielectric function in the independent-particle picture.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LOPTICS",
+      "checked": "2026-11-06"
+    },
+    "CSHIFT": {
+      "def": "Complex shift (broadening) in eV used for LOPTICS.",
+      "short": "Complex shift (broadening) in eV used for LOPTICS.",
+      "default": "0.1 (for LOPTICS)",
+      "wiki": "https://www.vasp.at/wiki/CSHIFT",
+      "checked": "2026-11-06"
+    },
+    "LEPSILON": {
+      "def": "Static dielectric tensor, Born effective charges and piezoelectric tensor by density-functional perturbation theory (LDA and GGA only).",
+      "short": "Static dielectric tensor, Born effective charges and piezoelectric tensor by density-functional perturbation theory (LDA and GGA only).",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LEPSILON",
+      "checked": "2026-11-06"
+    },
+    "LCALCEPS": {
+      "def": "The same quantities as LEPSILON from finite electric fields; works for hybrids and meta-GGA, gapped systems only.",
+      "short": "The same quantities as LEPSILON from finite electric fields; works for hybrids and meta-GGA, gapped systems only.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LCALCEPS",
+      "checked": "2026-11-06"
+    },
+    "LRPA": {
+      "def": ".TRUE. leaves the exchange-correlation local-field effects out of LEPSILON and LCALCEPS.",
+      "short": ".TRUE. leaves the exchange-correlation local-field effects out of LEPSILON and LCALCEPS.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LRPA",
+      "checked": "2026-11-06"
+    },
+    "LAECHG": {
+      "def": "Write the all-electron core and valence densities (AECCAR0, AECCAR2) for Bader analysis.",
+      "short": "Write the all-electron core and valence densities (AECCAR0, AECCAR2) for Bader analysis.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LAECHG",
+      "checked": "2026-11-06"
+    },
+    "LELF": {
+      "def": "Write the electron localization function to ELFCAR.",
+      "short": "Write the electron localization function to ELFCAR.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LELF",
+      "checked": "2026-11-06"
+    },
+    "LVHAR": {
+      "def": "Write the ionic plus Hartree potential to LOCPOT (no exchange-correlation): the choice for work functions.",
+      "short": "Write the ionic plus Hartree potential to LOCPOT (no exchange-correlation): the choice for work functions.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LVHAR",
+      "checked": "2026-11-06"
+    },
+    "LVTOT": {
+      "def": "Write the total local potential, exchange-correlation included, to LOCPOT.",
+      "short": "Write the total local potential, exchange-correlation included, to LOCPOT.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LVTOT",
+      "checked": "2026-11-06"
+    },
+    "LDIPOL": {
+      "def": "Dipole correction of the potential and forces for slabs and molecules.",
+      "short": "Dipole correction of the potential and forces for slabs and molecules.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LDIPOL",
+      "checked": "2026-11-06"
+    },
+    "IDIPOL": {
+      "def": "Direction of the dipole correction: 1, 2 or 3 along a lattice vector, 4 in all directions.",
+      "short": "Direction of the dipole correction: 1, 2 or 3 along a lattice vector, 4 in all directions.",
+      "default": "not set",
+      "wiki": "https://www.vasp.at/wiki/IDIPOL",
+      "checked": "2026-11-06"
+    },
+    "DIPOL": {
+      "def": "Centre of the cell for the dipole correction, in fractional coordinates.",
+      "short": "Centre of the cell for the dipole correction, in fractional coordinates.",
+      "default": "not set (VASP places it half a cell away from the plane of lowest charge density)",
+      "wiki": "https://www.vasp.at/wiki/DIPOL",
+      "checked": "2026-11-06"
+    },
+    "LVACPOTAV": {
+      "def": "Print the vacuum potential on both sides of a slab to OUTCAR.",
+      "short": "Print the vacuum potential on both sides of a slab to OUTCAR.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LVACPOTAV",
+      "checked": "2026-11-06"
+    },
+    "LPARD": {
+      "def": "Write band- or energy-resolved partial charge densities (PARCHG), e.g. for STM images.",
+      "short": "Write band- or energy-resolved partial charge densities (PARCHG), e.g. for STM images.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LPARD",
+      "checked": "2026-11-06"
+    },
+    "IBAND": {
+      "def": "The bands for LPARD.",
+      "short": "The bands for LPARD.",
+      "default": "not set",
+      "wiki": "https://www.vasp.at/wiki/IBAND",
+      "checked": "2026-11-06"
+    },
+    "EINT": {
+      "def": "The energy window for LPARD.",
+      "short": "The energy window for LPARD.",
+      "default": "not set",
+      "wiki": "https://www.vasp.at/wiki/EINT",
+      "checked": "2026-11-06"
+    },
+    "NBMOD": {
+      "def": "How LPARD selects bands: band list, all bands, or an energy window (absolute or relative to the Fermi level).",
+      "short": "How LPARD selects bands: band list, all bands, or an energy window (absolute or relative to the Fermi level).",
+      "default": "set from IBAND or EINT",
+      "wiki": "https://www.vasp.at/wiki/NBMOD",
+      "checked": "2026-11-06"
+    },
+    "LPHON_DISPERSION": {
+      "def": "Phonon dispersion along the QPOINTS path, for the primitive cell, from the supercell force constants of the same run (6.3.2 and later).",
+      "short": "Phonon dispersion along the QPOINTS path, for the primitive cell, from the supercell force constants of the same run (6.3.2 and later).",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LPHON_DISPERSION",
+      "checked": "2026-11-06"
+    },
+    "LCHIMAG": {
+      "def": "NMR chemical shielding tensors by linear response.",
+      "short": "NMR chemical shielding tensors by linear response.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LCHIMAG",
+      "checked": "2026-11-06"
+    },
+    "LEFG": {
+      "def": "Electric field gradients at the nuclei.",
+      "short": "Electric field gradients at the nuclei.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LEFG",
+      "checked": "2026-11-06"
+    },
+    "LHYPERFINE": {
+      "def": "Hyperfine coupling constants (spin-polarized runs).",
+      "short": "Hyperfine coupling constants (spin-polarized runs).",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LHYPERFINE",
+      "checked": "2026-11-06"
+    },
+    "ICORELEVEL": {
+      "def": "Core-level energies: 1 initial state, 2 final state with a core hole.",
+      "short": "Core-level energies: 1 initial state, 2 final state with a core hole.",
+      "default": "0",
+      "wiki": "https://www.vasp.at/wiki/ICORELEVEL",
+      "checked": "2026-11-06"
+    },
+    "LCALCPOL": {
+      "def": "Berry-phase electronic polarization.",
+      "short": "Berry-phase electronic polarization.",
+      "default": ".FALSE.",
+      "wiki": "https://www.vasp.at/wiki/LCALCPOL",
+      "checked": "2026-11-06"
+    },
+    "EFIELD_PEAD": {
+      "def": "A finite homogeneous electric field (eV/Å), also used internally by LCALCEPS.",
+      "short": "A finite homogeneous electric field (eV/Å), also used internally by LCALCEPS.",
+      "default": "0.01 in each direction with LCALCEPS, otherwise 0",
+      "wiki": "https://www.vasp.at/wiki/EFIELD_PEAD",
+      "checked": "2026-11-06"
+    },
+    "IVDW": {
+      "def": "Empirical van der Waals correction, e.g. 11 for DFT-D3 with zero damping, 12 for Becke–Johnson damping.",
+      "short": "Empirical van der Waals correction, e.g. 11 for DFT-D3 with zero damping, 12 for Becke–Johnson damping.",
+      "default": "0 (none)",
+      "wiki": "https://www.vasp.at/wiki/IVDW",
+      "checked": "2026-11-06"
+    },
+    "EMIN": {
+      "def": "Lower end of the DOS energy window (eV).",
+      "short": "Lower end of the DOS energy window (eV).",
+      "default": "lowest eigenvalue minus a margin",
+      "wiki": "https://www.vasp.at/wiki/EMIN",
+      "checked": "2026-11-06"
+    },
+    "EMAX": {
+      "def": "Upper end of the DOS energy window (eV).",
+      "short": "Upper end of the DOS energy window (eV).",
+      "default": "highest eigenvalue plus a margin",
+      "wiki": "https://www.vasp.at/wiki/EMAX",
+      "checked": "2026-11-06"
+    },
+    "IMAGES": {
+      "def": "Number of images between the two end points of an NEB, one folder each (01, 02, …).",
+      "short": "Number of images between the two end points of an NEB, one folder each (01, 02, …).",
+      "default": "0",
+      "use": "Start small (a few images) and add more once the band has converged.",
+      "pitfall": "The number of MPI ranks must be a multiple of IMAGES.",
+      "group": "neb",
+      "wiki": "https://www.vasp.at/wiki/IMAGES",
+      "checked": "2026-11-06"
+    },
+    "SPRING": {
+      "def": "Spring constant between images; a negative value switches on nudging.",
+      "short": "Spring constant between images; a negative value switches on nudging.",
+      "default": "−5",
+      "use": "Keep −5.",
+      "pitfall": "Very large values slow convergence.",
+      "group": "neb",
+      "wiki": "https://www.vasp.at/wiki/SPRING",
+      "checked": "2026-11-06"
+    },
+    "ICHAIN": {
+      "def": "VTST method: 0 nudged elastic band, 2 dimer, 1 dynamical matrix, 3 Lanczos.",
+      "short": "VTST method: 0 nudged elastic band, 2 dimer, 1 dynamical matrix, 3 Lanczos.",
+      "default": "0",
+      "use": "0 for NEB.",
+      "group": "neb",
+      "vtst": true,
+      "wiki": "https://theory.cm.utexas.edu/vtsttools/neb.html",
+      "checked": "2026-11-06"
+    },
+    "LCLIMB": {
+      "def": "VTST climbing image: the highest image climbs to the saddle point.",
+      "short": "VTST climbing image: the highest image climbs to the saddle point.",
+      "default": ".TRUE. (VTST)",
+      "use": ".FALSE. for a first, plain NEB; then .TRUE. to converge the saddle point.",
+      "pitfall": "The VTST default is already .TRUE.: set .FALSE. explicitly for the first stage. Stock VASP has no climbing image.",
+      "group": "neb",
+      "vtst": true,
+      "wiki": "https://theory.cm.utexas.edu/vtsttools/neb.html",
+      "checked": "2026-11-06"
+    },
+    "IOPT": {
+      "def": "VTST optimizer: 1 LBFGS, 2 conjugate gradient, 3 quick-min, 7 FIRE (0 = use IBRION).",
+      "short": "VTST optimizer: 1 LBFGS, 2 conjugate gradient, 3 quick-min, 7 FIRE (0 = use IBRION).",
+      "default": "0",
+      "use": "Quick-min or FIRE while forces are large; LBFGS or CG near convergence.",
+      "pitfall": "Set IBRION = 3 and POTIM = 0 so VASP's own optimizer stays idle (nothing checks this); a positive EDIFFG makes VTST stop.",
+      "group": "neb",
+      "vtst": true,
+      "wiki": "https://theory.cm.utexas.edu/vtsttools/optimizers.html",
+      "checked": "2026-11-06"
+    },
+    "LNEBCELL": {
+      "def": "VTST solid-state NEB: the cell changes along the path too.",
+      "short": "VTST solid-state NEB: the cell changes along the path too.",
+      "default": ".FALSE.",
+      "use": "With ISIF = 3 and IOPT = 3 (or 7).",
+      "pitfall": "Needs a cutoff high enough for cell changes.",
+      "group": "neb",
+      "vtst": true,
+      "wiki": "https://theory.cm.utexas.edu/vtsttools/neb.html",
+      "checked": "2026-11-06"
+    },
+    "MDALGO": {
+      "def": "Thermostat: 1 Andersen, 2 Nosé–Hoover, 3 Langevin, 4 Nosé–Hoover chain (6.4.0), 5 CSVR (6.4.3).",
+      "short": "Thermostat: 1 Andersen, 2 Nosé–Hoover, 3 Langevin, 4 Nosé–Hoover chain (6.4.0), 5 CSVR (6.4.3).",
+      "default": "0 (legacy Nosé)",
+      "use": "Set it explicitly (1–5); only 3 (Langevin) with ISIF = 3 gives NpT.",
+      "pitfall": "MDALGO = 0 wraps the atoms back into the cell, which rules out a mean-squared displacement.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/MDALGO",
+      "checked": "2026-11-06"
+    },
+    "TEBEG": {
+      "def": "Starting temperature (K); velocities are drawn from it if POSCAR has none.",
+      "short": "Starting temperature (K); velocities are drawn from it if POSCAR has none.",
+      "default": "0",
+      "use": "The target temperature.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/TEBEG",
+      "checked": "2026-11-06"
+    },
+    "TEEND": {
+      "def": "Final temperature (K) of a linear ramp.",
+      "short": "Final temperature (K) of a linear ramp.",
+      "default": "TEBEG",
+      "use": "Larger than TEBEG to heat gradually, e.g. for force-field training.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/TEEND",
+      "checked": "2026-11-06"
+    },
+    "SMASS": {
+      "def": "Nosé mass for MDALGO = 0 and 2 (−3 = NVE, −1 = velocity rescaling, ≥ 0 = Nosé thermostat); damping for IBRION = 3.",
+      "short": "Nosé mass for MDALGO = 0 and 2 (−3 = NVE, −1 = velocity rescaling, ≥ 0 = Nosé thermostat); damping for IBRION = 3.",
+      "default": "−3",
+      "use": "MDALGO = 2: 0 or a small positive value for NVT.",
+      "pitfall": "The default −3 means no thermostat (NVE).",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/SMASS",
+      "checked": "2026-11-06"
+    },
+    "ANDERSEN_PROB": {
+      "def": "Andersen collision probability per atom per step (MDALGO = 1).",
+      "short": "Andersen collision probability per atom per step (MDALGO = 1).",
+      "default": "0",
+      "use": "0 for NVE; positive for NVT.",
+      "pitfall": "Rescale it if POTIM changes.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/ANDERSEN_PROB",
+      "checked": "2026-11-06"
+    },
+    "LANGEVIN_GAMMA": {
+      "def": "Langevin friction per species in ps⁻¹ (MDALGO = 3).",
+      "short": "Langevin friction per species in ps⁻¹ (MDALGO = 3).",
+      "default": "0 for each species",
+      "use": "About 10 ps⁻¹ per species for NVT or NpT.",
+      "pitfall": "0 means NVE; very large values overdamp the motion.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/LANGEVIN_GAMMA",
+      "checked": "2026-11-06"
+    },
+    "LANGEVIN_GAMMA_L": {
+      "def": "Langevin friction of the lattice in ps⁻¹ (MDALGO = 3, ISIF = 3).",
+      "short": "Langevin friction of the lattice in ps⁻¹ (MDALGO = 3, ISIF = 3).",
+      "default": "0",
+      "use": "About 10 for NpT.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/LANGEVIN_GAMMA_L",
+      "checked": "2026-11-06"
+    },
+    "PMASS": {
+      "def": "Fictitious mass of the lattice for NpT (MDALGO = 3, ISIF = 3), in amu.",
+      "short": "Fictitious mass of the lattice for NpT (MDALGO = 3, ISIF = 3), in amu.",
+      "default": "1000",
+      "use": "Start at 1000 and test.",
+      "pitfall": "Too small: violent volume swings; too large: the cell barely responds.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/PMASS",
+      "checked": "2026-11-06"
+    },
+    "NHC_NCHAINS": {
+      "def": "Length of the Nosé–Hoover chain (MDALGO = 4).",
+      "short": "Length of the Nosé–Hoover chain (MDALGO = 4).",
+      "default": "0 (= NVE)",
+      "use": "3 is a common choice.",
+      "pitfall": "The default gives NVE.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/NHC_NCHAINS",
+      "checked": "2026-11-06"
+    },
+    "NHC_PERIOD": {
+      "def": "Time scale of the Nosé–Hoover chain thermostat, in MD steps.",
+      "short": "Time scale of the Nosé–Hoover chain thermostat, in MD steps.",
+      "default": "40",
+      "use": "20–200 steps.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/NHC_PERIOD",
+      "checked": "2026-11-06"
+    },
+    "CSVR_PERIOD": {
+      "def": "Time scale of the CSVR thermostat (MDALGO = 5).",
+      "short": "Time scale of the CSVR thermostat (MDALGO = 5).",
+      "default": "0 (= NVE)",
+      "use": "Set it to get NVT.",
+      "pitfall": "The VASP Wiki gives its unit both as fs and as MD steps.",
+      "since": "6.4.3",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/CSVR_PERIOD",
+      "checked": "2026-11-06"
+    },
+    "NBLOCK": {
+      "def": "Every NBLOCK steps VASP writes an XDATCAR frame and updates averages.",
+      "short": "Every NBLOCK steps VASP writes an XDATCAR frame and updates averages.",
+      "default": "1",
+      "use": "1 for short AIMD; 10–100 for long runs.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/NBLOCK",
+      "checked": "2026-11-06"
+    },
+    "KBLOCK": {
+      "def": "Averages (PCDAT, DOSCAR) are written every KBLOCK × NBLOCK steps.",
+      "short": "Averages (PCDAT, DOSCAR) are written every KBLOCK × NBLOCK steps.",
+      "default": "NSW",
+      "use": "Leave the default.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/KBLOCK",
+      "checked": "2026-11-06"
+    },
+    "POMASS": {
+      "def": "Atomic masses (amu) per species, overriding the POTCAR values.",
+      "short": "Atomic masses (amu) per species, overriding the POTCAR values.",
+      "default": "from the POTCAR",
+      "use": "A heavier H (e.g. 8) allows a longer time step when only equilibrium properties matter.",
+      "pitfall": "It changes the dynamics: avoid it when time-dependent or mass-dependent results matter.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/POMASS",
+      "checked": "2026-11-06"
+    },
+    "RANDOM_SEED": {
+      "def": "Seed of the random numbers (initial velocities, stochastic thermostats).",
+      "short": "Seed of the random numbers (initial velocities, stochastic thermostats).",
+      "default": "from the system clock",
+      "use": "Set it to make a run reproducible.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/RANDOM_SEED",
+      "checked": "2026-11-06"
+    },
+    "VELOCITY": {
+      "def": "Write the velocities to vaspout.h5 (VASP 6.4 and later).",
+      "short": "Write the velocities to vaspout.h5 (VASP 6.4 and later).",
+      "default": ".FALSE.",
+      "use": ".TRUE. for velocity autocorrelation and vibrational DOS.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/VELOCITY",
+      "checked": "2026-11-06"
+    },
+    "ML_LMLFF": {
+      "def": "Switch on VASP's machine-learned force field (VASP 6.3.0 and later).",
+      "short": "Switch on VASP's machine-learned force field (VASP 6.3.0 and later).",
+      "default": ".FALSE.",
+      "use": ".TRUE. together with ML_MODE.",
+      "since": "6.3.0",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/ML_LMLFF",
+      "checked": "2026-11-06"
+    },
+    "ML_MODE": {
+      "def": "Force-field mode: train, select, refit, run, or delta (6.6.0).",
+      "short": "Force-field mode: train, select, refit, run, or delta (6.6.0).",
+      "default": "none (with ML_LMLFF = .TRUE., VASP then trains)",
+      "use": "train → refit → run; set it explicitly.",
+      "pitfall": "Without refit, the fast prediction mode is not available.",
+      "since": "6.4.0",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/ML_MODE",
+      "checked": "2026-11-06"
+    },
+    "ML_CTIFOR": {
+      "def": "Bayesian error threshold that decides when to compute a step from first principles.",
+      "short": "Bayesian error threshold that decides when to compute a step from first principles.",
+      "default": "0.02 or 0.002, depending on ML_CALGO",
+      "use": "Lower for stricter training.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/ML_CTIFOR",
+      "checked": "2026-11-06"
+    },
+    "ML_OUTBLOCK": {
+      "def": "How often a prediction run (ML_MODE = run) writes output.",
+      "short": "How often a prediction run (ML_MODE = run) writes output.",
+      "default": "10 in most cases",
+      "use": "10–100 for long runs.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/ML_OUTBLOCK",
+      "checked": "2026-11-06"
+    },
+    "ML_WTSIF": {
+      "def": "Weight of the stress in the force-field fit.",
+      "short": "Weight of the stress in the force-field fit.",
+      "default": "1.0 (5.0 with ML_IWEIGHT = 1)",
+      "use": "A tiny value (1E-10) for surfaces and molecules, which have no meaningful stress.",
+      "group": "md",
+      "wiki": "https://www.vasp.at/wiki/ML_WTSIF",
+      "checked": "2026-11-06"
     }
   },
   "refs": {
@@ -1176,10 +1862,10 @@
     },
     "VASPwikiOSZICAR": {
       "cite": "VASP Wiki: OSZICAR",
-      "text": "VASP Wiki, “OSZICAR” (defines the residual R = (H − εS)|φ⟩ of the trial orbitals).",
+      "text": "VASP Wiki, “OSZICAR” (what each column means).",
       "url": "https://www.vasp.at/wiki/OSZICAR",
-      "urlLabel": "vasp.at/wiki",
-      "read": "2026-10-30"
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
     },
     "VASPwikiBZint": {
       "cite": "VASP Wiki: integrating over orbitals",
@@ -1247,10 +1933,10 @@
     },
     "VASPwikiMAGMOM": {
       "cite": "VASP Wiki: MAGMOM",
-      "text": "VASP Wiki, “MAGMOM”.",
+      "text": "VASP Wiki, “MAGMOM” (starting moments, symmetry, restarts).",
       "url": "https://www.vasp.at/wiki/MAGMOM",
-      "urlLabel": "vasp.at/wiki",
-      "read": "2026-10-30"
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
     },
     "VASPwikiNi": {
       "cite": "VASP Wiki: fcc Ni",
@@ -1355,6 +2041,251 @@
       "text": "VASP Wiki, “Volume relaxation” (Pulay stress, the 1.3 × cutoff rule and the restart protocol).",
       "url": "https://www.vasp.at/wiki/Volume_relaxation",
       "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiKPOINTS": {
+      "cite": "VASP Wiki: KPOINTS",
+      "text": "VASP Wiki, “KPOINTS” (every format, the mesh formulas, and which mesh suits which lattice).",
+      "url": "https://www.vasp.at/wiki/KPOINTS",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiKpointsSmear": {
+      "cite": "VASP Wiki: number of k points and smearing",
+      "text": "VASP Wiki, “Number of k points and method for smearing” (k-point density for insulators and metals, and comparing meshes).",
+      "url": "https://www.vasp.at/wiki/Number_of_k_points_and_method_for_smearing",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiBandDFT": {
+      "cite": "VASP Wiki: band structures with DFT",
+      "text": "VASP Wiki, “Band-structure calculation using density-functional theory” (KPOINTS_OPT and the ICHARG = 11 route).",
+      "url": "https://www.vasp.at/wiki/Band-structure_calculation_using_density-functional_theory",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiBandHybrid": {
+      "cite": "VASP Wiki: band structures with hybrids",
+      "text": "VASP Wiki, “Band-structure calculation using hybrid functionals” (zero-weight k-points, KPOINTS_OPT and HFRCUT).",
+      "url": "https://www.vasp.at/wiki/Band-structure_calculation_using_hybrid_functionals",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiPOSCAR": {
+      "cite": "VASP Wiki: POSCAR",
+      "text": "VASP Wiki, “POSCAR” (the full format specification, selective dynamics and velocities).",
+      "url": "https://www.vasp.at/wiki/POSCAR",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiCONTCAR": {
+      "cite": "VASP Wiki: CONTCAR",
+      "text": "VASP Wiki, “CONTCAR” (what VASP writes back, and restarting molecular dynamics).",
+      "url": "https://www.vasp.at/wiki/CONTCAR",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiLattCons": {
+      "cite": "VASP Wiki: LATTICE_CONSTRAINTS",
+      "text": "VASP Wiki, “LATTICE_CONSTRAINTS” (fixing lattice components in relaxations and MD).",
+      "url": "https://www.vasp.at/wiki/LATTICE_CONSTRAINTS",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiRecommended": {
+      "cite": "VASP Wiki: recommended pseudopotentials",
+      "text": "VASP Wiki, “Recommended pseudopotentials” (the current recommendation for each element, with valence, ENMAX and SHA256 checksums).",
+      "url": "https://www.vasp.at/wiki/Recommended_pseudopotentials",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiPreparing": {
+      "cite": "VASP Wiki: preparing a POTCAR",
+      "text": "VASP Wiki, “Preparing a POTCAR” (building the file in POSCAR order and mixing potential sets).",
+      "url": "https://www.vasp.at/wiki/Preparing_a_POTCAR",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiAvailable": {
+      "cite": "VASP Wiki: available pseudopotentials",
+      "text": "VASP Wiki, “Available pseudopotentials” (the sets, the suffixes and every potential with its ENMAX).",
+      "url": "https://www.vasp.at/wiki/Available_pseudopotentials",
+      "urlLabel": "vasp.at/wiki",
+      "read": "2026-11-06"
+    },
+    "VASPwikiParallel": {
+      "cite": "VASP Wiki: optimizing the parallelization",
+      "text": "VASP Wiki, “Optimizing the parallelization” (NCORE, KPAR, the dry run and benchmarking).",
+      "url": "https://www.vasp.at/wiki/Optimizing_the_parallelization",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiGPU": {
+      "cite": "VASP Wiki: GPU ports of VASP",
+      "text": "VASP Wiki, “GPU ports of VASP” (one MPI rank per GPU, NCORE, KPAR and NSIM on GPUs).",
+      "url": "https://www.vasp.at/wiki/GPU_ports_of_VASP",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiMPIOMP": {
+      "cite": "VASP Wiki: combining MPI and OpenMP",
+      "text": "VASP Wiki, “Combining MPI and OpenMP” (threads, stack size and pinning).",
+      "url": "https://www.vasp.at/wiki/Combining_MPI_and_OpenMP",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "SlurmSbatch": {
+      "cite": "Slurm: sbatch",
+      "text": "Slurm documentation, “sbatch” (directives, --signal, --dependency and arrays).",
+      "url": "https://slurm.schedmd.com/sbatch.html",
+      "urlLabel": "slurm.schedmd.com",
+      "read": "2026-11-06"
+    },
+    "VASPwikiOUTCAR": {
+      "cite": "VASP Wiki: OUTCAR",
+      "text": "VASP Wiki, “OUTCAR”.",
+      "url": "https://www.vasp.at/wiki/OUTCAR",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiRestartFiles": {
+      "cite": "VASP Wiki: restart and output files cheat sheet",
+      "text": "VASP Wiki, “Restart and output files cheat sheet” (which files LWAVE, LCHARG and LH5 write).",
+      "url": "https://www.vasp.at/wiki/Restart_and_output_files_cheat_sheet",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiTroubleSCF": {
+      "cite": "VASP Wiki: troubleshooting electronic convergence",
+      "text": "VASP Wiki, “Troubleshooting electronic convergence” (the official ladder, magnetic and DFT+U recipes).",
+      "url": "https://www.vasp.at/wiki/Troubleshooting_electronic_convergence",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiKnownIssues": {
+      "cite": "VASP Wiki: known issues",
+      "text": "VASP Wiki, “Known issues” (bugs by version, with workarounds).",
+      "url": "https://www.vasp.at/wiki/Known_issues",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPforum": {
+      "cite": "VASP forum",
+      "text": "The VASP forum, where the developers answer questions on errors.",
+      "url": "https://www.vasp.at/forum/",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiISIF": {
+      "cite": "VASP Wiki: ISIF",
+      "text": "VASP Wiki, “ISIF” (which degrees of freedom relax, and the stress).",
+      "url": "https://www.vasp.at/wiki/ISIF",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiPulay": {
+      "cite": "VASP Wiki: Pulay stress",
+      "text": "VASP Wiki, “Pulay stress”.",
+      "url": "https://www.vasp.at/wiki/Pulay_stress",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiMAE": {
+      "cite": "VASP Wiki: magnetic anisotropy",
+      "text": "VASP Wiki, “Determining the magnetic anisotropy”.",
+      "url": "https://www.vasp.at/wiki/Determining_the_Magnetic_Anisotropy",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiConstrM": {
+      "cite": "VASP Wiki: constraining local magnetic moments",
+      "text": "VASP Wiki, “Constraining the local magnetic moments”.",
+      "url": "https://www.vasp.at/wiki/Constraining_the_local_magnetic_moments",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPtutMagnetism": {
+      "cite": "VASP tutorials: magnetism",
+      "text": "VASP tutorials, “Magnetism” (antiferromagnets, exchange constants, anisotropy, worked step by step).",
+      "url": "https://www.vasp.at/tutorials/latest/magnetism/part1/",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "Horton2019": {
+      "cite": "Horton et al. 2019",
+      "text": "M. K. Horton, J. H. Montoya, M. Liu and K. A. Persson, “High-throughput prediction of the ground-state collinear magnetic order of inorganic materials using density functional theory”, npj Comput. Mater. 5, 64 (2019).",
+      "url": "https://doi.org/10.1038/s41524-019-0199-7",
+      "urlLabel": "doi.org",
+      "read": "2026-11-06"
+    },
+    "VASPwikiNEB": {
+      "cite": "VASP Wiki: nudged elastic bands",
+      "text": "VASP Wiki, “Nudged elastic bands”.",
+      "url": "https://www.vasp.at/wiki/Nudged_elastic_bands",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VTSTneb": {
+      "cite": "VTST tools: NEB",
+      "text": "Henkelman group, VTST tools, “Nudged elastic band” (climbing image, optimizers and scripts).",
+      "url": "https://theory.cm.utexas.edu/vtsttools/neb.html",
+      "urlLabel": "theory.cm.utexas.edu",
+      "read": "2026-11-06"
+    },
+    "VASPwikiDimer": {
+      "cite": "VASP Wiki: improved dimer method",
+      "text": "VASP Wiki, “Improved dimer method”.",
+      "url": "https://www.vasp.at/wiki/Improved_dimer_method",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiMD": {
+      "cite": "VASP Wiki: molecular-dynamics calculations",
+      "text": "VASP Wiki, “Molecular-dynamics calculations” (setup, ensembles, analysis).",
+      "url": "https://www.vasp.at/wiki/Molecular-dynamics_calculations",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiMLFFbest": {
+      "cite": "VASP Wiki: best practices for MLFF",
+      "text": "VASP Wiki, “Best practices for machine-learned force fields”.",
+      "url": "https://www.vasp.at/wiki/Best_practices_for_machine-learned_force_fields",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiMDALGO": {
+      "cite": "VASP Wiki: MDALGO",
+      "text": "VASP Wiki, “MDALGO” (thermostats and ensembles).",
+      "url": "https://www.vasp.at/wiki/MDALGO",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiLinResp": {
+      "cite": "VASP Wiki: linear response",
+      "text": "VASP Wiki, “Category: Linear response” (dielectric tensors, Born charges, piezoelectric tensors).",
+      "url": "https://www.vasp.at/wiki/Category:Linear_response",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiPhonFD": {
+      "cite": "VASP Wiki: phonons from finite differences",
+      "text": "VASP Wiki, “Phonons from finite differences”.",
+      "url": "https://www.vasp.at/wiki/Phonons_from_finite_differences",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPwikiWorkFunction": {
+      "cite": "VASP Wiki: computing the work function",
+      "text": "VASP Wiki, “Computing the work function”.",
+      "url": "https://www.vasp.at/wiki/Computing_the_work_function",
+      "urlLabel": "www.vasp.at",
+      "read": "2026-11-06"
+    },
+    "VASPtutorials": {
+      "cite": "VASP tutorials",
+      "text": "The official VASP tutorials, with worked examples for most properties.",
+      "url": "https://www.vasp.at/tutorials/latest/",
+      "urlLabel": "www.vasp.at",
       "read": "2026-11-06"
     }
   }

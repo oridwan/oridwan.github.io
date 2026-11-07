@@ -509,3 +509,36 @@ tests:
   - one version comment was misleading.
 - **Browser checks:** no console errors, and no horizontal scroll at 1440 px or 390 px on the sheet, hub and course home.
 - **Next:** E2 KPOINTS, which has a brief in `part3-kpoints-part5-poscar.md`.
+
+**2026-11-06 (later): all 11 remaining sheets.** The user chose "All 11 now". Built in order:
+KPOINTS, POSCAR, POTCAR → Slurm, reading output, errors → relaxation, magnetism → properties, NEB, AIMD + MLFF.
+- **Tools (all in `cheat-tools.js`, tested in Node):**
+  - k-mesh calculator and POSCAR checker (shared POSCAR parser: scale/volume/three factors, VASP 4 format, selective dynamics, shortest distance with images, digit check, cell-shape guess);
+  - POTCAR planner (VASP's recommended potpaw.64 PBE list valid since October 2026, parsed from the Wiki table: 96 elements with ZVAL and ENMAX);
+  - Slurm generator (bash -n on 144 layouts; KPAR divides ranks and k-points; NCORE near √ranks; GPU rules; STOPCAR trap with correct exit status);
+  - command finder, error lookup and property finder (one finder component);
+  - MAGMOM builder (FM, alternating planes along a/b/c with a 0.01 tolerance, custom per site, noncollinear; odd-plane warning).
+- **Registry:** 135 tags; VTST tags flagged and linked to the VTST docs.
+- **Tests:** 8,040 checks.
+  - Every INCAR, POSCAR and KPOINTS block parses and passes the rules.
+  - Every OUTCAR/OSZICAR/vasprun.xml command runs on the 9 real outputs and finds something in at least one of them. The two exceptions have no matching test file: the band-gap grep (no 6.4.3+ OUTCAR) and the MD OSZICAR line (no MD OSZICAR).
+  - Every script on the pages passes `bash -n`.
+  - Every error card is found from its own message.
+  - `shellcheck` is not installed here, so it was not used.
+- **Fact-checks:** five independent batches (INCAR; KPOINTS, POSCAR, POTCAR; Slurm, output, errors; relaxation, magnetism; properties, NEB, AIMD) with 10 + 11 + 7 + 8 + 8 findings. All were applied except one from the last batch: r²SCAN band structures with ICHARG = 11 stay "6.6.0 and later", because the wiki's DFT band-structure page and the 6.6.0 Changelog both support it (the meta-GGA band-structure page is older). Highlights:
+  - elastic tensor: VASP order XX YY ZZ XY YZ ZX becomes Voigt order by reordering 1 2 3 5 6 4 (a 4↔6 swap exchanges C44 and C55);
+  - DIPOL unset means VASP places the centre half a cell from the charge-density minimum, not at the centre of mass;
+  - LOPTICS with τ-meta-GGA and spin-orbit is hit by known issue 100 (use LPEAD = .TRUE.);
+  - VTST checks only the EDIFFG sign, not IBRION = 3 and POTIM = 0;
+  - ML_MODE unset with ML_LMLFF = .TRUE. means train; LPHON_DISPERSION gives bands only;
+  - ISTART = 1 handles a new cell or ENCUT;
+  - KPAR should divide the k-points;
+  - the GPU hybrid crash is still open in 6.6.1;
+  - the ZBRENT bracketing bug was fixed in 6.6.0 (Changelog; this settles the open question in §2);
+  - the OSZICAR one-liners now match fields by name, so they work for MD too;
+  - the NiO sample cell was corrected;
+  - MAGMOM planes are now clustered with a tolerance;
+  - Cubic BN uses a = 3.615 Å;
+  - hexagonal cells may also use a 1/3 shift;
+  - POSCAR labels such as Fe1 are mapped to their element.
+- **Browser checks:** the hub, all 12 sheets and the course home have no console errors and no horizontal scroll at 1440 px or 390 px. Link check: 23 pages, 0 problems.

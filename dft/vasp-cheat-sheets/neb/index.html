@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VASP NEB Cheat Sheet: IMAGES, Climbing Image, VTST</title>
+  <meta name="description" content="VASP NEB cheat sheet: IMAGES and SPRING, the VTST climbing image, IDPP interpolation, optimizers, the saddle-point check and the common mistakes.">
+  <meta name="keywords" content="VASP NEB, nudged elastic band VASP, climbing image NEB, VTST, IMAGES, LCLIMB, IOPT, nebmake, IDPP, transition state, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/neb/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="VASP NEB Cheat Sheet: IMAGES, Climbing Image, VTST">
+  <meta property="og:description" content="VASP NEB cheat sheet: IMAGES and SPRING, the VTST climbing image, IDPP interpolation, optimizers, the saddle-point check and the common mistakes.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/neb/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VASP NEB Cheat Sheet: IMAGES, Climbing Image, VTST">
+  <meta name="twitter:description" content="VASP NEB cheat sheet: IMAGES and SPRING, the VTST climbing image, IDPP interpolation, optimizers, the saddle-point check and the common mistakes.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "VASP NEB Cheat Sheet: IMAGES, Climbing Image, VTST",
+  "name": "VASP NEB cheat sheet",
+  "description": "VASP NEB cheat sheet: IMAGES and SPRING, the VTST climbing image, IDPP interpolation, optimizers, the saddle-point check and the common mistakes.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/neb/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP NEB, nudged elastic band VASP, climbing image NEB, VTST, IMAGES, LCLIMB, IOPT, nebmake, IDPP, transition state, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “Nudged elastic bands”.",
+    "Henkelman group, VTST tools, “Nudged elastic band” (climbing image, optimizers and scripts).",
+    "VASP Wiki, “Improved dimer method”."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "NEB",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/neb/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="neb">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>NEB</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Applications</p>
+    <h1>VASP NEB cheat sheet</h1>
+    <p class="sheet-lede">Migration and reaction barriers with the nudged elastic band method: what stock VASP can do and what needs the VTST code, how to prepare the end points and images, the two-stage run with a climbing image, and how to check the saddle point.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#native-vs-vtst">Stock VASP or VTST</a></li>
+        <li><a href="#workflow">The workflow</a></li>
+        <li><a href="#setup">Set up and run</a></li>
+        <li><a href="#incar">INCAR recipes</a></li>
+        <li><a href="#analysis">Monitor and analyse</a></li>
+        <li><a href="#magnetism">Magnetic systems</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Relax both end points with identical settings and the same atom order; then interpolate the images (IDPP is better than linear).</li>
+  <li>Stock VASP does a plain NEB with <code>IMAGES</code> and <code>SPRING = -5</code>, using IBRION = 1 or 3 (not 2). The climbing image needs VASP built with the VTST code.</li>
+  <li>Under VTST, LCLIMB is on by default: run a first, plain NEB with <code>LCLIMB = .FALSE.</code>, then switch it on.</li>
+  <li>The number of MPI ranks must be a multiple of IMAGES.</li>
+  <li>A saddle point has exactly one imaginary frequency: check it.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="native-vs-vtst">
+<h2>Stock VASP or VTST</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Feature</th><th scope="col">Stock VASP 6.6.1</th><th scope="col">VASP + VTST code</th></tr></thead>
+<tbody>
+<tr><th scope="row">Plain NEB (IMAGES, SPRING)</th><td data-label="Stock">yes</td><td data-label="VTST">yes, with an improved tangent</td></tr>
+<tr><th scope="row">Climbing image (LCLIMB)</th><td data-label="Stock">no</td><td data-label="VTST">yes, on by default</td></tr>
+<tr><th scope="row">Force-based optimizers (IOPT: LBFGS, CG, quick-min, FIRE)</th><td data-label="Stock">no</td><td data-label="VTST">yes</td></tr>
+<tr><th scope="row">Cell changing along the path (solid-state NEB)</th><td data-label="Stock">no</td><td data-label="VTST">yes (LNEBCELL)</td></tr>
+<tr><th scope="row">Dimer method</th><td data-label="Stock">yes (IBRION = 44)</td><td data-label="VTST">yes (ICHAIN = 2)</td></tr>
+</tbody>
+</table></div>
+<p>To see whether your build has VTST and what it read: <code>grep -E "NEB:|OPT:" 01/OUTCAR</code>. A stock build ignores the VTST tags.</p>
+</section>
+
+<section class="sheet-sec" id="workflow">
+<h2>The workflow</h2>
+<ol class="steps">
+  <li><b>End points.</b> Relax the initial and final states with identical settings: ENCUT, PREC, smearing, KPOINTS, POTCAR, functional, ISPIN and MAGMOM, LREAL. Any error in them shifts the whole path. For spin-polarized r²SCAN do not use VASP 6.6.0.</li>
+  <li><b>Atom order.</b> Every atom must have the same index in both end points; a swapped pair of identical atoms gives a nonsense path that no tool flags. Compare per-atom displacements (<code>diffcon.pl</code>) and look for atoms that jump.</li>
+  <li><b>Interpolate.</b> IDPP (VTST <code>nebmake.py</code>, ASE, pymatgen) avoids the overlaps that linear interpolation (<code>nebmake.pl</code>) can create. Use the periodic minimum-image path, so atoms do not fly across the cell.</li>
+  <li><b>Inspect.</b> Make a movie of the images (<code>nebmovie.pl 0</code>) and check the shortest distances: atoms almost on top of each other crash VASP.</li>
+  <li><b>Plain NEB</b> with a loose force criterion, then a <b>climbing-image NEB</b> from its CONTCARs with a tight one.</li>
+  <li><b>Confirm the saddle</b> with a frequency calculation on the climbing image (one large imaginary mode), or refine it with the dimer method.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="setup">
+<h2>Set up and run</h2>
+<figure class="code sh"><figcaption><span class="code-t">From relaxed end points to a running NEB (VTST scripts)</span></figcaption><pre><code>dist.pl ini/CONTCAR fin/CONTCAR         <span class="c"> # total displacement between the end points</span>
+diffcon.pl ini/CONTCAR fin/CONTCAR      <span class="c"> # per-atom displacements: spot ordering or wrapping problems</span>
+nebmake.py ini/CONTCAR fin/CONTCAR 5    <span class="c"> # 5 images, IDPP by default; nebmake.pl for linear</span>
+cp ini/OUTCAR 00/ ; cp fin/OUTCAR 06/   <span class="c"> # the analysis scripts need the end-point OUTCARs</span>
+nebmovie.pl 0                           <span class="c"> # movie.xyz of the starting images: look at it</span>
+srun -n 160 vasp_std &gt; vasp.out         <span class="c"> # from the parent folder; ranks = a multiple of IMAGES</span></code></pre></figure>
+<p class="then">Folders <code>00</code> to <code>06</code> hold POSCAR (and WAVECAR, CHGCAR if any); INCAR, KPOINTS and POTCAR stay in the parent folder. Start with few images (one to five) and add more once the band has converged.</p>
+</section>
+
+<section class="sheet-sec" id="incar">
+<h2>INCAR recipes</h2>
+<div class="recipes">
+<figure class="code incar"><figcaption><span class="code-t">Stock VASP: plain NEB</span></figcaption><pre><code><span class="k">ENCUT</span>  = 520            <span class="c">! the same settings as the end-point relaxations</span>
+<span class="k">PREC</span>   = Accurate
+<span class="k">EDIFF</span>  = 1E-6
+<span class="k">ISMEAR</span> = 0 ; <span class="k">SIGMA</span> = 0.05
+<span class="k">IMAGES</span> = 4              <span class="c">! MPI ranks must be a multiple of 4</span>
+<span class="k">SPRING</span> = -5             <span class="c">! the default; negative switches nudging on</span>
+<span class="k">IBRION</span> = 1              <span class="c">! or 3; not 2 (conjugate gradient usually fails for NEB)</span>
+<span class="k">POTIM</span>  = 0.5            <span class="c">! tune it; IBRION = 1 is sensitive to the step</span>
+<span class="k">ISIF</span>   = 2              <span class="c">! the cell stays fixed</span>
+<span class="k">NSW</span>    = 200
+<span class="k">EDIFFG</span> = -0.03          <span class="c">! tighten to -0.01 for production</span>
+<span class="k">LCHARG</span> = .FALSE.</code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">VTST stage 1: plain NEB, robust optimizer</span></figcaption><pre><code><span class="k">ENCUT</span>  = 520
+<span class="k">PREC</span>   = Accurate
+<span class="k">EDIFF</span>  = 1E-6
+<span class="k">ISMEAR</span> = 0 ; <span class="k">SIGMA</span> = 0.05
+<span class="k">IMAGES</span> = 5
+<span class="k">ICHAIN</span> = 0              <span class="c">! NEB</span>
+<span class="k">LCLIMB</span> = .FALSE.        <span class="c">! the VTST default is .TRUE.</span>
+<span class="k">SPRING</span> = -5
+<span class="k">IBRION</span> = 3 ; <span class="k">POTIM</span> = 0  <span class="c">! required by the VTST optimizers</span>
+<span class="k">IOPT</span>   = 3              <span class="c">! quick-min (7 = FIRE) while forces are large</span>
+<span class="k">EDIFFG</span> = -0.1           <span class="c">! a loose first pass</span>
+<span class="k">NSW</span>    = 200
+<span class="k">ISIF</span>   = 2</code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">VTST stage 2: climbing image, from the stage-1 CONTCARs</span></figcaption><pre><code><span class="k">ENCUT</span>  = 520
+<span class="k">PREC</span>   = Accurate
+<span class="k">EDIFF</span>  = 1E-6
+<span class="k">ISMEAR</span> = 0 ; <span class="k">SIGMA</span> = 0.05
+<span class="k">IMAGES</span> = 5
+<span class="k">ICHAIN</span> = 0
+<span class="k">LCLIMB</span> = .TRUE.
+<span class="k">SPRING</span> = -5
+<span class="k">IBRION</span> = 3 ; <span class="k">POTIM</span> = 0
+<span class="k">IOPT</span>   = 1              <span class="c">! LBFGS (or 2 = CG) once the forces are accurate</span>
+<span class="k">EDIFFG</span> = -0.03          <span class="c">! -0.01 for a well-converged saddle</span>
+<span class="k">NSW</span>    = 300
+<span class="k">ISIF</span>   = 2</code></pre></figure>
+<figure class="code incar"><figcaption><span class="code-t">Saddle check: frequencies of the climbing image (in its own folder)</span></figcaption><pre><code><span class="k">ENCUT</span>  = 520
+<span class="k">PREC</span>   = Accurate
+<span class="k">EDIFF</span>  = 1E-7
+<span class="k">ISMEAR</span> = 0 ; <span class="k">SIGMA</span> = 0.05
+<span class="k">IBRION</span> = 5              <span class="c">! finite differences; honours selective dynamics</span>
+<span class="k">NFREE</span>  = 2
+<span class="k">POTIM</span>  = 0.015
+<span class="k">NSW</span>    = 1</code></pre></figure>
+</div>
+<p class="then">For the frequency check, fix the atoms far from the event with selective dynamics. In OUTCAR, imaginary modes are marked <code>f/i=</code>: expect one large one; tiny ones are numerical noise.</p>
+</section>
+
+<section class="sheet-sec" id="analysis">
+<h2>Monitor and analyse</h2>
+<figure class="code sh"><figcaption><span class="code-t">VTST analysis scripts</span></figcaption><pre><code>nebef.pl                 <span class="c"> # per image: max force, energy, energy relative to image 00</span>
+nebresults.pl            <span class="c"> # neb.dat, spline.dat, exts.dat, mep.eps, movie.xyz (then gzips the OUTCARs)</span>
+vfin.pl stage1           <span class="c"> # archive a stage and move CONTCAR over POSCAR in every image</span>
+neb2dim.pl               <span class="c"> # set up a dimer run at the highest point</span></code></pre></figure>
+<p>After <code>nebresults.pl</code> the OUTCARs are gzipped: use <code>zgrep</code> or unzip them. With pymatgen, <code>NEBAnalysis.from_dir(".")</code> reads the barrier from the same folders.</p>
+<div class="tagtable-wrap"><table class="tagtable">
+<thead><tr><th scope="col">Tag</th><th scope="col">What it does</th><th scope="col">Default</th><th scope="col">What to use</th><th scope="col">Watch out</th></tr></thead>
+<tbody>
+<tr id="tag-images"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/IMAGES" rel="noopener" title="IMAGES on the VASP Wiki"><code>IMAGES</code></a></th><td data-label="What it does">Number of images between the two end points of an NEB, one folder each (01, 02, …).</td><td data-label="Default">0</td><td data-label="What to use">Start small (a few images) and add more once the band has converged.</td><td data-label="Watch out">The number of MPI ranks must be a multiple of IMAGES.</td></tr>
+<tr id="tag-spring"><th scope="row"><a class="wiki" href="https://www.vasp.at/wiki/SPRING" rel="noopener" title="SPRING on the VASP Wiki"><code>SPRING</code></a></th><td data-label="What it does">Spring constant between images; a negative value switches on nudging.</td><td data-label="Default">−5</td><td data-label="What to use">Keep −5.</td><td data-label="Watch out">Very large values slow convergence.</td></tr>
+<tr id="tag-ichain"><th scope="row"><a class="wiki" href="https://theory.cm.utexas.edu/vtsttools/neb.html" rel="noopener" title="ICHAIN on the VASP Wiki"><code>ICHAIN</code></a> <span class="since vtst" title="Needs VASP compiled with the VTST code">VTST</span></th><td data-label="What it does">VTST method: 0 nudged elastic band, 2 dimer, 1 dynamical matrix, 3 Lanczos.</td><td data-label="Default">0</td><td data-label="What to use">0 for NEB.</td><td data-label="Watch out"></td></tr>
+<tr id="tag-lclimb"><th scope="row"><a class="wiki" href="https://theory.cm.utexas.edu/vtsttools/neb.html" rel="noopener" title="LCLIMB on the VASP Wiki"><code>LCLIMB</code></a> <span class="since vtst" title="Needs VASP compiled with the VTST code">VTST</span></th><td data-label="What it does">VTST climbing image: the highest image climbs to the saddle point.</td><td data-label="Default">.TRUE. (VTST)</td><td data-label="What to use">.FALSE. for a first, plain NEB; then .TRUE. to converge the saddle point.</td><td data-label="Watch out">The VTST default is already .TRUE.: set .FALSE. explicitly for the first stage. Stock VASP has no climbing image.</td></tr>
+<tr id="tag-iopt"><th scope="row"><a class="wiki" href="https://theory.cm.utexas.edu/vtsttools/optimizers.html" rel="noopener" title="IOPT on the VASP Wiki"><code>IOPT</code></a> <span class="since vtst" title="Needs VASP compiled with the VTST code">VTST</span></th><td data-label="What it does">VTST optimizer: 1 LBFGS, 2 conjugate gradient, 3 quick-min, 7 FIRE (0 = use IBRION).</td><td data-label="Default">0</td><td data-label="What to use">Quick-min or FIRE while forces are large; LBFGS or CG near convergence.</td><td data-label="Watch out">Set IBRION = 3 and POTIM = 0 so VASP's own optimizer stays idle (nothing checks this); a positive EDIFFG makes VTST stop.</td></tr>
+<tr id="tag-lnebcell"><th scope="row"><a class="wiki" href="https://theory.cm.utexas.edu/vtsttools/neb.html" rel="noopener" title="LNEBCELL on the VASP Wiki"><code>LNEBCELL</code></a> <span class="since vtst" title="Needs VASP compiled with the VTST code">VTST</span></th><td data-label="What it does">VTST solid-state NEB: the cell changes along the path too.</td><td data-label="Default">.FALSE.</td><td data-label="What to use">With ISIF = 3 and IOPT = 3 (or 7).</td><td data-label="Watch out">Needs a cutoff high enough for cell changes.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="magnetism">
+<h2>Magnetic systems</h2>
+<ul class="tight">
+  <li>End points and images should sit on the same magnetic state. If one image drops into another spin state, converge a single-point run for that image and start the NEB from its WAVECAR and CHGCAR (each image folder can hold its own).</li>
+  <li>Keep MAGMOM in the INCAR: on restarts it sets the magnetic symmetry.</li>
+  <li>Before VASP 6.6.0, negative MAGMOM values could give too few bands by default: set NBANDS.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>End points relaxed with different settings, or a different atom order (no tool reports it).</li>
+  <li>Linear interpolation without the minimum-image convention: atoms cross the whole cell.</li>
+  <li>Expecting a climbing image from stock VASP, or forgetting that VTST climbs by default.</li>
+  <li>IBRION = 2 for the NEB; IOPT without IBRION = 3 and POTIM = 0; a positive EDIFFG with IOPT (VTST stops).</li>
+  <li>A rank count that is not a multiple of IMAGES.</li>
+  <li>Too many images at the start, which slows convergence.</li>
+  <li>Different cells at the two ends in a fixed-cell NEB: use the same cell, or solid-state NEB.</li>
+  <li>pymatgen's NEB input set switches DFT+U off unless told otherwise; check LDAU.</li>
+  <li>Reporting the dimer's DIMCAR energy as the saddle energy: take it from OUTCAR.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li>Lecture 32: The nudged elastic band method <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiNEB">VASP Wiki, “Nudged elastic bands”. · <a href="https://www.vasp.at/wiki/Nudged_elastic_bands" rel="noopener">www.vasp.at</a></li>
+<li id="ref-VTSTneb">Henkelman group, VTST tools, “Nudged elastic band” (climbing image, optimizers and scripts). · <a href="https://theory.cm.utexas.edu/vtsttools/neb.html" rel="noopener">theory.cm.utexas.edu</a></li>
+<li id="ref-VASPwikiDimer">VASP Wiki, “Improved dimer method”. · <a href="https://www.vasp.at/wiki/Improved_dimer_method" rel="noopener">www.vasp.at</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../properties/"><span>Previous sheet</span>Properties</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <a class="pn-next" href="../aimd-mlff/"><span>Next sheet</span>AIMD and ML force fields</a>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

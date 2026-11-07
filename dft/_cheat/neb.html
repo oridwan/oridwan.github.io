@@ -1,0 +1,163 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1 and VTST code 6.6.1.
+  VASP Wiki: Nudged elastic bands (folders 00..N+1; ranks multiple of IMAGES; minimise images; no
+  variable-cell NEB; same ordering; free-floating systems drift), IMAGES, SPRING (default -5; CG usually
+  fails), Improved dimer method (IBRION = 44; one imaginary mode), IBRION, POTIM, MAGMOM, Known issues
+  51 and 74, TS search using the NEB method (uses IBRION = 2: contradicts SPRING page; not followed).
+  VASP forum: no climbing image in stock VASP 6.5.1 (p=33174, 2026-02-26; p=30284); overlap crash RAD_INT
+  (p=32288). VASP tutorial transition states (IBRION = 1, POTIM = 0.8, up to four images; ASE IDPP).
+  VTST (theory.cm.utexas.edu/vtsttools: neb.html, optimizers.html, dimer.html, scripts.html; GitHub
+  vtstcode6.6.1 neb.F, chain.F, opt.F; vtstscripts nebmake.pl/.py, nebef.pl, nebresults.pl, vfin.pl):
+  LCLIMB default .TRUE.; IOPT needs IBRION = 3, POTIM = 0, negative EDIFFG; LNEBCELL with ISIF = 3 and
+  IOPT 3 or 7; scripts need OUTCARs in 00 and N+1; nebresults.pl re-gzips OUTCARs.
+  ASE ase/mep/neb.py (interpolate mic default False; idpp); pymatgen IDPPSolver (sort_tol default 1.0),
+  NEBSet (forces LDAU = False, IOPT needs VTST). Brief: dft/_research/D-neb-aimd.md sheet 1.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Relax both end points with identical settings and the same atom order; then interpolate the images (IDPP is better than linear).</li>
+  <li>Stock VASP does a plain NEB with <code>IMAGES</code> and <code>SPRING = -5</code>, using IBRION = 1 or 3 (not 2). The climbing image needs VASP built with the VTST code.</li>
+  <li>Under VTST, LCLIMB is on by default: run a first, plain NEB with <code>LCLIMB = .FALSE.</code>, then switch it on.</li>
+  <li>The number of MPI ranks must be a multiple of IMAGES.</li>
+  <li>A saddle point has exactly one imaginary frequency: check it.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="native-vs-vtst">
+<h2>Stock VASP or VTST</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Feature</th><th scope="col">Stock VASP 6.6.1</th><th scope="col">VASP + VTST code</th></tr></thead>
+<tbody>
+<tr><th scope="row">Plain NEB (IMAGES, SPRING)</th><td data-label="Stock">yes</td><td data-label="VTST">yes, with an improved tangent</td></tr>
+<tr><th scope="row">Climbing image (LCLIMB)</th><td data-label="Stock">no</td><td data-label="VTST">yes, on by default</td></tr>
+<tr><th scope="row">Force-based optimizers (IOPT: LBFGS, CG, quick-min, FIRE)</th><td data-label="Stock">no</td><td data-label="VTST">yes</td></tr>
+<tr><th scope="row">Cell changing along the path (solid-state NEB)</th><td data-label="Stock">no</td><td data-label="VTST">yes (LNEBCELL)</td></tr>
+<tr><th scope="row">Dimer method</th><td data-label="Stock">yes (IBRION = 44)</td><td data-label="VTST">yes (ICHAIN = 2)</td></tr>
+</tbody>
+</table></div>
+<p>To see whether your build has VTST and what it read: <code>grep -E "NEB:|OPT:" 01/OUTCAR</code>. A stock build ignores the VTST tags.</p>
+</section>
+
+<section class="sheet-sec" id="workflow">
+<h2>The workflow</h2>
+<ol class="steps">
+  <li><b>End points.</b> Relax the initial and final states with identical settings: ENCUT, PREC, smearing, KPOINTS, POTCAR, functional, ISPIN and MAGMOM, LREAL. Any error in them shifts the whole path. For spin-polarized r²SCAN do not use VASP 6.6.0.</li>
+  <li><b>Atom order.</b> Every atom must have the same index in both end points; a swapped pair of identical atoms gives a nonsense path that no tool flags. Compare per-atom displacements (<code>diffcon.pl</code>) and look for atoms that jump.</li>
+  <li><b>Interpolate.</b> IDPP (VTST <code>nebmake.py</code>, ASE, pymatgen) avoids the overlaps that linear interpolation (<code>nebmake.pl</code>) can create. Use the periodic minimum-image path, so atoms do not fly across the cell.</li>
+  <li><b>Inspect.</b> Make a movie of the images (<code>nebmovie.pl 0</code>) and check the shortest distances: atoms almost on top of each other crash VASP.</li>
+  <li><b>Plain NEB</b> with a loose force criterion, then a <b>climbing-image NEB</b> from its CONTCARs with a tight one.</li>
+  <li><b>Confirm the saddle</b> with a frequency calculation on the climbing image (one large imaginary mode), or refine it with the dimer method.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="setup">
+<h2>Set up and run</h2>
+<pre class="sh" data-title="From relaxed end points to a running NEB (VTST scripts)">
+dist.pl ini/CONTCAR fin/CONTCAR          # total displacement between the end points
+diffcon.pl ini/CONTCAR fin/CONTCAR       # per-atom displacements: spot ordering or wrapping problems
+nebmake.py ini/CONTCAR fin/CONTCAR 5     # 5 images, IDPP by default; nebmake.pl for linear
+cp ini/OUTCAR 00/ ; cp fin/OUTCAR 06/    # the analysis scripts need the end-point OUTCARs
+nebmovie.pl 0                            # movie.xyz of the starting images: look at it
+srun -n 160 vasp_std > vasp.out          # from the parent folder; ranks = a multiple of IMAGES
+</pre>
+<p class="then">Folders <code>00</code> to <code>06</code> hold POSCAR (and WAVECAR, CHGCAR if any); INCAR, KPOINTS and POTCAR stay in the parent folder. Start with few images (one to five) and add more once the band has converged.</p>
+</section>
+
+<section class="sheet-sec" id="incar">
+<h2>INCAR recipes</h2>
+<div class="recipes">
+<pre class="incar" data-title="Stock VASP: plain NEB">
+ENCUT  = 520            ! the same settings as the end-point relaxations
+PREC   = Accurate
+EDIFF  = 1E-6
+ISMEAR = 0 ; SIGMA = 0.05
+IMAGES = 4              ! MPI ranks must be a multiple of 4
+SPRING = -5             ! the default; negative switches nudging on
+IBRION = 1              ! or 3; not 2 (conjugate gradient usually fails for NEB)
+POTIM  = 0.5            ! tune it; IBRION = 1 is sensitive to the step
+ISIF   = 2              ! the cell stays fixed
+NSW    = 200
+EDIFFG = -0.03          ! tighten to -0.01 for production
+LCHARG = .FALSE.
+</pre>
+<pre class="incar" data-title="VTST stage 1: plain NEB, robust optimizer">
+ENCUT  = 520
+PREC   = Accurate
+EDIFF  = 1E-6
+ISMEAR = 0 ; SIGMA = 0.05
+IMAGES = 5
+ICHAIN = 0              ! NEB
+LCLIMB = .FALSE.        ! the VTST default is .TRUE.
+SPRING = -5
+IBRION = 3 ; POTIM = 0  ! required by the VTST optimizers
+IOPT   = 3              ! quick-min (7 = FIRE) while forces are large
+EDIFFG = -0.1           ! a loose first pass
+NSW    = 200
+ISIF   = 2
+</pre>
+<pre class="incar" data-title="VTST stage 2: climbing image, from the stage-1 CONTCARs">
+ENCUT  = 520
+PREC   = Accurate
+EDIFF  = 1E-6
+ISMEAR = 0 ; SIGMA = 0.05
+IMAGES = 5
+ICHAIN = 0
+LCLIMB = .TRUE.
+SPRING = -5
+IBRION = 3 ; POTIM = 0
+IOPT   = 1              ! LBFGS (or 2 = CG) once the forces are accurate
+EDIFFG = -0.03          ! -0.01 for a well-converged saddle
+NSW    = 300
+ISIF   = 2
+</pre>
+<pre class="incar" data-title="Saddle check: frequencies of the climbing image (in its own folder)">
+ENCUT  = 520
+PREC   = Accurate
+EDIFF  = 1E-7
+ISMEAR = 0 ; SIGMA = 0.05
+IBRION = 5              ! finite differences; honours selective dynamics
+NFREE  = 2
+POTIM  = 0.015
+NSW    = 1
+</pre>
+</div>
+<p class="then">For the frequency check, fix the atoms far from the event with selective dynamics. In OUTCAR, imaginary modes are marked <code>f/i=</code>: expect one large one; tiny ones are numerical noise.</p>
+</section>
+
+<section class="sheet-sec" id="analysis">
+<h2>Monitor and analyse</h2>
+<pre class="sh" data-title="VTST analysis scripts">
+nebef.pl                  # per image: max force, energy, energy relative to image 00
+nebresults.pl             # neb.dat, spline.dat, exts.dat, mep.eps, movie.xyz (then gzips the OUTCARs)
+vfin.pl stage1            # archive a stage and move CONTCAR over POSCAR in every image
+neb2dim.pl                # set up a dimer run at the highest point
+</pre>
+<p>After <code>nebresults.pl</code> the OUTCARs are gzipped: use <code>zgrep</code> or unzip them. With pymatgen, <code>NEBAnalysis.from_dir(".")</code> reads the barrier from the same folders.</p>
+<x-tags names="IMAGES SPRING ICHAIN LCLIMB IOPT LNEBCELL"></x-tags>
+</section>
+
+<section class="sheet-sec" id="magnetism">
+<h2>Magnetic systems</h2>
+<ul class="tight">
+  <li>End points and images should sit on the same magnetic state. If one image drops into another spin state, converge a single-point run for that image and start the NEB from its WAVECAR and CHGCAR (each image folder can hold its own).</li>
+  <li>Keep MAGMOM in the INCAR: on restarts it sets the magnetic symmetry.</li>
+  <li>Before VASP 6.6.0, negative MAGMOM values could give too few bands by default: set NBANDS.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>End points relaxed with different settings, or a different atom order (no tool reports it).</li>
+  <li>Linear interpolation without the minimum-image convention: atoms cross the whole cell.</li>
+  <li>Expecting a climbing image from stock VASP, or forgetting that VTST climbs by default.</li>
+  <li>IBRION = 2 for the NEB; IOPT without IBRION = 3 and POTIM = 0; a positive EDIFFG with IOPT (VTST stops).</li>
+  <li>A rank count that is not a multiple of IMAGES.</li>
+  <li>Too many images at the start, which slows convergence.</li>
+  <li>Different cells at the two ends in a fixed-cell NEB: use the same cell, or solid-state NEB.</li>
+  <li>pymatgen's NEB input set switches DFT+U off unless told otherwise; check LDAU.</li>
+  <li>Reporting the dimer's DIMCAR energy as the saddle energy: take it from OUTCAR.</li>
+</ul>
+</section>

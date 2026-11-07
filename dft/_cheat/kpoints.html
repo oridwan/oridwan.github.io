@@ -1,0 +1,196 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  VASP Wiki raw source (dft/_research/wiki-raw): KPOINTS (formats, line-3 rules, formulas, symmetry of the
+  mesh: fcc/fco Gamma only, hexagonal Gamma or 1/3 shift, rhombohedral Gamma, bct/bco N ~ 1/|a|),
+  KSPACING (N_i = max(1, ceiling(|b_i| 2pi / KSPACING)), b_i.a_j = delta_ij), KGAMMA, KSPACING_OPT (6.6.0),
+  KPOINTS_OPT, LKPOINTS_OPT, KPOINTS_OPT_NKBATCH, KPOINTS_OPT_MODE (6.5.0), IBZKPT, Number of k points and
+  method for smearing (100 / 1000 / 5000 k-points per atom; even meshes up to 8, odd beyond; compare
+  irreducible counts), Band-structure calculation using DFT / hybrid functionals / meta-GGA functionals
+  (hybrids never ICHARG = 11; HFRCUT = -1; meta-GGA before 6.6.0 follows the hybrid procedure),
+  Smearing technique (tetrahedron >= 4 k), Known issues 45, 46, 69.
+  pymatgen-core inputs.py / sets.py: reciprocal_density definition (k-points per A^-3 of reciprocal volume,
+  2pi included); MP values 64 / 100 / 200 / 50; line_density 20. VASPKIT tutorial source: kpr x 2pi = KSPACING.
+  Output commands tested on OUTCARs from VASP 5.2.2, 5.2.12, 6.1.1, 6.2.0, 6.3.0.
+  Research brief: dft/_research/part3-kpoints-part5-poscar.md.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Use a Γ-centred mesh unless you have a reason not to. It is required for fcc and rhombohedral cells and for the tetrahedron method (<code>ISMEAR = -5</code>); hexagonal cells take a Γ-centred mesh or one shifted by 1/3 in the plane.</li>
+  <li>Make the subdivisions proportional to the reciprocal-lattice lengths: a long real-space axis gets few k-points, a short one many. <x-tag>KSPACING</x-tag> does this for you.</li>
+  <li>Converge the mesh for the quantity you report. Compare meshes by the number of irreducible k-points VASP finds, not by N.</li>
+  <li>Metals need about ten times more k-points than insulators.</li>
+  <li>With no KPOINTS file, VASP uses <code>KSPACING = 0.5</code>, which is coarse for metals.</li>
+  <li>Band structures: a path in line mode, read with <code>ICHARG = 11</code> for LDA/GGA, or a KPOINTS_OPT file (VASP 6.3.0 and later). Hybrids never use ICHARG = 11.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="calculator">
+<h2>k-mesh from your POSCAR</h2>
+<p>Paste a POSCAR and choose a spacing. The calculator applies the same rule as <x-tag>KSPACING</x-tag>, guesses the lattice type from the cell shape, and writes the KPOINTS file. It runs in your browser.</p>
+<div class="tool" data-tool="kmesh">
+  <noscript><p class="callout">The calculator needs JavaScript. The rule it applies is in <a href="#density">How dense</a>.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="formats">
+<h2>The ways to write KPOINTS</h2>
+<p>Line 1 is a comment. Line 2 is 0 for an automatic mesh, or the number of k-points (or points per segment). Only the first character of line 3 matters: <code>G</code> Γ-centred, <code>M</code> Monkhorst–Pack, <code>L</code> line mode, <code>A</code> fully automatic; for lists and generating vectors, <code>C</code> or <code>K</code> means Cartesian and anything else fractional (reciprocal).</p>
+<div class="recipes">
+<pre class="kpoints" data-title="Γ-centred mesh: the default choice">
+Regular k-point mesh
+0              ! 0 = generate the mesh automatically
+Gamma          ! Gamma-centred
+4  4  4        ! subdivisions N1 N2 N3 along b1 b2 b3
+0  0  0        ! optional shift
+</pre>
+<pre class="kpoints" data-title="Monkhorst–Pack mesh">
+Automatic generation
+0
+Monkhorst-Pack ! odd N: same as Gamma-centred; even N: shifted, no Gamma point
+4  4  4
+0  0  0
+</pre>
+<pre class="kpoints" data-title="Hexagonal cell, mesh shifted by 1/3 in the plane (a1, a2 at 120 degrees)">
+Hexagonal mesh shifted by 1/3 in the plane
+0
+Gamma          ! keep Gamma mode: Monkhorst-Pack would add another shift
+6  6  4
+0.3333333333  0.3333333333  0.0
+</pre>
+<pre class="kpoints" data-title="Explicit list with weights">
+Explicit k-point list
+4              ! number of k-points
+Cartesian      ! units of 2pi/a, a = the POSCAR scale; "Reciprocal" for fractions of b1 b2 b3
+0.0  0.0  0.0   1
+0.0  0.0  0.5   1
+0.0  0.5  0.5   2
+0.5  0.5  0.5   4
+</pre>
+<pre class="kpoints" data-title="Line mode for a band structure (fcc path)">
+k-points along high-symmetry lines
+40             ! points per segment, end points included
+Line-mode
+Reciprocal     ! fractional coordinates of b1 b2 b3
+  0    0    0     Gamma
+  0.5  0.5  0     X
+
+  0.5  0.5  0     X
+  0.5  0.75 0.25  W
+
+  0.5  0.75 0.25  W
+  0    0    0     Gamma
+</pre>
+<pre class="kpoints" data-title="Fully automatic (deprecated; KSPACING does the same)">
+Fully automatic mesh
+0
+Auto
+20             ! length R_k in Angstrom: about 10 for large-gap insulators, up to 100 for d metals
+</pre>
+</div>
+<p>VASP writes the irreducible points of every automatic mesh to IBZKPT, in the explicit-list format; edit a copy of it rather than typing a list by hand. Generating vectors (line 3 <code>Reciprocal</code> or <code>Cartesian</code> with three vectors and a shift) give generalized meshes, such as a conventional-cell mesh on a primitive cell.</p>
+</section>
+
+<section class="sheet-sec" id="which-mesh">
+<h2>Which mesh for which lattice</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Lattice</th><th scope="col">Mesh</th><th scope="col">Why</th></tr></thead>
+<tbody>
+<tr><th scope="row">fcc, face-centred orthorhombic</th><td data-label="Mesh">Γ-centred only</td><td data-label="Why">A Monkhorst–Pack mesh breaks their symmetry and the generating lattice no longer matches the reciprocal lattice. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Hexagonal (incl. SmCo₅-type)</th><td data-label="Mesh">Γ-centred, or a 1/3 shift in the plane</td><td data-label="Why">Never Monkhorst–Pack with even in-plane subdivisions: it breaks the hexagonal symmetry. Use N1 = N2. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Rhombohedral</th><td data-label="Mesh">Γ-centred only</td><td data-label="Why"><span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Body-centred tetragonal or orthorhombic, primitive cell</th><td data-label="Mesh">N1 = N2 = N3, or ratios 1/|a1| : 1/|a2| : 1/|a3|</td><td data-label="Why">KSPACING follows |b_i|, which may not suit these cells. Alternatively use the conventional cell. <span class="lbl adv">VASP advice</span></td></tr>
+<tr><th scope="row">Cubic, tetragonal, orthorhombic (primitive), monoclinic, triclinic</th><td data-label="Mesh">Γ-centred or Monkhorst–Pack</td><td data-label="Why">Either works; Γ-centred is the safe default.</td></tr>
+</tbody>
+</table></div>
+<p>The tetrahedron method (<code>ISMEAR = -5</code>) needs a Γ-centred mesh with at least 4 k-points, whatever the lattice. When a mesh does not fit the lattice symmetry, VASP reports it in a message from its routine IBZKPT about the “generating k-lattice”; change the mesh rather than ignoring it.</p>
+</section>
+
+<section class="sheet-sec" id="density">
+<h2>How dense</h2>
+<p>For a spacing Δk = <x-tag>KSPACING</x-tag> in Å⁻¹ (2π included), VASP takes N<sub>i</sub> = max(1, ⌈|b<sub>i</sub>| · 2π / Δk⌉), where b<sub>i</sub> are the reciprocal vectors without the 2π (b<sub>i</sub> · a<sub>j</sub> = δ<sub>ij</sub>). For an orthogonal cell, |b<sub>i</sub>| = 1/a<sub>i</sub>: silicon's 5.43 Å cubic cell at Δk = 0.25 Å⁻¹ gets ⌈1.157 / 0.25⌉ = 5 subdivisions per axis.</p>
+<div class="two-col">
+<div>
+<h3>Rules of thumb for the full Brillouin zone</h3>
+<ul class="tight">
+  <li>Insulators: about 100 k-points per atom bring the energy error below 10 meV.</li>
+  <li>Metals: about 1000 per atom for the same accuracy.</li>
+  <li>Transition metals with a steep DOS at the Fermi level: up to 5000 per atom for about 1 meV per atom.</li>
+  <li>Even meshes (8 × 8 × 8) are efficient up to N = 8; beyond that, odd meshes (11 × 11 × 11).</li>
+  <li>Compare an energy difference between cells only with consistent meshes: for commensurate supercells, use the same k-point set.</li>
+</ul>
+<p class="then">Count “k-points per atom” as N1 × N2 × N3 × (atoms in the cell).</p>
+</div>
+<div>
+<h3>Converting between conventions</h3>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Where</th><th scope="col">Setting</th><th scope="col">Same as KSPACING</th></tr></thead>
+<tbody>
+<tr><th scope="row">KPOINTS <code>Auto</code></th><td data-label="Setting">length R_k (Å)</td><td data-label="Same as KSPACING">2π / R_k (it rounds instead of rounding up)</td></tr>
+<tr><th scope="row">VASPKIT</th><td data-label="Setting">resolution in units of 2π Å⁻¹</td><td data-label="Same as KSPACING">2π × the resolution: 0.04 ≈ 0.25</td></tr>
+<tr><th scope="row">pymatgen</th><td data-label="Setting">reciprocal_density ρ, k-points per Å⁻³ of reciprocal volume</td><td data-label="Same as KSPACING">about ρ<sup>−1/3</sup> for a cubic cell: 64 ≈ 0.25, 100 ≈ 0.22, 200 ≈ 0.17</td></tr>
+</tbody>
+</table></div>
+<p class="then">Materials Project uses ρ = 64 to relax, 100 for static and DOS runs, and KSPACING 0.22–0.44 (from the band gap) for r²SCAN.</p>
+</div>
+</div>
+</section>
+
+<section class="sheet-sec" id="bands">
+<h2>Band structures and dense DOS</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Functional</th><th scope="col">How</th></tr></thead>
+<tbody>
+<tr><th scope="row">LDA, GGA (PBE)</th><td data-label="How">Either one run with the regular mesh in KPOINTS and the path in a KPOINTS_OPT file (VASP 6.3.0 and later), or two runs: a self-consistent one, then the path in KPOINTS (line mode) with <code>ICHARG = 11</code> reading its CHGCAR.</td></tr>
+<tr><th scope="row">Meta-GGA (r²SCAN)</th><td data-label="How">Before VASP 6.6.0: as for hybrids. From 6.6.0 the ICHARG = 11 route also works. KPOINTS_OPT works on every version from 6.3.0.</td></tr>
+<tr><th scope="row">Hybrid (HSE06)</th><td data-label="How">Never ICHARG = 11. Run self-consistently with the regular mesh in KPOINTS and the path in KPOINTS_OPT, or append the path to an IBZKPT copy as zero-weight k-points. For gapped systems set <code>HFRCUT = -1</code>.</td></tr>
+</tbody>
+</table></div>
+<ul class="tight">
+  <li>Take the Fermi energy from the self-consistent run: it cannot be computed from points on a path. With KPOINTS_OPT, set <x-tag>EFERMI</x-tag> or pass the Fermi energy to the plotting tool.</li>
+  <li>Set <x-tag>LMAXMIX</x-tag> to 4 (d) or 6 (f) in both the self-consistent and the ICHARG = 11 run.</li>
+  <li>Paths come from SeeK-path, pymatgen's HighSymmKpath or VASPKIT (task 303). Each tool's path belongs to <em>its</em> standardized primitive cell: run on that cell, or the labels are wrong.</li>
+  <li>A zero-weight hybrid run should not restart from a converged hybrid WAVECAR: the SCF can stop before the zero-weight states converge.</li>
+  <li>Spin-polarized projected DOS from KPOINTS_OPT lost the second spin channel in VASP 6.6.0 (fixed in 6.6.1); PROCAR_OPT was broken in 6.5.0 and 6.5.1.</li>
+</ul>
+<pre class="kpoints" data-title="KPOINTS_OPT: the path, used next to a regular KPOINTS">
+k-points for the band structure
+40
+Line-mode
+Reciprocal
+  0.0  0.0  0.0   Gamma
+  0.5  0.0  0.5   X
+</pre>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The k-point tags</h2>
+<x-tags names="KSPACING KGAMMA KSPACING_OPT LKPOINTS_OPT KPOINTS_OPT_NKBATCH KPOINTS_OPT_MODE"></x-tags>
+</section>
+
+<section class="sheet-sec" id="check">
+<h2>Check the mesh VASP used</h2>
+<pre class="sh" data-title="Irreducible k-points">
+grep "irreducible k-points" OUTCAR   # how many points the mesh reduced to by symmetry
+grep NKPTS OUTCAR                    # the same number, with the number of bands
+head -3 IBZKPT                       # line 2: number of irreducible k-points
+vasp_std --dry-run                   # VASP 6.4 and later: writes IBZKPT and stops
+</pre>
+<p>The irreducible count sets the cost and suggests <x-tag>KPAR</x-tag>: choose a divisor of the number of MPI ranks that is at most this count.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>Monkhorst–Pack with even N for fcc or hexagonal cells: lower symmetry, slower convergence, or an IBZKPT error.</li>
+  <li>No KPOINTS file, so VASP silently uses KSPACING = 0.5 Å⁻¹; or a forgotten KPOINTS file that silently overrides KSPACING.</li>
+  <li>Mixing conventions: a VASPKIT 0.04 is a KSPACING of 0.25; pymatgen's reciprocal_density is a density, not a spacing.</li>
+  <li>Judging convergence by N when comparing even and odd meshes: compare irreducible counts instead.</li>
+  <li>A line-mode KPOINTS in a self-consistent run.</li>
+  <li>A path from one tool used on a differently oriented or non-standard cell.</li>
+  <li>The tetrahedron method with fewer than 4 k-points, a shifted mesh, or for forces in metals.</li>
+  <li>A KPOINTS_OPT file left in the folder: VASP reads it automatically.</li>
+  <li>With spin–orbit coupling, a k-point set that depends on the spin direction: test <code>ISYM = -1</code>.</li>
+</ul>
+</section>

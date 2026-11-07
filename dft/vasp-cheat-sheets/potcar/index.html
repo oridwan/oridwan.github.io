@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Which POTCAR to Use in VASP: _pv, _sv, _3 Explained</title>
+  <meta name="description" content="Which POTCAR to use in VASP: suffixes _pv, _sv, _d, _s, _h, _3 explained, the October 2026 recommendations, rare-earth choices, and a POTCAR planner.">
+  <meta name="keywords" content="VASP POTCAR, which POTCAR to use, Fe_pv, Ti_sv, Nd_3, PAW potentials, potpaw.64, ENMAX, recommended pseudopotentials, VASP">
+  <link rel="canonical" href="https://oridwan.github.io/dft/vasp-cheat-sheets/potcar/">
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="author" content="Osman Goni Ridwan">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Osman Goni Ridwan">
+  <meta property="og:title" content="Which POTCAR to Use in VASP: _pv, _sv, _3 Explained">
+  <meta property="og:description" content="Which POTCAR to use in VASP: suffixes _pv, _sv, _d, _s, _h, _3 explained, the October 2026 recommendations, rare-earth choices, and a POTCAR planner.">
+  <meta property="og:url" content="https://oridwan.github.io/dft/vasp-cheat-sheets/potcar/">
+  <meta property="og:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta property="og:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="article:modified_time" content="2026-11-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Which POTCAR to Use in VASP: _pv, _sv, _3 Explained">
+  <meta name="twitter:description" content="Which POTCAR to use in VASP: suffixes _pv, _sv, _d, _s, _h, _3 explained, the October 2026 recommendations, rare-earth choices, and a POTCAR planner.">
+  <meta name="twitter:image" content="https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp">
+  <meta name="twitter:image:alt" content="The INCAR builder from the VASP cheat sheets: choices for a ferromagnetic metal cell relaxation on the left, and the commented INCAR it writes on the right.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "TechArticle",
+    "LearningResource"
+  ],
+  "headline": "Which POTCAR to Use in VASP: _pv, _sv, _3 Explained",
+  "name": "VASP POTCAR cheat sheet",
+  "description": "Which POTCAR to use in VASP: suffixes _pv, _sv, _d, _s, _h, _3 explained, the October 2026 recommendations, rare-earth choices, and a POTCAR planner.",
+  "url": "https://oridwan.github.io/dft/vasp-cheat-sheets/potcar/",
+  "image": "https://oridwan.github.io/assets/fig/vasp-cheat-sheets.webp",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "learningResourceType": "Cheat sheet",
+  "keywords": "VASP POTCAR, which POTCAR to use, Fe_pv, Ti_sv, Nd_3, PAW potentials, potpaw.64, ENMAX, recommended pseudopotentials, VASP, VASP cheat sheet",
+  "datePublished": "2026-11-06",
+  "dateModified": "2026-11-06",
+  "author": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Osman Goni Ridwan",
+    "url": "https://oridwan.github.io/",
+    "jobTitle": "Computational Materials Scientist",
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "University of North Carolina at Charlotte"
+    },
+    "sameAs": [
+      "https://scholar.google.com/citations?user=-NaiqfUAAAAJ",
+      "https://www.linkedin.com/in/ogridwan",
+      "https://github.com/oridwan"
+    ]
+  },
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Density Functional Theory and VASP",
+    "url": "https://oridwan.github.io/dft/"
+  },
+  "citation": [
+    "VASP Wiki, “Recommended pseudopotentials” (the current recommendation for each element, with valence, ENMAX and SHA256 checksums).",
+    "VASP Wiki, “Available pseudopotentials” (the sets, the suffixes and every potential with its ENMAX).",
+    "VASP Wiki, “Preparing a POTCAR” (building the file in POSCAR order and mixing potential sets).",
+    "VASP Wiki, “Choosing pseudopotentials” (advice, and the table of recommended PBE potentials, potpaw.64)."
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Osman Goni Ridwan",
+      "item": "https://oridwan.github.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "DFT & VASP Course",
+      "item": "https://oridwan.github.io/dft/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "VASP cheat sheets",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "POTCAR",
+      "item": "https://oridwan.github.io/dft/vasp-cheat-sheets/potcar/"
+    }
+  ]
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex-swap.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../../style.css">
+  <link rel="stylesheet" href="../../../dft/dft.css">
+  <link rel="stylesheet" href="../../../dft/cheat.css">
+</head>
+<body class="dft cheat" data-sheet="potcar">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="dft-top">
+  <div class="dft-top-in">
+    <a class="brand" href="../../../">Osman Goni Ridwan</a>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">DFT &amp; VASP Course</a><a href="../">VASP cheat sheets</a><span>POTCAR</span></nav>
+    <div class="top-actions"></div>
+  </div>
+  
+</header>
+
+<main id="main" class="sheet">
+  <header class="sheet-head">
+    <p class="eyebrow">VASP cheat sheet · Essentials</p>
+    <h1>VASP POTCAR cheat sheet</h1>
+    <p class="sheet-lede">POTCAR holds the PAW potential of each species. This sheet decodes the suffixes, gives VASP's current recommendations, shows how to build and check the file without printing it, and covers the rare-earth choice between f in the core and f in the valence.</p>
+    <p class="stamp">Checked against VASP 6.6.1 · Updated <time datetime="2026-11-06">6 November 2026</time> <button type="button" class="print-btn">Print</button></p>
+  </header>
+  <div class="sheet-grid">
+    <nav class="sheet-toc" aria-label="On this sheet">
+      <p class="toc-k">On this sheet</p>
+      <ol>
+        <li><a href="#short">The short version</a></li>
+        <li><a href="#planner">Plan a POTCAR</a></li>
+        <li><a href="#suffixes">What the suffixes mean</a></li>
+        <li><a href="#sets">Which set</a></li>
+        <li><a href="#build">Build a POTCAR</a></li>
+        <li><a href="#inspect">Check a POTCAR without printing it</a></li>
+        <li><a href="#encut">ENMAX and ENCUT</a></li>
+        <li><a href="#rare-earths">Rare earths: f in the core or in the valence</a></li>
+        <li><a href="#report">What to report</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+      </ol>
+    </nav>
+    <article class="sheet-body">
+
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>Concatenate one potential per species, in the order of the POSCAR species line. A wrong order is the most common POTCAR mistake, and VASP only warns about it.</li>
+  <li>Start from VASP's recommended potentials (potpaw.64, PBE). Since October 2026 they include <code>Fe_pv</code>, <code>Co_pv</code>, <code>Ni_pv</code>, <code>Cu_pv</code>, <code>Eu_3</code> and <code>Yb_3</code>.</li>
+  <li>The largest ENMAX of your POTCAR is the default <a class="vtag" href="#tag-encut">ENCUT</a>. Set ENCUT yourself anyway, and keep it the same for every energy you compare.</li>
+  <li>Compare energies only between runs with identical POTCAR files: the same names <em>and</em> the same set.</li>
+  <li>Lanthanide <code>_3</code> potentials put the 4f electrons in the core: no 4f magnetism comes out of them.</li>
+  <li>Never edit or share a POTCAR. Report the TITEL lines instead.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="planner">
+<h2>Plan a POTCAR</h2>
+<p>Type the species line of your POSCAR, and optionally the counts line. The planner looks up VASP's current recommendation for each element (potpaw.64, PBE), with its valence electrons and ENMAX, and writes the command that builds the POTCAR. Type a potential name such as <code>Fe_sv</code> to override an element. Nothing is uploaded, and no POTCAR content is used.</p>
+<div class="tool" data-tool="potcar">
+  <noscript><p class="callout">The planner needs JavaScript. The commands are <a href="#build">below</a>.</p></noscript>
+</div>
+</section>
+
+<section class="sheet-sec" id="suffixes">
+<h2>What the suffixes mean</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">Suffix</th><th scope="col">Meaning</th><th scope="col">When to use it</th></tr></thead>
+<tbody>
+<tr><th scope="row">none</th><td data-label="Meaning">The standard valence, e.g. Ti with 4 electrons (3d² 4s²).</td><td data-label="When to use it">Most p elements, Zn, Pd, Ag, Cd, Ir to Hg.</td></tr>
+<tr><th scope="row"><code>_pv</code></th><td data-label="Meaning">Semicore p states in the valence: Ti_pv has 10 electrons.</td><td data-label="When to use it">Recommended for most 3d and some 4d/5d metals (Cr to Cu, Tc to Rh, Hf, Ta, Re, Os); safer for magnetism and DFT+U.</td></tr>
+<tr><th scope="row"><code>_sv</code></th><td data-label="Meaning">Semicore s and p states in the valence: Ti_sv has 12 electrons.</td><td data-label="When to use it">Recommended for Sc, Ti, V, Y, Zr, Nb, Mo, W and most alkali and alkaline-earth metals (Na and Mg use <code>_pv</code>).</td></tr>
+<tr><th scope="row"><code>_d</code></th><td data-label="Meaning">Semicore d states in the valence: Ge_d has 14 electrons.</td><td data-label="When to use it">Ga, Ge, In, Sn, Tl, Pb, Bi, Po.</td></tr>
+<tr><th scope="row"><code>_s</code></th><td data-label="Meaning">Soft: larger core radius, lower cutoff (O_s about 283 eV against 400 eV for O).</td><td data-label="When to use it">Quick relaxations and large supercells. Not for hybrid functionals or Hartree–Fock.</td></tr>
+<tr><th scope="row"><code>_h</code></th><td data-label="Meaning">Hard: smaller core radius, higher cutoff, more transferable (O_h about 766 eV).</td><td data-label="When to use it">Short bonds and reference accuracy. potpaw.64 adds valence-f <code>_h</code> lanthanides.</td></tr>
+<tr><th scope="row"><code>_GW</code></th><td data-label="Meaning">Accurate scattering far above the Fermi level; combines with others, e.g. <code>_sv_GW</code>.</td><td data-label="When to use it">GW, RPA, BSE, optics: anything with many empty bands.</td></tr>
+<tr><th scope="row"><code>_2</code>, <code>_3</code></th><td data-label="Meaning">Lanthanides only: a fixed valence, with the remaining 4f electrons frozen in the core.</td><td data-label="When to use it">When 4f magnetism does not matter and the valence is known. VASP recommends <code>_3</code> for Pr to Lu, now including Eu and Yb.</td></tr>
+<tr><th scope="row"><code>_AE</code></th><td data-label="Meaning">All-electron and very hard (H, He, Li only).</td><td data-label="When to use it">Properties of the core region.</td></tr>
+<tr><th scope="row"><code>H.5</code>, <code>H1.25</code> …</th><td data-label="Meaning">Hydrogen with fractional valence.</td><td data-label="When to use it">Passivating dangling bonds of a slab; set <a class="vtag" href="#tag-nelect">NELECT</a> yourself.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="sheet-sec" id="sets">
+<h2>Which set</h2>
+<ul class="tight">
+  <li><b>potpaw.64</b> is the latest and recommended set. It updated the lanthanides (Pr to Yb), whose valence-f potentials in older sets were significantly flawed, and added <code>_h</code> versions of them.</li>
+  <li><b>potpaw.54</b> (2015) and <b>potpaw.52</b> (2012): today's downloads give the same results as their original releases; use them only to reproduce older work. Materials Project's r²SCAN data use potpaw.54.</li>
+  <li>The 2010-and-earlier sets are outdated and unsupported, and can misbehave with newer features such as meta-GGA. Materials Project's PBE and PBE+U data use files of this generation, some of which VASP no longer distributes.</li>
+  <li>Use LDA potentials only for LDA calculations. The PBE potentials serve every GGA, meta-GGA and hybrid: choose the functional in the INCAR, never by editing LEXCH in the POTCAR.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="build">
+<h2>Build a POTCAR</h2>
+<figure class="code sh"><figcaption><span class="code-t">Concatenate in the order of the POSCAR species line</span></figcaption><pre><code>sed -n 6p POSCAR                    <span class="c"> # the species line, e.g.  Nd Fe B</span>
+POTDIR=/path/to/potpaw_PBE.64       <span class="c"> # your licensed copy</span>
+cat &quot;$POTDIR/Nd_3/POTCAR&quot; &quot;$POTDIR/Fe_pv/POTCAR&quot; &quot;$POTDIR/B/POTCAR&quot; &gt; POTCAR</code></pre></figure>
+<p>Tools such as pymatgen and ASE build the POTCAR for you once told where your licensed potentials are; check what they chose with the commands below.</p>
+</section>
+
+<section class="sheet-sec" id="inspect">
+<h2>Check a POTCAR without printing it</h2>
+<figure class="code sh"><figcaption><span class="code-t">Header lines only</span></figcaption><pre><code>grep TITEL POTCAR                   <span class="c"> # one line per species, in file order: potential name and date</span>
+grep -c &quot;End of Dataset&quot; POTCAR     <span class="c"> # number of species</span>
+grep ZVAL POTCAR                    <span class="c"> # valence electrons of each species</span>
+grep ENMAX POTCAR                   <span class="c"> # recommended cutoff of each species; the largest is the default ENCUT</span>
+grep kinetic POTCAR                 <span class="c"> # meta-GGA (r2SCAN): kinetic-energy data per species (H, He, Li_sv, Be_sv print less, but work)</span>
+grep SHA256 POTCAR                  <span class="c"> # checksum line in newer files</span>
+grep -v -e COPYR -e MD5 -e SHA256 POTCAR | sha256sum  <span class="c"> # single-element file: compare with the VASP Wiki table</span></code></pre></figure>
+<figure class="code sh"><figcaption><span class="code-t">Which potentials a finished run used</span></figcaption><pre><code>grep &quot;POTCAR:&quot; OUTCAR | awk '!seen[$0]++'  <span class="c"> # OUTCAR lists each potential twice; keep one of each</span></code></pre></figure>
+</section>
+
+<section class="sheet-sec" id="encut">
+<h2>ENMAX and ENCUT</h2>
+<ul class="tight">
+  <li>Each potential carries ENMAX, its recommended cutoff, and ENMIN, the lowest usable one. VASP's default <a class="vtag" href="#tag-encut">ENCUT</a> is the largest ENMAX in the POTCAR.</li>
+  <li>That default changes with the elements, so energies of different compounds are not comparable unless you set ENCUT explicitly to one value for all of them.</li>
+  <li>For relaxations that change the cell, use at least 1.3 × the largest ENMAX. Materials Project uses 520 eV for PBE (1.3 × 400 eV) and 680 eV for r²SCAN.</li>
+  <li>A lanthanide <code>_3</code> potential has a low ENMAX, so in a compound the cutoff is usually set by another element: in Nd₂Fe₁₄B it is boron (318.6 eV), not Nd_3 (182.6 eV).</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="rare-earths">
+<h2>Rare earths: f in the core or in the valence</h2>
+<div class="two-col">
+<div>
+<h3>f in the core (<code>Nd_3</code>, <code>Sm_3</code>, <code>Dy_3</code>)</h3>
+<ul class="tight">
+  <li>Stable and cheap: no partly filled 4f shell pinned at the Fermi level.</li>
+  <li>The 4f moment is absent: only the 5d/6s polarization of the rare-earth site and the transition-metal moments are computed, so no 4f moment or 4f single-ion anisotropy can come out.</li>
+  <li>Needs the valence to be known; VASP recommends <code>_3</code> unless 4f magnetism matters.</li>
+</ul>
+</div>
+<div>
+<h3>f in the valence (<code>Nd</code>, <code>Nd_h</code>)</h3>
+<ul class="tight">
+  <li>Use potpaw.64: the older valence-f lanthanides were significantly flawed.</li>
+  <li>Plain DFT pins the 4f states at the Fermi level and overbinds; DFT+U or a similar correction is usually needed.</li>
+  <li>Set <code>LMAXMIX = 6</code> and <code>LASPH = .TRUE.</code>, and expect a higher cutoff (Nd 338 eV, Nd_h 402 eV).</li>
+</ul>
+</div>
+</div>
+<p>Materials Project uses <code>_3</code> for most lanthanides in its PBE and r²SCAN data and <code>_h</code> in its newest sets; its PBE Gd file is no longer distributed, so rare-earth energies are comparable with their hull only if you hold the identical files.</p>
+</section>
+
+<section class="sheet-sec" id="report">
+<h2>What to report</h2>
+<p>In a methods section give the set (e.g. PBE potpaw.64), the TITEL line of every potential (name and date), the valence electrons and the ENCUT. The TITEL identifies the file without sharing it. POTCAR files are licensed: never post them in a repository or supplementary information.</p>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>POTCAR order different from the POSCAR species order (VASP warns only if POSCAR has the species line).</li>
+  <li>Relying on the default ENCUT, which moves with the composition.</li>
+  <li>Comparing energies made with different files, including the same name from a different set or date.</li>
+  <li>Expecting 4f magnetism from <code>_3</code> or <code>_2</code> potentials; using <code>Eu_2</code> or <code>Yb_2</code> for trivalent compounds.</li>
+  <li>Meta-GGA with old (2010 and earlier) potentials or with <code>O_GW</code>, which lack kinetic-energy data.</li>
+  <li>Editing LEXCH to “make” a PBEsol or SCAN potential instead of setting the functional in the INCAR.</li>
+  <li>Soft <code>_s</code> potentials with hybrids; LDA potentials with GGA.</li>
+  <li>Leaving out semicore states in magnetic transition-metal work: they change lattice constants, moments and energy differences.</li>
+  <li>Fractional hydrogen without setting NELECT.</li>
+</ul>
+</section>
+
+<section class="backmatter" id="key-terms">
+<h2>Other tags on this sheet</h2>
+<dl class="terms tags">
+<dt id="tag-encut"><code>ENCUT</code></dt>
+<dd>Plane-wave cutoff in eV: the size of the basis set.<span class="tag-meta">Default: the largest ENMAX among the POTCAR files · <a href="https://www.vasp.at/wiki/ENCUT" rel="noopener">VASP Wiki: ENCUT</a></span></dd>
+<dt id="tag-nelect"><code>NELECT</code></dt>
+<dd>Total number of electrons; set it for charged cells (fewer electrons for a positive charge).<span class="tag-meta">Default: the valence electrons of the POTCARs (neutral cell) · <a href="https://www.vasp.at/wiki/NELECT" rel="noopener">VASP Wiki: NELECT</a></span></dd>
+</dl>
+</section>
+<section class="backmatter" id="lectures">
+<h2>The physics behind this sheet</h2>
+<ul class="sheet-lecs">
+<li><a href="../../atomic-orbitals-core-valence-electrons/">Lecture 4: Atomic orbitals, core and valence electrons</a></li>
+<li>Lecture 17: Plane waves and the ENCUT cutoff <span class="muted">(in preparation)</span></li>
+<li>Lecture 18: PAW, pseudopotentials and the POTCAR <span class="muted">(in preparation)</span></li>
+</ul>
+</section>
+<section class="backmatter" id="further-reading">
+<h2>Further reading</h2>
+<ol class="refs">
+<li id="ref-VASPwikiRecommended">VASP Wiki, “Recommended pseudopotentials” (the current recommendation for each element, with valence, ENMAX and SHA256 checksums). · <a href="https://www.vasp.at/wiki/Recommended_pseudopotentials" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiAvailable">VASP Wiki, “Available pseudopotentials” (the sets, the suffixes and every potential with its ENMAX). · <a href="https://www.vasp.at/wiki/Available_pseudopotentials" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiPreparing">VASP Wiki, “Preparing a POTCAR” (building the file in POSCAR order and mixing potential sets). · <a href="https://www.vasp.at/wiki/Preparing_a_POTCAR" rel="noopener">vasp.at/wiki</a></li>
+<li id="ref-VASPwikiChoosing">VASP Wiki, “Choosing pseudopotentials” (advice, and the table of recommended PBE potentials, potpaw.64). · <a href="https://www.vasp.at/wiki/Choosing_pseudopotentials" rel="noopener">vasp.at/wiki</a></li>
+</ol>
+</section>
+
+    </article>
+  </div>
+  <nav class="sheet-pn" aria-label="Other cheat sheets">
+    <a class="pn-prev" href="../kpoints/"><span>Previous sheet</span>KPOINTS</a>
+    <a class="pn-hub" href="../">All VASP cheat sheets</a>
+    <a class="pn-next" href="../poscar/"><span>Next sheet</span>POSCAR</a>
+  </nav>
+</main>
+
+<footer class="site-copy">
+  <p>© 2026 Osman Goni Ridwan. All rights reserved. The text, figures, interactive tools and code of this course may not be copied, republished or adapted without written permission. <a href="https://github.com/oridwan/oridwan.github.io/blob/main/LICENSE">Copyright and permissions</a></p>
+</footer>
+<script type="module" src="../../deck.js"></script>
+<script type="module" src="../../cheat.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!--
+  Provenance (stripped at build). Checked 2026-11-06 against VASP 6.6.1.
+  VASP Wiki raw source: MDALGO (values; default 0 wraps coordinates; NpT only with 3), POTIM (must be set),
+  NSW (split runs <= ~20000), TEBEG, TEEND, SMASS (-3 default), ANDERSEN_PROB (0), LANGEVIN_GAMMA (NTYP x 0),
+  LANGEVIN_GAMMA_L (0), PMASS (1000), NHC_NCHAINS (0), NHC_PERIOD (40 steps), CSVR_PERIOD (0; unit given as
+  fs and as steps), NBLOCK, KBLOCK, POMASS, RANDOM_SEED, VELOCITY, ISYM (0 for MD), ISIF (0 for IBRION = 0),
+  NVE/NVT/NpT/NpH ensemble pages, Molecular-dynamics calculations (start 1 fs; drift; OSZICAR MD line;
+  OUTCAR ETOTAL block), CONTCAR (delete predictor-corrector when changing ensemble), MAXMIX, Best practices
+  for machine-learned force fields (time step <= 0.7 fs with H, 1.5 fs with O; heat gradually; train in NpT
+  or Langevin NVT, never NVE; no MAXMIX; ML_WTSIF tiny for surfaces; errors < 1 meV/atom and 30-100 meV/A),
+  ML_LMLFF (6.3.0), ML_MODE (6.4.0; delta 6.6.0), ML_AB/ML_ABN/ML_FF/ML_FFN, ML_LOGFILE, ML_CTIFOR,
+  ML_OUTBLOCK, ML_WTSIF, Machine learning force field calculations: Basics (refit gives 20-100x),
+  Changelog (6.4.0 NHC; 6.4.3 CSVR; 6.6.0 spilling factor stops runs > 0.9). MLFF: one potential energy
+  landscape (Basics). ASE read XDATCAR index ':' (default last frame). MDAnalysis has no VASP reader.
+  pymatgen-analysis-diffusion DiffusionAnalyzer. Brief: dft/_research/D-neb-aimd.md sheet 2.
+-->
+
+<section class="sheet-sec" id="short">
+<h2>The short version</h2>
+<ol class="short-list">
+  <li>MD is <code>IBRION = 0</code> with <code>NSW</code> steps of <code>POTIM</code> fs; POTIM has no default, and VASP stops without it.</li>
+  <li>Always set MDALGO and its coupling tag: every thermostat's coupling defaults to “off”, so a run that sets only MDALGO is silently NVE.</li>
+  <li>The default MDALGO = 0 folds atoms back into the cell, which rules out a mean-squared displacement. Use MDALGO 1–5.</li>
+  <li>Constant pressure (NpT) only works with Langevin: <code>MDALGO = 3</code>, <code>ISIF = 3</code>.</li>
+  <li>Use <code>ISYM = 0</code>, a time step of about 1 fs (0.5–0.7 fs with hydrogen), and check the drift of the conserved energy.</li>
+  <li>VASP's machine-learned force fields (6.3 and later) train on the fly during MD: train, refit, then run.</li>
+</ol>
+</section>
+
+<section class="sheet-sec" id="thermostats">
+<h2>Thermostats and ensembles</h2>
+<div class="tagtable-wrap"><table class="choice">
+<thead><tr><th scope="col">MDALGO</th><th scope="col">Thermostat</th><th scope="col">Ensembles</th><th scope="col">Coupling tag (default = off)</th></tr></thead>
+<tbody>
+<tr><th scope="row">0</th><td data-label="Thermostat">legacy Nosé (deprecated)</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">SMASS (−3 = NVE); wraps coordinates</td></tr>
+<tr><th scope="row">1</th><td data-label="Thermostat">Andersen</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">ANDERSEN_PROB (0)</td></tr>
+<tr><th scope="row">2</th><td data-label="Thermostat">Nosé–Hoover</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">SMASS (−3)</td></tr>
+<tr><th scope="row">3</th><td data-label="Thermostat">Langevin (+ Parrinello–Rahman cell)</td><td data-label="Ensembles">NVT, NpT, NpH</td><td data-label="Coupling tag">LANGEVIN_GAMMA (0), LANGEVIN_GAMMA_L (0), PMASS</td></tr>
+<tr><th scope="row">4</th><td data-label="Thermostat">Nosé–Hoover chain (6.4.0)</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">NHC_NCHAINS (0), NHC_PERIOD</td></tr>
+<tr><th scope="row">5</th><td data-label="Thermostat">CSVR, stochastic velocity rescaling (6.4.3)</td><td data-label="Ensembles">NVE, NVT</td><td data-label="Coupling tag">CSVR_PERIOD (0)</td></tr>
+</tbody>
+</table></div>
+<p>NVE: <code>MDALGO = 1</code> with <code>ANDERSEN_PROB = 0</code> is the simplest. NVT: any MDALGO with its coupling switched on, ISIF = 2. NpT: Langevin with ISIF = 3 only, at a cutoff of about 1.3 × ENMAX (the cell changes). NpH: as NpT with both frictions 0.</p>
+</section>
+
+<section class="sheet-sec" id="recipes">
+<h2>INCAR recipes</h2>
+<p>Add your converged electronic settings (ENCUT, PREC, EDIFF, smearing) to each block.</p>
+<div class="recipes">
+<pre class="incar" data-title="NVT, Nosé-Hoover chain (VASP 6.4.0 and later)" data-allow="encut-missing">
+IBRION      = 0
+MDALGO      = 4
+ISIF        = 2
+ISYM        = 0
+NSW         = 10000
+POTIM       = 1.0        ! fs; 0.5-0.7 with hydrogen
+TEBEG       = 300 ; TEEND = 300
+NHC_NCHAINS = 3          ! the default 0 means no thermostat
+NHC_PERIOD  = 40         ! in MD steps
+RANDOM_SEED = 248489752 0 0
+</pre>
+<pre class="incar" data-title="NVT, Langevin (good for sampling and force-field training)" data-allow="encut-missing">
+IBRION         = 0
+MDALGO         = 3
+ISIF           = 2
+ISYM           = 0
+NSW            = 10000
+POTIM          = 1.0
+TEBEG          = 300
+LANGEVIN_GAMMA = 10.0 10.0   ! ps^-1, one value per species
+</pre>
+<pre class="incar" data-title="NpT, Langevin with Parrinello-Rahman cell dynamics" data-allow="encut-missing">
+IBRION           = 0
+MDALGO           = 3
+ISIF             = 3
+ISYM             = 0
+NSW              = 10000
+POTIM            = 1.0
+TEBEG            = 300
+LANGEVIN_GAMMA   = 10.0 10.0 10.0   ! three species
+LANGEVIN_GAMMA_L = 10.0
+PMASS            = 1000
+PSTRESS          = 0        ! target pressure in kB
+</pre>
+<pre class="incar" data-title="NVE production run" data-allow="encut-missing">
+IBRION        = 0
+MDALGO        = 1
+ANDERSEN_PROB = 0.0      ! Andersen switched off: plain NVE
+ISIF          = 2
+ISYM          = 0
+NSW           = 10000
+POTIM         = 1.0
+TEBEG         = 300
+</pre>
+<pre class="incar" data-title="Faster electronic settings for long AIMD" data-allow="encut-missing">
+PREC   = Normal
+EDIFF  = 1E-5
+ALGO   = Fast
+LREAL  = Auto
+MAXMIX = 40              ! reuse the mixer between steps (not when training force fields)
+LWAVE  = .FALSE. ; LCHARG = .FALSE.
+NBLOCK = 10              ! one XDATCAR frame every 10 steps
+</pre>
+</div>
+<p class="then">With a single Γ point, run <code>vasp_gam</code>. Split long simulations into runs of at most about 20000 steps.</p>
+</section>
+
+<section class="sheet-sec" id="tags">
+<h2>The MD tags</h2>
+<x-tags names="MDALGO TEBEG TEEND SMASS ANDERSEN_PROB LANGEVIN_GAMMA LANGEVIN_GAMMA_L PMASS NHC_NCHAINS NHC_PERIOD CSVR_PERIOD NBLOCK KBLOCK POMASS RANDOM_SEED VELOCITY"></x-tags>
+</section>
+
+<section class="sheet-sec" id="restart">
+<h2>Restarting and changing ensemble</h2>
+<ul class="tight">
+  <li><code>cp CONTCAR POSCAR</code> continues the trajectory: CONTCAR carries the velocities and the integrator's predictor–corrector data.</li>
+  <li>Switching ensemble (NVT to NpT, say): delete the predictor–corrector block at the end of the file, or the run crashes; keep the velocities.</li>
+  <li>Equilibrate first, then count only the production part. Starting velocities come from TEBEG unless POSCAR has them; set RANDOM_SEED for reproducible runs.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="analysis">
+<h2>Analysis</h2>
+<pre class="sh" data-title="Temperature and energies from OSZICAR (MD runs)">
+grep "T=" OSZICAR | awk '{print $1, $3, $5}' > T_E.dat   # step, temperature, conserved energy E
+tail -3 OSZICAR                                         # the latest steps
+</pre>
+<ul class="tight">
+  <li>OSZICAR's MD line: <code>T=</code> temperature, <code>E=</code> total energy including kinetic and thermostat terms (the conserved quantity), <code>F=</code> and <code>E0=</code> as in relaxations, <code>EK=</code> kinetic energy, <code>SP=</code> and <code>SK=</code> thermostat energies.</li>
+  <li>In NVE and Nosé–Hoover runs, E must not drift systematically; drift means too large a time step or noisy forces (a poorly converged SCF). Stochastic thermostats do not conserve it exactly.</li>
+  <li>XDATCAR holds a frame every NBLOCK steps; with MDALGO ≥ 1 the coordinates are not folded back into the cell. In ASE read all frames with <code>read("XDATCAR", index=":")</code>; without the index you get only the last one.</li>
+  <li>Diffusion: D from the mean-squared displacement, ⟨|r(t) − r(0)|²⟩ = 2 n D t in n dimensions; pymatgen's DiffusionAnalyzer reads vasprun.xml files directly. Radial distribution: PCDAT (averaged) or ASE's get_rdf. Vibrational DOS: Fourier transform of the velocity autocorrelation (VELOCITY = .TRUE.).</li>
+  <li>MDAnalysis has no VASP reader: convert with ASE first.</li>
+</ul>
+</section>
+
+<section class="sheet-sec" id="mlff">
+<h2>Machine-learned force fields in VASP</h2>
+<p>VASP can learn a force field during MD: it computes a step from first principles only when the model's estimated error is too large, and otherwise predicts.</p>
+<pre class="incar" data-title="Train on the fly (NpT Langevin, heating)" data-allow="encut-missing">
+ML_LMLFF = .TRUE.
+ML_MODE  = train          ! continues from ML_AB if that file is present
+IBRION   = 0
+MDALGO   = 3
+ISIF     = 3
+ISYM     = 0
+TEBEG    = 200 ; TEEND = 500       ! heat to about 30% above the temperature you need
+LANGEVIN_GAMMA   = 10.0 10.0
+LANGEVIN_GAMMA_L = 3.0
+PMASS    = 100
+POTIM    = 1.5
+NSW      = 20000
+</pre>
+<pre class="sh" data-title="Train, refit, run">
+cp ML_ABN ML_AB      # continue training (ML_MODE = train) or refit (ML_MODE = refit)
+cp ML_FFN ML_FF      # then production: ML_MODE = run
+grep ERR ML_LOGFILE | grep -v "#" | awk '{print $2, $4}' > ERR.dat   # force error per step
+</pre>
+<ul class="tight">
+  <li>Refit before production: without it the fast prediction mode, 20 to 100 times faster, is not available.</li>
+  <li>Keep the INCAR and POTCAR of the first-principles part identical across training stages; no MAXMIX while training; never train in NVE.</li>
+  <li>Aim for training errors below about 1 meV/atom in energy and 30–100 meV/Å in forces.</li>
+  <li>Surfaces and molecules: a tiny stress weight, <code>ML_WTSIF = 1E-10</code>.</li>
+  <li>A force field describes one potential-energy landscape: for a magnet, train on one consistent magnetic state.</li>
+  <li>Since VASP 6.6.0 a run stops if the model's spilling factor becomes critically large (above 0.9).</li>
+</ul>
+<x-tags names="ML_LMLFF ML_MODE ML_CTIFOR ML_OUTBLOCK ML_WTSIF"></x-tags>
+</section>
+
+<section class="sheet-sec" id="mistakes">
+<h2>Common mistakes</h2>
+<ul class="tight">
+  <li>No POTIM: VASP stops at once. No coupling tag: a silent NVE run.</li>
+  <li>MDALGO = 0, then a mean-squared displacement from wrapped coordinates.</li>
+  <li>NpT with a thermostat other than Langevin.</li>
+  <li>Too large a time step for hydrogen; or a heavier hydrogen mass (POMASS) when dynamics matter.</li>
+  <li>Symmetry left on (ISYM).</li>
+  <li>A CONTCAR from an NVT run reused for NpT without removing the predictor–corrector block.</li>
+  <li>Reading XDATCAR with ASE without <code>index=":"</code>.</li>
+  <li>Spin-polarized r²SCAN MD or force-field training on VASP 6.6.0.</li>
+</ul>
+</section>

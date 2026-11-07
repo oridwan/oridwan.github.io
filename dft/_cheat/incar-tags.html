@@ -186,7 +186,7 @@ ALGO    = All
 ISEARCH = 1           ! VASP 6.5.1 or later; delete it on older versions
 EDIFF   = 1E-6
 </pre>
-<p class="then">Add to a recipe above, with a converged ENCUT (Materials Project uses 680 eV for r²SCAN). Check that every POTCAR has kinetic-energy data: <code>grep kinetic POTCAR</code>. If the SCF struggles, start from a PBE WAVECAR; with <code>ALGO = Normal</code>, <code>LMIXTAU = .TRUE.</code> can help. Band structures and DOS with a meta-GGA follow the hybrid procedure below, not ICHARG = 11.</p>
+<p class="then">Add to a recipe above, with a converged ENCUT (Materials Project uses 680 eV for r²SCAN). Check that every POTCAR has kinetic-energy data: <code>grep kinetic POTCAR</code>. If the SCF struggles, start from a PBE WAVECAR; with <code>ALGO = Normal</code>, <code>LMIXTAU = .TRUE.</code> can help. Before VASP 6.6.0, band structures and DOS with a meta-GGA must follow the hybrid procedure below instead of ICHARG = 11; KPOINTS_OPT works on every version from 6.3.0.</p>
 
 <pre class="incar" data-title="HSE06 hybrid, static run">
 LHFCALC  = .TRUE.
@@ -201,7 +201,7 @@ LASPH    = .TRUE.
 NSW      = 0 ; IBRION = -1
 LWAVE    = .TRUE.     ! hybrids are expensive: keep WAVECAR for restarts
 </pre>
-<p class="then">Start from a converged PBE WAVECAR. Never use ICHARG = 11 with hybrids: for a band structure, put the path in a KPOINTS_OPT file (VASP 6.3.0 and later) or as zero-weight k-points, and set <code>HFRCUT = -1</code>. To relax the cell with a hybrid, set ISIF explicitly: its default is 0, which moves the atoms but computes no stress.</p>
+<p class="then">Start from a converged PBE WAVECAR. Never use ICHARG = 11 with hybrids: for a band structure, put the path in a KPOINTS_OPT file (VASP 6.3.0 and later) or as zero-weight k-points, and for gapped systems set <code>HFRCUT = -1</code>. To relax the cell with a hybrid, set ISIF explicitly: its default is 0, which moves the atoms but computes no stress.</p>
 </div>
 </section>
 
